@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Home, ListTodo, ShoppingBag, TrendingUp } from 'lucide-react';
+import { Home, ListTodo, ShoppingBag, Sparkles } from 'lucide-react';
 import { HomeScreen } from './components/HomeScreen';
 import { TasksScreen } from './components/TasksScreen';
 import { ShopScreen } from './components/ShopScreen';
-import { StatsScreen } from './components/StatsScreen';
+import { ReflectionScreen } from './components/ReflectionScreen';
 import { initialShopItems, type ShopItem } from './data/shop-items';
 
-type Screen = 'home' | 'tasks' | 'shop' | 'stats';
+type Screen = 'home' | 'tasks' | 'shop' | 'reflect';
 
 interface FamilyMember {
   id: string;
@@ -128,7 +128,7 @@ export default function App() {
     { id: 'home' as Screen, label: 'Home', icon: Home },
     { id: 'tasks' as Screen, label: 'Tasks', icon: ListTodo },
     { id: 'shop' as Screen, label: 'Shop', icon: ShoppingBag },
-    { id: 'stats' as Screen, label: 'Stats', icon: TrendingUp },
+    { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles },
   ];
 
   return (
@@ -154,13 +154,12 @@ export default function App() {
           />
         )}
         {currentScreen === 'shop' && <ShopScreen stars={stars} items={shopItems} onPurchase={handlePurchaseItem} onToggleEquip={handleToggleEquip} />}
-        {currentScreen === 'stats' && (
-          <StatsScreen
-            totalStarsEarned={totalStarsEarned}
-            currentStars={stars}
-            tasksCompleted={tasksCompleted}
-            itemsOwned={shopItems.filter(i => i.purchased).length}
-            streak={5}
+        {currentScreen === 'reflect' && (
+          <ReflectionScreen
+            currentUser={currentUser}
+            familyMembers={familyMembers}
+            tasksCompletedToday={tasks.filter(t => t.completed && t.assignedTo === currentUser).length}
+            starsEarnedToday={tasks.filter(t => t.completed && t.assignedTo === currentUser).reduce((sum, t) => sum + t.stars, 0)}
           />
         )}
       </div>
