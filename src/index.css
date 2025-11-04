@@ -710,6 +710,10 @@
     height: 15%;
   }
 
+  .h-\[80vh\] {
+    height: 80vh;
+  }
+
   .h-\[calc\(100\%-1px\)\] {
     height: calc(100% - 1px);
   }

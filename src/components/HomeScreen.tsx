@@ -175,7 +175,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
       </div>
 
       {/* Home View */}
-      <div className="flex-1 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
+      <div className="h-[80vh] bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
           {/* House Structure */}
           <div className="flex flex-col h-full">
