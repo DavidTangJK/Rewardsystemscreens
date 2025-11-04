@@ -1,26 +1,17 @@
 import { useState } from 'react';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Badge } from './ui/badge';
-import { Button } from './ui/button';
 import { Card } from './ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { sampleFriends, Friend } from '../data/friends-data';
 
 export function SocialScreen() {
   const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
 
-  const currentIndex = sampleFriends.findIndex(f => f.id === selectedFriend.id);
-  const hasPrevious = currentIndex > 0;
-  const hasNext = currentIndex < sampleFriends.length - 1;
-
-  const goToPrevious = () => {
-    if (hasPrevious) {
-      setSelectedFriend(sampleFriends[currentIndex - 1]);
-    }
-  };
-
-  const goToNext = () => {
-    if (hasNext) {
-      setSelectedFriend(sampleFriends[currentIndex + 1]);
+  const handleFriendChange = (friendId: string) => {
+    const friend = sampleFriends.find(f => f.id === friendId);
+    if (friend) {
+      setSelectedFriend(friend);
     }
   };
 
@@ -45,48 +36,25 @@ export function SocialScreen() {
             <p className="text-blue-100 opacity-90">Visit your friends' virtual homes!</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className={`${getBadgeColor(selectedFriend.color)} text-white px-4 py-2 rounded-xl flex items-center gap-2`}>
-              <span className="text-2xl">{selectedFriend.emoji}</span>
-              <span>{selectedFriend.name}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Friends List */}
-      <div className="bg-white border-b p-4 flex-shrink-0">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 overflow-x-auto pb-2">
-            {sampleFriends.map(friend => (
-              <button
-                key={friend.id}
-                onClick={() => setSelectedFriend(friend)}
-                className={`flex-shrink-0 transition-all ${
-                  selectedFriend.id === friend.id
-                    ? 'scale-110'
-                    : 'opacity-60 hover:opacity-100'
-                }`}
-              >
-                <Card className={`p-3 ${
-                  selectedFriend.id === friend.id
-                    ? `${getBadgeColor(friend.color)} text-white`
-                    : 'bg-gray-50'
-                }`}>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="text-3xl">{friend.emoji}</div>
-                    <div className="text-xs whitespace-nowrap">{friend.name}</div>
-                    <div className="flex items-center gap-1 text-xs">
-                      <Star className={`${
-                        selectedFriend.id === friend.id 
-                          ? 'fill-yellow-200 text-yellow-200' 
-                          : 'fill-yellow-400 text-yellow-400'
-                      }`} size={12} />
-                      <span>{friend.stars}</span>
+            <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
+              <SelectTrigger className={`w-[180px] ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {sampleFriends.map(friend => (
+                  <SelectItem key={friend.id} value={friend.id}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{friend.emoji}</span>
+                      <span>{friend.name}</span>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Star className="fill-yellow-400 text-yellow-400" size={12} />
+                        <span>{friend.stars}</span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </button>
-            ))}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -94,25 +62,6 @@ export function SocialScreen() {
       {/* Friend's Home View */}
       <div className="h-[80vh] bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
-          {/* Navigation Arrows */}
-          {hasPrevious && (
-            <button
-              onClick={goToPrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all hover:scale-110"
-            >
-              <ChevronLeft size={24} />
-            </button>
-          )}
-          
-          {hasNext && (
-            <button
-              onClick={goToNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white rounded-full p-3 shadow-lg transition-all hover:scale-110"
-            >
-              <ChevronRight size={24} />
-            </button>
-          )}
-
           {/* House Structure */}
           <div className="flex flex-col h-full">
             {/* Roof */}

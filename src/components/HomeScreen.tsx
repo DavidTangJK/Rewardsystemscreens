@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star } from 'lucide-react';
+import { Star, ShoppingBag } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 
 interface ShopItem {
   id: number;
@@ -25,6 +26,7 @@ interface HomeScreenProps {
   familyMembers: FamilyMember[];
   currentUser: string;
   backgroundGradient?: string;
+  onOpenShop: () => void;
 }
 
 interface Character {
@@ -37,7 +39,7 @@ interface Character {
   isCurrentUser: boolean;
 }
 
-export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100' }: HomeScreenProps) {
+export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Initialize characters from family members plus parents
@@ -167,9 +169,18 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
             <h1 className="text-white">My Virtual Home</h1>
             <p className="text-purple-100 opacity-90">Drag items to arrange your room!</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2">
-            <Star className="fill-yellow-300 text-yellow-300" size={24} />
-            <span className="text-white">{stars}</span>
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2">
+              <Star className="fill-yellow-300 text-yellow-300" size={24} />
+              <span className="text-white">{stars}</span>
+            </div>
+            <Button
+              onClick={onOpenShop}
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+            >
+              <ShoppingBag size={20} className="mr-2" />
+              Shop
+            </Button>
           </div>
         </div>
       </div>

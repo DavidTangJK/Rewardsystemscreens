@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, ListTodo, ShoppingBag, Sparkles, Users } from 'lucide-react';
 import { HomeScreen } from './components/HomeScreen';
 import { TasksScreen } from './components/TasksScreen';
@@ -6,6 +6,7 @@ import { ShopScreen } from './components/ShopScreen';
 import { ReflectionScreen } from './components/ReflectionScreen';
 import { SocialScreen } from './components/SocialScreen';
 import { initialShopItems, type ShopItem } from './data/shop-items';
+import { getFamilyMembers, createFamilyMember } from './utils/api';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
@@ -33,13 +34,53 @@ export default function App() {
   const [totalStarsEarned, setTotalStarsEarned] = useState(150);
   const [tasksCompleted, setTasksCompleted] = useState(12);
   
-  const familyMembers: FamilyMember[] = [
-    { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
-    { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
-    { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
-  ];
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
 
-  const [currentUser, setCurrentUser] = useState<string>(familyMembers[0].id);
+  const [currentUser, setCurrentUser] = useState<string>('');
+
+  // Load family members from database
+  useEffect(() => {
+    const loadFamilyMembers = async () => {
+      try {
+        const members = await getFamilyMembers();
+        
+        // If no members exist, initialize with default members
+        if (members.length === 0) {
+          const defaultMembers = [
+            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
+            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
+            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
+          ];
+          
+          // Create default members in database
+          for (const member of defaultMembers) {
+            await createFamilyMember(member);
+          }
+          
+          setFamilyMembers(defaultMembers);
+          setCurrentUser(defaultMembers[0].id);
+        } else {
+          setFamilyMembers(members);
+          setCurrentUser(members[0].id);
+        }
+      } catch (error) {
+        console.error('Failed to load family members:', error);
+        // Fallback to hardcoded data if database fails
+        const fallbackMembers = [
+          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
+          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
+          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
+        ];
+        setFamilyMembers(fallbackMembers);
+        setCurrentUser(fallbackMembers[0].id);
+      } finally {
+        setIsLoadingMembers(false);
+      }
+    };
+    
+    loadFamilyMembers();
+  }, []);
   
   const [tasks, setTasks] = useState<Task[]>([
     { id: 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: 'alex', deadline: '9:00 AM' },
@@ -83,11 +124,23 @@ export default function App() {
   const handlePurchaseItem = (itemId: number) => {
     const item = shopItems.find(i => i.id === itemId);
     if (item && !item.purchased && stars >= item.cost) {
-      setShopItems(prevItems =>
-        prevItems.map(i =>
+      setShopItems(prevItems => {
+        // If purchasing a background, unequip all other backgrounds first
+        if (item.category === 'backgrounds') {
+          return prevItems.map(i =>
+            i.id === itemId
+              ? { ...i, purchased: true, equipped: true }
+              : i.category === 'backgrounds'
+              ? { ...i, equipped: false }
+              : i
+          );
+        }
+        
+        // For other items, just set purchased and equipped
+        return prevItems.map(i =>
           i.id === itemId ? { ...i, purchased: true, equipped: true } : i
-        )
-      );
+        );
+      });
       setStars(prev => prev - item.cost);
     }
   };
@@ -140,10 +193,21 @@ export default function App() {
   const navItems = [
     { id: 'home' as Screen, label: 'Home', icon: Home },
     { id: 'tasks' as Screen, label: 'Tasks', icon: ListTodo },
-    { id: 'shop' as Screen, label: 'Shop', icon: ShoppingBag },
     { id: 'social' as Screen, label: 'Friends', icon: Users },
     { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles },
   ];
+
+  // Show loading state while fetching family members
+  if (isLoadingMembers) {
+    return (
+      <div className="size-full flex items-center justify-center bg-gradient-to-b from-purple-500 to-pink-500">
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-bounce">🏠</div>
+          <p className="text-white">Loading your family...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="size-full flex flex-col">
@@ -157,6 +221,7 @@ export default function App() {
             familyMembers={familyMembers}
             currentUser={currentUser}
             backgroundGradient={equippedBackground?.gradient}
+            onOpenShop={() => setCurrentScreen('shop')}
           />
         )}
         {currentScreen === 'tasks' && (
@@ -182,7 +247,7 @@ export default function App() {
 
       {/* Bottom Navigation */}
       <nav className="bg-white border-t border-border">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-4">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;
