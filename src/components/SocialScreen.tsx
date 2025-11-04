@@ -92,7 +92,7 @@ export function SocialScreen() {
       </div>
 
       {/* Friend's Home View */}
-      <div className="flex-1 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
+      <div className="h-[80vh] bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
           {/* Navigation Arrows */}
           {hasPrevious && (
@@ -114,7 +114,7 @@ export function SocialScreen() {
           )}
 
           {/* House Structure */}
-          <div className="absolute inset-0 flex flex-col">
+          <div className="flex flex-col h-full">
             {/* Roof */}
             <div className="h-[15%] relative flex items-end justify-center">
               <div className="w-0 h-0 border-l-[200px] border-l-transparent border-r-[200px] border-r-transparent border-b-[80px] border-b-red-600"></div>
