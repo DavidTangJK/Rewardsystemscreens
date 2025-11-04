@@ -2,12 +2,13 @@ export interface ShopItem {
   id: number;
   name: string;
   cost: number;
-  category: 'furniture' | 'pets' | 'games' | 'toys';
+  category: 'furniture' | 'pets' | 'games' | 'toys' | 'backgrounds';
   emoji: string;
   purchased: boolean;
   equipped: boolean;
   x?: number;
   y?: number;
+  gradient?: string; // For background items
 }
 
 export const initialShopItems: ShopItem[] = [
@@ -36,4 +37,13 @@ export const initialShopItems: ShopItem[] = [
   { id: 16, name: 'Art Supplies', cost: 18, category: 'toys', emoji: '🎨', purchased: false, equipped: false },
   { id: 17, name: 'Soccer Ball', cost: 12, category: 'toys', emoji: '⚽', purchased: true, equipped: true },
   { id: 18, name: 'Basketball', cost: 12, category: 'toys', emoji: '🏀', purchased: false, equipped: false },
+  
+  // Backgrounds
+  { id: 19, name: 'Cozy Default', cost: 0, category: 'backgrounds', emoji: '🏠', purchased: true, equipped: true, gradient: 'from-amber-50 to-amber-100' },
+  { id: 20, name: 'Ocean Breeze', cost: 25, category: 'backgrounds', emoji: '🌊', purchased: false, equipped: false, gradient: 'from-cyan-100 to-blue-200' },
+  { id: 21, name: 'Forest Retreat', cost: 25, category: 'backgrounds', emoji: '🌲', purchased: false, equipped: false, gradient: 'from-green-100 to-emerald-200' },
+  { id: 22, name: 'Sunset Dreams', cost: 30, category: 'backgrounds', emoji: '🌅', purchased: false, equipped: false, gradient: 'from-orange-100 to-pink-200' },
+  { id: 23, name: 'Purple Paradise', cost: 30, category: 'backgrounds', emoji: '💜', purchased: false, equipped: false, gradient: 'from-purple-100 to-pink-200' },
+  { id: 24, name: 'Starry Night', cost: 35, category: 'backgrounds', emoji: '⭐', purchased: false, equipped: false, gradient: 'from-indigo-200 to-purple-300' },
+  { id: 25, name: 'Rainbow Magic', cost: 40, category: 'backgrounds', emoji: '🌈', purchased: false, equipped: false, gradient: 'from-pink-100 via-yellow-100 to-cyan-100' },
 ];

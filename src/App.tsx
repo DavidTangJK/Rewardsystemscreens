@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Home, ListTodo, ShoppingBag, Sparkles } from 'lucide-react';
+import { Home, ListTodo, ShoppingBag, Sparkles, Users } from 'lucide-react';
 import { HomeScreen } from './components/HomeScreen';
 import { TasksScreen } from './components/TasksScreen';
 import { ShopScreen } from './components/ShopScreen';
 import { ReflectionScreen } from './components/ReflectionScreen';
+import { SocialScreen } from './components/SocialScreen';
 import { initialShopItems, type ShopItem } from './data/shop-items';
 
-type Screen = 'home' | 'tasks' | 'shop' | 'reflect';
+type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
 interface FamilyMember {
   id: string;
@@ -107,6 +108,17 @@ export default function App() {
         );
       }
       
+      // If equipping a background, unequip all other backgrounds first
+      if (item.category === 'backgrounds' && !item.equipped) {
+        return prevItems.map(i =>
+          i.id === itemId
+            ? { ...i, equipped: true }
+            : i.category === 'backgrounds'
+            ? { ...i, equipped: false }
+            : i
+        );
+      }
+      
       // For other items, just toggle
       return prevItems.map(i =>
         i.id === itemId ? { ...i, equipped: !i.equipped } : i
@@ -114,7 +126,8 @@ export default function App() {
     });
   };
 
-  const equippedItems = shopItems.filter(item => item.equipped);
+  const equippedItems = shopItems.filter(item => item.equipped && item.category !== 'backgrounds');
+  const equippedBackground = shopItems.find(item => item.equipped && item.category === 'backgrounds');
 
   const handleUpdateItemPosition = (itemId: number, x: number, y: number) => {
     setShopItems(prevItems =>
@@ -128,6 +141,7 @@ export default function App() {
     { id: 'home' as Screen, label: 'Home', icon: Home },
     { id: 'tasks' as Screen, label: 'Tasks', icon: ListTodo },
     { id: 'shop' as Screen, label: 'Shop', icon: ShoppingBag },
+    { id: 'social' as Screen, label: 'Friends', icon: Users },
     { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles },
   ];
 
@@ -142,6 +156,7 @@ export default function App() {
             onUpdatePosition={handleUpdateItemPosition}
             familyMembers={familyMembers}
             currentUser={currentUser}
+            backgroundGradient={equippedBackground?.gradient}
           />
         )}
         {currentScreen === 'tasks' && (
@@ -154,6 +169,7 @@ export default function App() {
           />
         )}
         {currentScreen === 'shop' && <ShopScreen stars={stars} items={shopItems} onPurchase={handlePurchaseItem} onToggleEquip={handleToggleEquip} />}
+        {currentScreen === 'social' && <SocialScreen />}
         {currentScreen === 'reflect' && (
           <ReflectionScreen
             currentUser={currentUser}
@@ -166,7 +182,7 @@ export default function App() {
 
       {/* Bottom Navigation */}
       <nav className="bg-white border-t border-border">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;

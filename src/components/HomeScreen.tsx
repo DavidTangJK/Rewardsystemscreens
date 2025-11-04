@@ -24,6 +24,7 @@ interface HomeScreenProps {
   onUpdatePosition: (itemId: number, x: number, y: number) => void;
   familyMembers: FamilyMember[];
   currentUser: string;
+  backgroundGradient?: string;
 }
 
 interface Character {
@@ -36,7 +37,7 @@ interface Character {
   isCurrentUser: boolean;
 }
 
-export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser }: HomeScreenProps) {
+export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100' }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Initialize characters from family members plus parents
@@ -187,15 +188,15 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
             {/* House Interior */}
             <div 
               ref={containerRef}
-              className="flex-1 bg-amber-50 mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden"
+              className={`flex-1 bg-gradient-to-b ${backgroundGradient} mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
               {/* Floor */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-100/30 to-amber-200/50 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30 pointer-events-none"></div>
               
               {/* Wood Floor Pattern */}
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-amber-300/40 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
               {/* Windows */}
               <div className="absolute top-4 left-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none">

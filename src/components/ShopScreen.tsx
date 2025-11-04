@@ -18,6 +18,7 @@ export function ShopScreen({ stars, items, onPurchase, onToggleEquip }: ShopScre
     { value: 'pets', label: '🐾 Pets' },
     { value: 'games', label: '🎮 Games' },
     { value: 'toys', label: '🧸 Toys' },
+    { value: 'backgrounds', label: '🎨 Backgrounds' },
   ];
 
   return (
@@ -40,7 +41,7 @@ export function ShopScreen({ stars, items, onPurchase, onToggleEquip }: ShopScre
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-6xl mx-auto">
           <Tabs defaultValue="furniture" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
               {categories.map(cat => (
                 <TabsTrigger key={cat.value} value={cat.value}>
                   {cat.label}
@@ -57,6 +58,7 @@ export function ShopScreen({ stars, items, onPurchase, onToggleEquip }: ShopScre
                       <ShopItemCard
                         key={item.id}
                         item={item}
+                        stars={stars}
                         canAfford={stars >= item.cost}
                         onPurchase={onPurchase}
                         onToggleEquip={onToggleEquip}
@@ -74,11 +76,13 @@ export function ShopScreen({ stars, items, onPurchase, onToggleEquip }: ShopScre
 
 function ShopItemCard({
   item,
+  stars,
   canAfford,
   onPurchase,
   onToggleEquip,
 }: {
   item: ShopItem;
+  stars: number;
   canAfford: boolean;
   onPurchase: (id: number) => void;
   onToggleEquip: (id: number) => void;
@@ -86,7 +90,13 @@ function ShopItemCard({
   return (
     <Card className={`p-4 ${item.equipped ? 'bg-purple-50 border-purple-300' : item.purchased ? 'bg-gray-50' : 'bg-white'}`}>
       <div className="flex flex-col items-center text-center space-y-3">
-        <div className="text-6xl">{item.emoji}</div>
+        {item.category === 'backgrounds' && item.gradient ? (
+          <div className={`w-full h-20 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-4xl border-2 border-gray-200`}>
+            {item.emoji}
+          </div>
+        ) : (
+          <div className="text-6xl">{item.emoji}</div>
+        )}
         <h3>{item.name}</h3>
         
         {item.purchased ? (
@@ -102,7 +112,10 @@ function ShopItemCard({
               className="w-full"
               variant={item.equipped ? 'outline' : 'default'}
             >
-              {item.equipped ? 'Remove from Room' : 'Add to Room'}
+              {item.category === 'backgrounds' 
+                ? (item.equipped ? 'Applied ✓' : 'Apply Background')
+                : (item.equipped ? 'Remove from Room' : 'Add to Room')
+              }
             </Button>
           </>
         ) : (
@@ -123,7 +136,7 @@ function ShopItemCard({
               ) : (
                 <>
                   <Lock size={16} className="mr-2" />
-                  Need {item.cost - (canAfford ? 0 : item.cost)} more
+                  Need {item.cost - stars} more
                 </>
               )}
             </Button>
