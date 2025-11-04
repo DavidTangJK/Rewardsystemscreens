@@ -255,14 +255,14 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setCurrentScreen(item.id)}
-                className={`flex flex-col items-center justify-center gap-1 py-3 transition-colors ${
+                className={`flex flex-col items-center gap-1 py-3 transition-colors ${
                   isActive
                     ? 'text-purple-600'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon size={24} strokeWidth={2} className="flex-shrink-0" />
-                <span className="text-[11px] leading-tight">{item.label}</span>
+                <Icon size={24} />
+                <span className="text-xs">{item.label}</span>
               </button>
             );
           })}
