@@ -1,4 +1,6 @@
-import Avatar from 'avataaars';
+import { useMemo } from 'react';
+import { createAvatar } from '@dicebear/core';
+import { avataaars } from '@dicebear/collection';
 import type { AvatarConfig } from '../data/avatar-options';
 
 interface AvatarDisplayProps {
@@ -8,30 +10,28 @@ interface AvatarDisplayProps {
 
 export function AvatarDisplay({ config, size = 'medium' }: AvatarDisplayProps) {
   const sizeMap = {
-    small: '64px',
-    medium: '96px',
-    large: '128px',
+    small: 64,
+    medium: 96,
+    large: 128,
   };
   
   const avatarSize = sizeMap[size];
   
+  const avatarSvg = useMemo(() => {
+    const avatar = createAvatar(avataaars, {
+      size: avatarSize,
+      seed: JSON.stringify(config), // Use config as seed for consistency
+      // Map our config to DiceBear options
+      ...config,
+    });
+    
+    return avatar.toString();
+  }, [config, avatarSize]);
+  
   return (
-    <div style={{ width: avatarSize, height: avatarSize }}>
-      <Avatar
-        style={{ width: '100%', height: '100%' }}
-        avatarStyle='Circle'
-        topType={config.topType as any}
-        accessoriesType={config.accessoriesType as any}
-        hairColor={config.hairColor as any}
-        facialHairType={config.facialHairType as any}
-        facialHairColor={config.facialHairColor as any}
-        clotheType={config.clotheType as any}
-        clotheColor={config.clotheColor as any}
-        eyeType={config.eyeType as any}
-        eyebrowType={config.eyebrowType as any}
-        mouthType={config.mouthType as any}
-        skinColor={config.skinColor as any}
-      />
-    </div>
+    <div 
+      style={{ width: `${avatarSize}px`, height: `${avatarSize}px` }}
+      dangerouslySetInnerHTML={{ __html: avatarSvg }}
+    />
   );
 }

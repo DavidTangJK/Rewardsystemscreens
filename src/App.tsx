@@ -53,8 +53,8 @@ export default function App() {
         if (members.length === 0) {
           const defaultMembers = [
             { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
-            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, topType: 'LongHairBun', hairColor: 'Blonde', clotheType: 'ShirtScoopNeck', clotheColor: 'Pink' } },
-            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, topType: 'ShortHairShortFlat', hairColor: 'Black', clotheType: 'Hoodie', clotheColor: 'PastelGreen' } },
+            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, top: ['bun'], hairColor: ['d6b370'], clothes: ['shirtScoopNeck'], clothesColor: ['ff488e'] } },
+            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, top: ['shortFlat'], hairColor: ['2c1b18'], clothes: ['hoodie'], clothesColor: ['a7ffc4'] } },
           ];
           
           // Create default members in database
@@ -78,8 +78,8 @@ export default function App() {
         // Fallback to hardcoded data if database fails
         const fallbackMembers = [
           { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
-          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, topType: 'LongHairBun', hairColor: 'Blonde', clotheType: 'ShirtScoopNeck', clotheColor: 'Pink' } },
-          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, topType: 'ShortHairShortFlat', hairColor: 'Black', clotheType: 'Hoodie', clotheColor: 'PastelGreen' } },
+          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, top: ['bun'], hairColor: ['d6b370'], clothes: ['shirtScoopNeck'], clothesColor: ['ff488e'] } },
+          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, top: ['shortFlat'], hairColor: ['2c1b18'], clothes: ['hoodie'], clothesColor: ['a7ffc4'] } },
         ];
         setFamilyMembers(fallbackMembers);
         setCurrentUser(fallbackMembers[0].id);
