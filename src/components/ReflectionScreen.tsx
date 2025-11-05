@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Sparkles, Calendar, Heart } from 'lucide-react';
+import { Sparkles, Calendar, Heart, Smile } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface Reflection {
   id: number;
@@ -50,8 +51,21 @@ export function ReflectionScreen({
 
   const [newReflection, setNewReflection] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
-  const moods = ['😊', '😁', '🥰', '😎', '🤗', '😌', '🤔', '😴', '🥳', '😇', '🤓', '😋'];
+  // Comprehensive list of face emojis
+  const faceEmojis = [
+    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊',
+    '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '😋', '😛', '😜', '🤪',
+    '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏',
+    '😒', '🙄', '😬', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕',
+    '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓',
+    '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧',
+    '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫',
+    '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹',
+    '👺', '👻', '👽', '👾', '🤖', '😺', '😸', '😹', '😻', '😼', '😽', '🙀',
+    '😿', '😾',
+  ];
 
   const reflectionTemplates = [
     { value: 'template1', label: 'I completed all my tasks and feel great!' },
@@ -132,21 +146,45 @@ export function ReflectionScreen({
             {/* Mood Selector */}
             <div className="mb-4">
               <p className="text-muted-foreground mb-2">How are you feeling?</p>
-              <div className="flex gap-2 flex-wrap">
-                {moods.map(mood => (
-                  <button
-                    key={mood}
-                    onClick={() => setSelectedMood(mood)}
-                    className={`text-3xl p-2 rounded-lg transition-all ${
-                      selectedMood === mood
-                        ? 'bg-purple-200 scale-110'
-                        : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+              <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto py-3"
                   >
-                    {mood}
-                  </button>
-                ))}
-              </div>
+                    {selectedMood ? (
+                      <span className="text-3xl mr-2">{selectedMood}</span>
+                    ) : (
+                      <Smile className="mr-2" size={20} />
+                    )}
+                    <span className="text-muted-foreground">
+                      {selectedMood ? 'Change your mood' : 'Pick a mood emoji'}
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-3" align="start">
+                  <ScrollArea className="h-64">
+                    <div className="grid grid-cols-8 gap-2 p-2">
+                      {faceEmojis.map(emoji => (
+                        <button
+                          key={emoji}
+                          onClick={() => {
+                            setSelectedMood(emoji);
+                            setIsEmojiPickerOpen(false);
+                          }}
+                          className={`text-2xl p-2 rounded-lg transition-all hover:bg-purple-100 ${
+                            selectedMood === emoji
+                              ? 'bg-purple-200 ring-2 ring-purple-400'
+                              : 'bg-gray-50 hover:scale-110'
+                          }`}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Template Selector */}
