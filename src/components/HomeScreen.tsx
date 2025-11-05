@@ -514,9 +514,9 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                     <div className="relative">
                       <div className={`animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
                         {char.avatarConfig ? (
-                          <AvatarDisplay config={char.avatarConfig} size="large" />
+                          <AvatarDisplay config={char.avatarConfig} size="compact" />
                         ) : (
-                          <div className="text-5xl">{char.emoji}</div>
+                          <div className="text-4xl">{char.emoji}</div>
                         )}
                       </div>
                       <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(char.color)} text-white px-2 py-0.5 rounded whitespace-nowrap ${

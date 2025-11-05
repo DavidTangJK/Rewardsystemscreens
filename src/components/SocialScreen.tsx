@@ -132,9 +132,9 @@ export function SocialScreen() {
                 <div className="relative">
                   <div className="animate-bounce-slow">
                     {selectedFriend.avatarConfig ? (
-                      <AvatarDisplay config={selectedFriend.avatarConfig} size="large" />
+                      <AvatarDisplay config={selectedFriend.avatarConfig} size="compact" />
                     ) : (
-                      <div className="text-5xl">{selectedFriend.emoji}</div>
+                      <div className="text-4xl">{selectedFriend.emoji}</div>
                     )}
                   </div>
                   <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(selectedFriend.color)} text-white px-2 py-0.5 rounded whitespace-nowrap`}>

@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface Reflection {
   id: number;
@@ -50,7 +51,18 @@ export function ReflectionScreen({
   const [newReflection, setNewReflection] = useState('');
   const [selectedMood, setSelectedMood] = useState<string>('');
 
-  const moods = ['😊', '😄', '🌟', '💪', '🎉', '😌', '🤔', '😴'];
+  const moods = ['😊', '😁', '🥰', '😎', '🤗', '😌', '🤔', '😴', '🥳', '😇', '🤓', '😋'];
+
+  const reflectionTemplates = [
+    { value: 'template1', label: 'I completed all my tasks and feel great!' },
+    { value: 'template2', label: 'I tried my best today and I\'m proud of myself.' },
+    { value: 'template3', label: 'I helped someone today and it made me happy.' },
+    { value: 'template4', label: 'I learned something new and interesting.' },
+    { value: 'template5', label: 'I stayed focused and got my work done.' },
+    { value: 'template6', label: 'I was kind to others today.' },
+    { value: 'template7', label: 'Today was challenging but I kept going.' },
+    { value: 'template8', label: 'I made progress on my goals today.' },
+  ];
 
   const handleSubmitReflection = () => {
     if (!newReflection.trim()) return;
@@ -137,9 +149,34 @@ export function ReflectionScreen({
               </div>
             </div>
 
+            {/* Template Selector */}
+            <div className="mb-4">
+              <p className="text-muted-foreground mb-2">Quick reflection (optional)</p>
+              <Select
+                value=""
+                onValueChange={(value) => {
+                  const template = reflectionTemplates.find(t => t.value === value);
+                  if (template) {
+                    setNewReflection(template.label);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a quick reflection or write your own below..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {reflectionTemplates.map(template => (
+                    <SelectItem key={template.value} value={template.value}>
+                      {template.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Reflection Input */}
             <Textarea
-              placeholder="What did you accomplish today? How do you feel? What are you proud of?"
+              placeholder="Write about your day, or choose a quick reflection above..."
               value={newReflection}
               onChange={(e) => setNewReflection(e.target.value)}
               className="min-h-32 mb-4 text-base"

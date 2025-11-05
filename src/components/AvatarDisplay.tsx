@@ -5,12 +5,13 @@ import type { AvatarConfig } from '../data/avatar-options';
 
 interface AvatarDisplayProps {
   config: AvatarConfig;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'compact' | 'medium' | 'large';
 }
 
 export function AvatarDisplay({ config, size = 'medium' }: AvatarDisplayProps) {
   const sizeMap = {
     small: 24,
+    compact: 48,
     medium: 96,
     large: 128,
   };
