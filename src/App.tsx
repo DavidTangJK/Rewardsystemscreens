@@ -8,7 +8,7 @@ import { SocialScreen } from './components/SocialScreen';
 import { OnboardingFlow } from './components/OnboardingFlow';
 import { AddChildModal } from './components/AddChildModal';
 import { initialShopItems, type ShopItem } from './data/shop-items';
-import { getFamilyMembers, createFamilyMember, updateFamilyMember } from './utils/api';
+import { getFamilyChildren, createChild, updateChild, wipeDatabase, getOrCreateFamily } from './utils/api';
 import { toast, Toaster } from 'sonner@2.0.3';
 import confetti from 'canvas-confetti';
 import type { AvatarConfig } from './data/avatar-options';
@@ -16,12 +16,13 @@ import { Button } from './components/ui/button';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
-interface FamilyMember {
+interface Child {
   id: string;
   name: string;
   emoji: string;
   color: string;
   avatarConfig?: AvatarConfig;
+  familyId: string;
 }
 
 interface Task {
@@ -41,34 +42,45 @@ export default function App() {
   const [totalStarsEarned, setTotalStarsEarned] = useState(0);
   const [tasksCompleted, setTasksCompleted] = useState(0);
   
-  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
-  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [isLoadingChildren, setIsLoadingChildren] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
   const [pendingChildFromUrl, setPendingChildFromUrl] = useState<{ id: string; name: string } | null>(null);
+  const [familyId, setFamilyId] = useState<string>('default-family');
 
   const [currentUser, setCurrentUser] = useState<string>('');
 
-  // Load family members from database
+  // Load children from database
   useEffect(() => {
-    const loadFamilyMembers = async () => {
+    const loadChildren = async () => {
       try {
+        // Wipe database on first load (development)
+        await wipeDatabase();
+        
         // Check URL parameters for child_id and child_name
         const urlParams = new URLSearchParams(window.location.search);
         const childId = urlParams.get('child_id');
         const childName = urlParams.get('child_name');
+        const urlFamilyId = urlParams.get('family_id') || 'default-family';
         
-        const members = await getFamilyMembers();
+        setFamilyId(urlFamilyId);
+        
+        // Ensure family exists
+        await getOrCreateFamily(urlFamilyId);
+        
+        // Load children in this family
+        const familyChildren = await getFamilyChildren(urlFamilyId);
         
         // If URL has child_id, check if it exists
         if (childId && childName) {
-          const childExists = members.some(m => m.id === childId);
+          const childExists = familyChildren.some(c => c.id === childId);
           
           if (!childExists) {
             // Child doesn't exist, prepare for onboarding
             setPendingChildFromUrl({ id: childId, name: childName });
             setShowOnboarding(true);
-            setIsLoadingMembers(false);
+            setIsLoadingChildren(false);
             
             toast.info(`👋 Welcome ${childName}!`, {
               description: "Let's set up your account!",
@@ -78,9 +90,9 @@ export default function App() {
             return;
           } else {
             // Child exists, set as current user
-            setFamilyMembers(members);
+            setChildren(familyChildren);
             setCurrentUser(childId);
-            setIsLoadingMembers(false);
+            setIsLoadingChildren(false);
             
             toast.success(`🎉 Welcome back, ${childName}!`, {
               description: 'Loading your tasks...',
@@ -92,22 +104,22 @@ export default function App() {
         }
         
         // Normal flow: no URL parameters
-        if (members.length === 0) {
+        if (familyChildren.length === 0) {
           setShowOnboarding(true);
         } else {
-          setFamilyMembers(members);
-          setCurrentUser(members[0].id);
+          setChildren(familyChildren);
+          setCurrentUser(familyChildren[0].id);
         }
       } catch (error) {
-        console.error('Failed to load family members:', error);
+        console.error('Failed to load children:', error);
         // Show onboarding if database fails
         setShowOnboarding(true);
       } finally {
-        setIsLoadingMembers(false);
+        setIsLoadingChildren(false);
       }
     };
     
-    loadFamilyMembers();
+    loadChildren();
   }, []);
   
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -116,39 +128,36 @@ export default function App() {
 
   const handleOnboardingComplete = async (name: string, avatarConfig: AvatarConfig, color: string) => {
     // Use ID from URL if available, otherwise generate from name
-    const memberId = pendingChildFromUrl?.id || name.toLowerCase().replace(/\s+/g, '-');
+    const childId = pendingChildFromUrl?.id || name.toLowerCase().replace(/\s+/g, '-');
     
-    const newMember: FamilyMember = {
-      id: memberId,
+    const newChild = {
+      id: childId,
       name,
-      emoji: '👤',
       color,
       avatarConfig,
     };
 
     try {
-      await createFamilyMember(newMember);
+      await createChild(familyId, newChild);
       
-      // Load existing members and add the new one
-      const existingMembers = await getFamilyMembers();
-      const allMembers = existingMembers.filter(m => m.id !== memberId);
-      allMembers.push(newMember);
+      // Load all children in family
+      const familyChildren = await getFamilyChildren(familyId);
       
-      setFamilyMembers(allMembers);
-      setCurrentUser(newMember.id);
+      setChildren(familyChildren);
+      setCurrentUser(childId);
       setShowOnboarding(false);
       setPendingChildFromUrl(null);
       
       // Clear URL parameters
       window.history.replaceState({}, '', window.location.pathname);
       
-      // Create initial tasks for the new member
+      // Create initial tasks for the new child
       const initialTasks: Task[] = [
-        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '9:00 AM' },
-        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '8:30 PM' },
-        { id: Date.now() + 3, title: 'Complete Homework', description: 'Finish all assignments', stars: 10, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '5:00 PM' },
-        { id: Date.now() + 4, title: 'Clean Your Room', description: 'Organize and tidy up', stars: 15, completed: false, category: 'weekly', assignedTo: newMember.id, deadline: 'Saturday 2:00 PM' },
-        { id: Date.now() + 5, title: 'Learn Something New', description: 'Try a new skill or hobby', stars: 20, completed: false, category: 'bonus', assignedTo: newMember.id },
+        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: childId, deadline: '9:00 AM' },
+        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: childId, deadline: '8:30 PM' },
+        { id: Date.now() + 3, title: 'Complete Homework', description: 'Finish all assignments', stars: 10, completed: false, category: 'daily', assignedTo: childId, deadline: '5:00 PM' },
+        { id: Date.now() + 4, title: 'Clean Your Room', description: 'Organize and tidy up', stars: 15, completed: false, category: 'weekly', assignedTo: childId, deadline: 'Saturday 2:00 PM' },
+        { id: Date.now() + 5, title: 'Learn Something New', description: 'Try a new skill or hobby', stars: 20, completed: false, category: 'bonus', assignedTo: childId },
       ];
       setTasks(initialTasks);
       
@@ -168,29 +177,31 @@ export default function App() {
         colors: ['#fbbf24', '#f59e0b', '#f97316', '#ec4899', '#a855f7'],
       });
     } catch (error) {
-      console.error('Failed to create member:', error);
+      console.error('Failed to create child:', error);
       toast.error('Failed to create account. Please try again.');
     }
   };
 
   const handleAddChild = async (name: string, avatarConfig: AvatarConfig, color: string) => {
-    const newMember: FamilyMember = {
-      id: name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
+    const childId = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    
+    const newChild = {
+      id: childId,
       name,
-      emoji: '👤',
       color,
       avatarConfig,
     };
 
     try {
-      await createFamilyMember(newMember);
-      setFamilyMembers(prev => [...prev, newMember]);
+      await createChild(familyId, newChild);
+      const familyChildren = await getFamilyChildren(familyId);
+      setChildren(familyChildren);
       
       // Create initial tasks for the new child
       const initialTasks: Task[] = [
-        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '9:00 AM' },
-        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '8:30 PM' },
-        { id: Date.now() + 3, title: 'Help with Dishes', description: 'Clean up after meals', stars: 8, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '7:00 PM' },
+        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: childId, deadline: '9:00 AM' },
+        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: childId, deadline: '8:30 PM' },
+        { id: Date.now() + 3, title: 'Help with Dishes', description: 'Clean up after meals', stars: 8, completed: false, category: 'daily', assignedTo: childId, deadline: '7:00 PM' },
       ];
       setTasks(prev => [...prev, ...initialTasks]);
       
@@ -349,7 +360,7 @@ export default function App() {
     const lockedScreens: Screen[] = ['home', 'social'];
     
     if (lockedScreens.includes(screenId) && !hasCompletedAllTasks()) {
-      const currentUserName = familyMembers.find(m => m.id === currentUser)?.name || 'You';
+      const currentUserName = children.find(c => c.id === currentUser)?.name || 'You';
       toast.error(`🔒 ${currentUserName} need${currentUserName === 'You' ? '' : 's'} to complete all daily tasks first!`, {
         description: 'Finish your daily tasks to unlock this tab.',
         duration: 3000,
@@ -372,8 +383,8 @@ export default function App() {
     return <OnboardingFlow onComplete={handleOnboardingComplete} defaultName={pendingChildFromUrl?.name} />;
   }
 
-  // Show loading state while fetching family members
-  if (isLoadingMembers) {
+  // Show loading state while fetching children
+  if (isLoadingChildren) {
     return (
       <div className="size-full flex items-center justify-center bg-gradient-to-b from-purple-500 to-pink-500">
         <div className="text-center">
@@ -395,7 +406,7 @@ export default function App() {
             stars={stars} 
             items={equippedItems} 
             onUpdatePosition={handleUpdateItemPosition}
-            familyMembers={familyMembers}
+            familyMembers={children}
             currentUser={currentUser}
             backgroundGradient={equippedBackground?.gradient}
             onOpenShop={() => setCurrentScreen('shop')}
@@ -406,7 +417,7 @@ export default function App() {
             tasks={tasks} 
             onToggleTask={handleToggleTask}
             currentUser={currentUser}
-            familyMembers={familyMembers}
+            familyMembers={children}
             onUserChange={setCurrentUser}
             onUpdateAvatar={handleUpdateAvatar}
           />
@@ -416,7 +427,7 @@ export default function App() {
         {currentScreen === 'reflect' && (
           <ReflectionScreen
             currentUser={currentUser}
-            familyMembers={familyMembers}
+            familyMembers={children}
             tasksCompletedToday={tasks.filter(t => t.completed && t.assignedTo === currentUser).length}
             starsEarnedToday={tasks.filter(t => t.completed && t.assignedTo === currentUser).reduce((sum, t) => sum + t.stars, 0)}
           />
@@ -459,7 +470,7 @@ export default function App() {
       </nav>
 
       {/* Floating Add Child Button */}
-      {familyMembers.length > 0 && (
+      {children.length > 0 && (
         <Button
           onClick={() => setShowAddChild(true)}
           className="fixed bottom-20 right-4 md:bottom-24 md:right-8 rounded-full w-14 h-14 shadow-lg z-50"
@@ -474,7 +485,7 @@ export default function App() {
         open={showAddChild}
         onClose={() => setShowAddChild(false)}
         onAdd={handleAddChild}
-        existingColors={familyMembers.map(m => m.color)}
+        existingColors={children.map(c => c.color)}
       />
     </div>
   );
