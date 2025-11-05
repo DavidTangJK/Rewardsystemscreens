@@ -5,12 +5,12 @@ export interface AvatarConfig {
   earrings?: string[];
   eyebrows?: string[];
   eyes?: string[];
+  facialHair?: string[];
   glasses?: string[];
   glassesColor?: string[];
   hairColor?: string[];
   hair?: string[];
   mouth?: string[];
-  nose?: string[];
   shirt?: string[];
   shirtColor?: string[];
 }
@@ -37,7 +37,7 @@ export const avatarOptions = {
     { id: 'fff4e6', name: 'Cream', color: '#fff4e6' },
   ],
 
-  // Hair styles
+  // Hair styles - all Micah options
   hairStyles: [
     { id: 'dannyPhantom', name: 'Danny', emoji: '✨' },
     { id: 'dougFunny', name: 'Doug', emoji: '🎨' },
@@ -45,6 +45,7 @@ export const avatarOptions = {
     { id: 'full', name: 'Full', emoji: '🌊' },
     { id: 'mrClean', name: 'Bald', emoji: '✨' },
     { id: 'mrT', name: 'Mr T', emoji: '💪' },
+    { id: 'pixie', name: 'Pixie', emoji: '🧚' },
     { id: 'turban', name: 'Turban', emoji: '👳' },
   ],
 
@@ -63,7 +64,7 @@ export const avatarOptions = {
     { id: '78c251', name: 'Green', color: '#78c251' },
   ],
 
-  // Eyes
+  // Eyes - corrected for Micah
   eyeTypes: [
     { id: 'eyes', name: 'Normal', emoji: '👀' },
     { id: 'eyesShadow', name: 'Shadow', emoji: '😊' },
@@ -71,15 +72,15 @@ export const avatarOptions = {
     { id: 'smiling', name: 'Smiling', emoji: '😄' },
   ],
 
-  // Eyebrows
+  // Eyebrows - corrected for Micah
   eyebrowTypes: [
     { id: 'down', name: 'Down', emoji: '😔' },
-    { id: 'eyelashesDown', name: 'Sad', emoji: '😢' },
-    { id: 'eyelashesUp', name: 'Happy', emoji: '😊' },
+    { id: 'eyelashesDown', name: 'Lashes Down', emoji: '😢' },
+    { id: 'eyelashesUp', name: 'Lashes Up', emoji: '😊' },
     { id: 'up', name: 'Up', emoji: '😃' },
   ],
 
-  // Mouth
+  // Mouth - corrected for Micah
   mouthTypes: [
     { id: 'frown', name: 'Frown', emoji: '☹️' },
     { id: 'laughing', name: 'Laughing', emoji: '😆' },
@@ -91,16 +92,16 @@ export const avatarOptions = {
     { id: 'surprised', name: 'Surprised', emoji: '😲' },
   ],
 
-  // Nose
-  noseTypes: [
-    { id: 'curve', name: 'Curve', emoji: '👃' },
-    { id: 'pointed', name: 'Pointed', emoji: '👃' },
-    { id: 'round', name: 'Round', emoji: '👃' },
+  // Facial Hair
+  facialHairTypes: [
+    { id: '', name: 'None', emoji: '·' },
+    { id: 'beard', name: 'Beard', emoji: '🧔' },
+    { id: 'scruff', name: 'Scruff', emoji: '🧔' },
   ],
 
-  // Glasses
+  // Glasses - corrected for Micah
   glassesTypes: [
-    { id: 'none', name: 'None', emoji: '·' },
+    { id: '', name: 'None', emoji: '·' },
     { id: 'round', name: 'Round', emoji: '👓' },
     { id: 'square', name: 'Square', emoji: '🤓' },
   ],
@@ -114,9 +115,9 @@ export const avatarOptions = {
     { id: 'f59797', name: 'Pink', color: '#f59797' },
   ],
 
-  // Earrings
+  // Earrings - corrected for Micah
   earringTypes: [
-    { id: 'none', name: 'None', emoji: '·' },
+    { id: '', name: 'None', emoji: '·' },
     { id: 'hoop', name: 'Hoop', emoji: '⭕' },
     { id: 'stud', name: 'Stud', emoji: '💎' },
   ],
@@ -130,7 +131,7 @@ export const avatarOptions = {
     { id: '6c4ba6', name: 'Purple', color: '#6c4ba6' },
   ],
 
-  // Shirts
+  // Shirts - corrected for Micah
   shirtTypes: [
     { id: 'collared', name: 'Collared', emoji: '👔' },
     { id: 'crew', name: 'Crew', emoji: '👕' },
@@ -159,15 +160,15 @@ export const defaultAvatarConfig: AvatarConfig = {
   baseColor: ['edb98a'],
   backgroundColor: ['b6e3f4'],
   earringColor: ['ffd700'],
-  earrings: ['none'],
+  earrings: [''],
   eyebrows: ['up'],
   eyes: ['eyes'],
-  glasses: ['none'],
+  facialHair: [''],
+  glasses: [''],
   glassesColor: ['000000'],
   hairColor: ['724133'],
   hair: ['full'],
   mouth: ['smile'],
-  nose: ['curve'],
   shirt: ['crew'],
   shirtColor: ['5199e4'],
 };
