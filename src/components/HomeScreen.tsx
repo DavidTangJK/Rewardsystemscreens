@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Star, ShoppingBag, Grid3x3 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { AvatarDisplay } from './AvatarDisplay';
+import type { AvatarConfig } from '../data/avatar-options';
 
 const GRID_COLS = 30;
 const GRID_ROWS = 15;
@@ -22,6 +24,7 @@ interface FamilyMember {
   name: string;
   emoji: string;
   color: string;
+  avatarConfig?: AvatarConfig;
 }
 
 interface HomeScreenProps {
@@ -42,6 +45,7 @@ interface Character {
   name: string;
   color: string;
   isCurrentUser: boolean;
+  avatarConfig?: AvatarConfig;
 }
 
 export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
@@ -64,6 +68,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
       name: member.name,
       color: member.color,
       isCurrentUser: member.id === currentUser,
+      avatarConfig: member.avatarConfig,
     }));
 
     // Add parents
@@ -387,9 +392,15 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                     }}
                   >
                     <div className="relative">
-                      <div className={`text-5xl animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
-                        {char.emoji}
-                      </div>
+                      {char.avatarConfig ? (
+                        <div className={`animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
+                          <AvatarDisplay config={char.avatarConfig} size="medium" />
+                        </div>
+                      ) : (
+                        <div className={`text-5xl animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
+                          {char.emoji}
+                        </div>
+                      )}
                       <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(char.color)} text-white px-2 py-0.5 rounded whitespace-nowrap ${
                         char.isCurrentUser ? 'ring-2 ring-yellow-400 ring-offset-2' : ''
                       }`}>

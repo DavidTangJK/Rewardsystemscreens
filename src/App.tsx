@@ -8,6 +8,8 @@ import { SocialScreen } from './components/SocialScreen';
 import { initialShopItems, type ShopItem } from './data/shop-items';
 import { getFamilyMembers, createFamilyMember } from './utils/api';
 import { toast, Toaster } from 'sonner@2.0.3';
+import confetti from 'canvas-confetti';
+import { type AvatarConfig, defaultAvatarConfig } from './data/avatar-options';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
@@ -16,6 +18,7 @@ interface FamilyMember {
   name: string;
   emoji: string;
   color: string;
+  avatarConfig?: AvatarConfig;
 }
 
 interface Task {
@@ -49,9 +52,9 @@ export default function App() {
         // If no members exist, initialize with default members
         if (members.length === 0) {
           const defaultMembers = [
-            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
-            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
-            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
+            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
+            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, topType: 'LongHairBun', hairColor: 'Blonde', clotheType: 'ShirtScoopNeck', clotheColor: 'Pink' } },
+            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, topType: 'ShortHairShortFlat', hairColor: 'Black', clotheType: 'Hoodie', clotheColor: 'PastelGreen' } },
           ];
           
           // Create default members in database
@@ -62,16 +65,21 @@ export default function App() {
           setFamilyMembers(defaultMembers);
           setCurrentUser(defaultMembers[0].id);
         } else {
-          setFamilyMembers(members);
-          setCurrentUser(members[0].id);
+          // Add default avatar config to existing members if they don't have one
+          const membersWithAvatars = members.map(m => ({
+            ...m,
+            avatarConfig: m.avatarConfig || defaultAvatarConfig
+          }));
+          setFamilyMembers(membersWithAvatars);
+          setCurrentUser(membersWithAvatars[0].id);
         }
       } catch (error) {
         console.error('Failed to load family members:', error);
         // Fallback to hardcoded data if database fails
         const fallbackMembers = [
-          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
-          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
-          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
+          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
+          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, topType: 'LongHairBun', hairColor: 'Blonde', clotheType: 'ShirtScoopNeck', clotheColor: 'Pink' } },
+          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, topType: 'ShortHairShortFlat', hairColor: 'Black', clotheType: 'Hoodie', clotheColor: 'PastelGreen' } },
         ];
         setFamilyMembers(fallbackMembers);
         setCurrentUser(fallbackMembers[0].id);
@@ -143,6 +151,37 @@ export default function App() {
         );
       });
       setStars(prev => prev - item.cost);
+      
+      // Trigger confetti celebration
+      const duration = 2000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          return;
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: Math.random() * 0.4 + 0.3, y: Math.random() * 0.3 + 0.1 },
+          colors: ['#fbbf24', '#f59e0b', '#f97316', '#ec4899', '#a855f7'],
+        });
+      }, 250);
+      
+      // Show success toast
+      toast.success(`🎉 You got ${item.emoji} ${item.name}!`, {
+        description: item.category === 'backgrounds' 
+          ? 'Your new background has been applied!' 
+          : 'Check it out in your home!',
+        duration: 3000,
+      });
     }
   };
 
@@ -151,17 +190,6 @@ export default function App() {
     if (!item || !item.purchased) return;
 
     setShopItems(prevItems => {
-      // If equipping a pet, unequip all other pets first
-      if (item.category === 'pets' && !item.equipped) {
-        return prevItems.map(i =>
-          i.id === itemId
-            ? { ...i, equipped: true }
-            : i.category === 'pets'
-            ? { ...i, equipped: false }
-            : i
-        );
-      }
-      
       // If equipping a background, unequip all other backgrounds first
       if (item.category === 'backgrounds' && !item.equipped) {
         return prevItems.map(i =>
@@ -173,7 +201,7 @@ export default function App() {
         );
       }
       
-      // For other items, just toggle
+      // For all other items (including pets), just toggle
       return prevItems.map(i =>
         i.id === itemId ? { ...i, equipped: !i.equipped } : i
       );
@@ -189,6 +217,18 @@ export default function App() {
         i.id === itemId ? { ...i, gridX, gridY } : i
       )
     );
+  };
+
+  const handleUpdateAvatar = (userId: string, avatarConfig: AvatarConfig) => {
+    setFamilyMembers(prevMembers =>
+      prevMembers.map(m =>
+        m.id === userId ? { ...m, avatarConfig } : m
+      )
+    );
+    toast.success('🎨 Avatar updated!', {
+      description: 'Your new look is saved!',
+      duration: 2000,
+    });
   };
 
   // Check if current user has completed all their assigned daily tasks
@@ -257,6 +297,7 @@ export default function App() {
             currentUser={currentUser}
             familyMembers={familyMembers}
             onUserChange={setCurrentUser}
+            onUpdateAvatar={handleUpdateAvatar}
           />
         )}
         {currentScreen === 'shop' && <ShopScreen stars={stars} items={shopItems} onPurchase={handlePurchaseItem} onToggleEquip={handleToggleEquip} />}

@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, Star, Users, Clock } from 'lucide-react';
+import { CheckCircle2, Circle, Star, Users, Clock, Palette } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
@@ -11,12 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import { AvatarCustomizer } from './AvatarCustomizer';
+import { AvatarDisplay } from './AvatarDisplay';
+import type { AvatarConfig } from '../data/avatar-options';
 
 interface FamilyMember {
   id: string;
   name: string;
   emoji: string;
   color: string;
+  avatarConfig?: AvatarConfig;
 }
 
 interface Task {
@@ -36,10 +40,12 @@ interface TasksScreenProps {
   currentUser: string;
   familyMembers: FamilyMember[];
   onUserChange: (userId: string) => void;
+  onUpdateAvatar?: (userId: string, avatarConfig: AvatarConfig) => void;
 }
 
-export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, onUserChange }: TasksScreenProps) {
+export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, onUserChange, onUpdateAvatar }: TasksScreenProps) {
   const [showAllTasks, setShowAllTasks] = useState(true);
+  const [isAvatarCustomizerOpen, setIsAvatarCustomizerOpen] = useState(false);
   
   // Filter tasks based on view preference
   const visibleTasks = showAllTasks ? tasks : tasks.filter(t => t.assignedTo === currentUser);
@@ -118,6 +124,15 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-white">Family Tasks</h1>
           <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setIsAvatarCustomizerOpen(true)}
+              variant="ghost"
+              size="sm"
+              className="bg-white/20 hover:bg-white/30 text-white"
+            >
+              <Palette size={16} className="mr-2" />
+              Customize Avatar
+            </Button>
             <Select value={currentUser} onValueChange={onUserChange}>
               <SelectTrigger className="w-[160px] bg-white/20 border-white/30 text-white">
                 <SelectValue />
@@ -137,6 +152,17 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
         </div>
         <p className="text-blue-100 opacity-90">Complete tasks to earn stars!</p>
       </div>
+      
+      {/* Avatar Customizer Dialog */}
+      {onUpdateAvatar && currentMember && (
+        <AvatarCustomizer
+          isOpen={isAvatarCustomizerOpen}
+          onClose={() => setIsAvatarCustomizerOpen(false)}
+          initialConfig={currentMember.avatarConfig}
+          onSave={(config) => onUpdateAvatar(currentUser, config)}
+          userName={currentMember.name}
+        />
+      )}
 
       {/* Filter Toggle */}
       <div className="bg-white border-b border-border p-4">

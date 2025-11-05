@@ -4,6 +4,8 @@ import { Card } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import type { ShopItem } from '../data/shop-items';
+import { useState } from 'react';
+import { motion } from 'motion/react';
 
 interface ShopScreenProps {
   stars: number;
@@ -87,15 +89,39 @@ function ShopItemCard({
   onPurchase: (id: number) => void;
   onToggleEquip: (id: number) => void;
 }) {
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  
+  const handlePurchase = (id: number) => {
+    setIsPurchasing(true);
+    onPurchase(id);
+    setTimeout(() => setIsPurchasing(false), 2000);
+  };
+  
   return (
-    <Card className={`p-4 ${item.equipped ? 'bg-purple-50 border-purple-300' : item.purchased ? 'bg-gray-50' : 'bg-white'}`}>
+    <Card className={`p-4 transition-all duration-300 ${item.equipped ? 'bg-purple-50 border-purple-300' : item.purchased ? 'bg-gray-50' : 'bg-white'}`}>
       <div className="flex flex-col items-center text-center space-y-3">
         {item.category === 'backgrounds' && item.gradient ? (
-          <div className={`w-full h-20 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-4xl border-2 border-gray-200`}>
+          <motion.div 
+            className={`w-full h-20 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center text-4xl border-2 border-gray-200`}
+            animate={isPurchasing ? {
+              scale: [1, 1.2, 1],
+              rotate: [0, 10, -10, 0],
+            } : {}}
+            transition={{ duration: 0.6 }}
+          >
             {item.emoji}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-6xl">{item.emoji}</div>
+          <motion.div 
+            className="text-6xl"
+            animate={isPurchasing ? {
+              scale: [1, 1.3, 1],
+              rotate: [0, 15, -15, 0],
+            } : {}}
+            transition={{ duration: 0.6 }}
+          >
+            {item.emoji}
+          </motion.div>
         )}
         <h3>{item.name}</h3>
         
@@ -126,7 +152,7 @@ function ShopItemCard({
             </div>
             
             <Button
-              onClick={() => onPurchase(item.id)}
+              onClick={() => handlePurchase(item.id)}
               disabled={!canAfford}
               className="w-full"
               variant={canAfford ? 'default' : 'secondary'}
