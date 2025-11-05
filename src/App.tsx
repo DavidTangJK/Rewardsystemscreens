@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Home, ListTodo, ShoppingBag, Sparkles, Users, Lock } from 'lucide-react';
+import { Home, ListTodo, ShoppingBag, Sparkles, Users, Lock, Plus } from 'lucide-react';
 import { HomeScreen } from './components/HomeScreen';
 import { TasksScreen } from './components/TasksScreen';
 import { ShopScreen } from './components/ShopScreen';
 import { ReflectionScreen } from './components/ReflectionScreen';
 import { SocialScreen } from './components/SocialScreen';
+import { OnboardingFlow } from './components/OnboardingFlow';
+import { AddChildModal } from './components/AddChildModal';
 import { initialShopItems, type ShopItem } from './data/shop-items';
 import { getFamilyMembers, createFamilyMember } from './utils/api';
 import { toast, Toaster } from 'sonner@2.0.3';
 import confetti from 'canvas-confetti';
 import type { AvatarConfig } from './data/avatar-options';
+import { Button } from './components/ui/button';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
@@ -34,12 +37,14 @@ interface Task {
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('tasks');
-  const [stars, setStars] = useState(50);
-  const [totalStarsEarned, setTotalStarsEarned] = useState(150);
-  const [tasksCompleted, setTasksCompleted] = useState(12);
+  const [stars, setStars] = useState(0);
+  const [totalStarsEarned, setTotalStarsEarned] = useState(0);
+  const [tasksCompleted, setTasksCompleted] = useState(0);
   
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showAddChild, setShowAddChild] = useState(false);
 
   const [currentUser, setCurrentUser] = useState<string>('');
 
@@ -49,35 +54,17 @@ export default function App() {
       try {
         const members = await getFamilyMembers();
         
-        // If no members exist, initialize with default members
+        // If no members exist, show onboarding
         if (members.length === 0) {
-          const defaultMembers = [
-            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
-            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
-            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
-          ];
-          
-          // Create default members in database
-          for (const member of defaultMembers) {
-            await createFamilyMember(member);
-          }
-          
-          setFamilyMembers(defaultMembers);
-          setCurrentUser(defaultMembers[0].id);
+          setShowOnboarding(true);
         } else {
           setFamilyMembers(members);
           setCurrentUser(members[0].id);
         }
       } catch (error) {
         console.error('Failed to load family members:', error);
-        // Fallback to hardcoded data if database fails
-        const fallbackMembers = [
-          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
-          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
-          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
-        ];
-        setFamilyMembers(fallbackMembers);
-        setCurrentUser(fallbackMembers[0].id);
+        // Show onboarding if database fails
+        setShowOnboarding(true);
       } finally {
         setIsLoadingMembers(false);
       }
@@ -86,22 +73,86 @@ export default function App() {
     loadFamilyMembers();
   }, []);
   
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: 'alex', deadline: '9:00 AM' },
-    { id: 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: 'alex', deadline: '8:30 PM' },
-    { id: 3, title: 'Complete Homework', description: 'Finish all assignments', stars: 10, completed: false, category: 'daily', assignedTo: 'alex', deadline: '5:00 PM' },
-    { id: 4, title: 'Help with Dishes', description: 'Clean up after meals', stars: 8, completed: false, category: 'daily', assignedTo: 'emma', deadline: '7:00 PM' },
-    { id: 5, title: 'Read for 20 Minutes', description: 'Choose any book you like', stars: 10, completed: false, category: 'daily', assignedTo: 'emma', deadline: '8:00 PM' },
-    { id: 11, title: 'Feed the Pet', description: 'Give food and water', stars: 5, completed: false, category: 'daily', assignedTo: 'ryan', deadline: '6:00 PM' },
-    { id: 12, title: 'Take Out Trash', description: 'Empty all trash bins', stars: 8, completed: false, category: 'daily', assignedTo: 'ryan', deadline: '7:30 PM' },
-    { id: 6, title: 'Clean Your Room', description: 'Organize and tidy up', stars: 15, completed: false, category: 'weekly', assignedTo: 'alex', deadline: 'Saturday 2:00 PM' },
-    { id: 7, title: 'Help with Laundry', description: 'Fold and put away clothes', stars: 12, completed: false, category: 'weekly', assignedTo: 'emma', deadline: 'Sunday 3:00 PM' },
-    { id: 8, title: 'Practice Instrument', description: '30 minutes of practice', stars: 15, completed: false, category: 'weekly', assignedTo: 'ryan', deadline: 'Friday 4:00 PM' },
-    { id: 9, title: 'Learn Something New', description: 'Try a new skill or hobby', stars: 20, completed: false, category: 'bonus', assignedTo: 'alex' },
-    { id: 10, title: 'Help a Sibling', description: 'Be kind and helpful', stars: 15, completed: false, category: 'bonus', assignedTo: 'emma' },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [shopItems, setShopItems] = useState<ShopItem[]>(initialShopItems);
+
+  const handleOnboardingComplete = async (name: string, avatarConfig: AvatarConfig, color: string) => {
+    const newMember: FamilyMember = {
+      id: name.toLowerCase().replace(/\s+/g, '-'),
+      name,
+      emoji: '👤',
+      color,
+      avatarConfig,
+    };
+
+    try {
+      await createFamilyMember(newMember);
+      setFamilyMembers([newMember]);
+      setCurrentUser(newMember.id);
+      setShowOnboarding(false);
+      
+      // Create initial tasks for the new member
+      const initialTasks: Task[] = [
+        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '9:00 AM' },
+        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '8:30 PM' },
+        { id: Date.now() + 3, title: 'Complete Homework', description: 'Finish all assignments', stars: 10, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '5:00 PM' },
+        { id: Date.now() + 4, title: 'Clean Your Room', description: 'Organize and tidy up', stars: 15, completed: false, category: 'weekly', assignedTo: newMember.id, deadline: 'Saturday 2:00 PM' },
+        { id: Date.now() + 5, title: 'Learn Something New', description: 'Try a new skill or hobby', stars: 20, completed: false, category: 'bonus', assignedTo: newMember.id },
+      ];
+      setTasks(initialTasks);
+      
+      // Give them 10 starting stars
+      setStars(10);
+      
+      toast.success(`🎉 Welcome ${name}!`, {
+        description: 'Your account has been created. Start completing tasks to earn stars!',
+        duration: 5000,
+      });
+      
+      // Celebration confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#fbbf24', '#f59e0b', '#f97316', '#ec4899', '#a855f7'],
+      });
+    } catch (error) {
+      console.error('Failed to create member:', error);
+      toast.error('Failed to create account. Please try again.');
+    }
+  };
+
+  const handleAddChild = async (name: string, avatarConfig: AvatarConfig, color: string) => {
+    const newMember: FamilyMember = {
+      id: name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now(),
+      name,
+      emoji: '👤',
+      color,
+      avatarConfig,
+    };
+
+    try {
+      await createFamilyMember(newMember);
+      setFamilyMembers(prev => [...prev, newMember]);
+      
+      // Create initial tasks for the new child
+      const initialTasks: Task[] = [
+        { id: Date.now() + 1, title: 'Make Your Bed', description: 'Start your day right!', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '9:00 AM' },
+        { id: Date.now() + 2, title: 'Brush Your Teeth', description: 'Morning and night', stars: 5, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '8:30 PM' },
+        { id: Date.now() + 3, title: 'Help with Dishes', description: 'Clean up after meals', stars: 8, completed: false, category: 'daily', assignedTo: newMember.id, deadline: '7:00 PM' },
+      ];
+      setTasks(prev => [...prev, ...initialTasks]);
+      
+      toast.success(`🎉 ${name} has been added!`, {
+        description: 'New tasks have been created.',
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Failed to add child:', error);
+      toast.error('Failed to add child. Please try again.');
+    }
+  };
 
   const handleToggleTask = (taskId: number) => {
     const task = tasks.find(t => t.id === taskId);
@@ -257,6 +308,11 @@ export default function App() {
     { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles, lockable: false },
   ];
 
+  // Show onboarding
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
+
   // Show loading state while fetching family members
   if (isLoadingMembers) {
     return (
@@ -309,7 +365,7 @@ export default function App() {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="bg-white border-t border-border">
+      <nav className="bg-white border-t border-border flex-shrink-0">
         <div className="grid grid-cols-4">
           {navItems.map(item => {
             const Icon = item.icon;
@@ -342,6 +398,25 @@ export default function App() {
           })}
         </div>
       </nav>
+
+      {/* Floating Add Child Button */}
+      {familyMembers.length > 0 && (
+        <Button
+          onClick={() => setShowAddChild(true)}
+          className="fixed bottom-20 right-4 md:bottom-24 md:right-8 rounded-full w-14 h-14 shadow-lg z-50"
+          size="icon"
+        >
+          <Plus size={24} />
+        </Button>
+      )}
+
+      {/* Add Child Modal */}
+      <AddChildModal
+        open={showAddChild}
+        onClose={() => setShowAddChild(false)}
+        onAdd={handleAddChild}
+        existingColors={familyMembers.map(m => m.color)}
+      />
     </div>
   );
 }
