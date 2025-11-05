@@ -147,32 +147,33 @@ export function AddChildModal({ open, onClose, onAdd, existingColors }: AddChild
 
         {step === 'avatar' && (
           <>
+            <div className="px-6 pt-4 pb-3 space-y-4">
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setStep('color')}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <ArrowLeft className="mr-2" size={20} /> Back
+                </Button>
+                <Button onClick={handleAdd} className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                  Add {name}! <ArrowRight className="ml-2" size={20} />
+                </Button>
+              </div>
+              <div className="text-center">
+                <p className="text-muted-foreground">
+                  Create {name}'s avatar
+                </p>
+              </div>
+            </div>
             <ScrollArea className="flex-1 px-6">
-              <div className="space-y-6 pb-4">
-                <div className="text-center">
-                  <div className="text-5xl mb-4">✨</div>
-                  <p className="text-muted-foreground">
-                    Create {name}'s avatar
-                  </p>
-                </div>
+              <div className="pb-4">
                 <SimpleAvatarCustomizer
                   avatarConfig={avatarConfig}
                   onAvatarChange={setAvatarConfig}
                 />
               </div>
             </ScrollArea>
-            <div className="p-6 pt-4 border-t flex gap-3 flex-shrink-0">
-              <Button
-                onClick={() => setStep('color')}
-                variant="outline"
-                className="flex-1"
-              >
-                <ArrowLeft className="mr-2" size={20} /> Back
-              </Button>
-              <Button onClick={handleAdd} className="flex-1">
-                Add {name}! <ArrowRight className="ml-2" size={20} />
-              </Button>
-            </div>
           </>
         )}
       </DialogContent>
