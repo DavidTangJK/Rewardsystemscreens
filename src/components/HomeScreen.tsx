@@ -393,7 +393,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                       <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(char.color)} text-white px-2 py-0.5 rounded whitespace-nowrap ${
                         char.isCurrentUser ? 'ring-2 ring-yellow-400 ring-offset-2' : ''
                       }`}>
-                        {char.isCurrentUser ? `${char.name} (You)` : char.name}
+                        {char.name}
                       </div>
                     </div>
                   </div>
