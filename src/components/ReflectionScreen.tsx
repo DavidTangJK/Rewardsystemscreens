@@ -12,39 +12,29 @@ interface Reflection {
   id: number;
   date: string;
   content: string;
-  tasksCompleted: number;
-  starsEarned: number;
   mood?: string;
 }
 
 interface ReflectionScreenProps {
   currentUser: string;
   familyMembers: Array<{ id: string; name: string; color: string }>;
-  tasksCompletedToday: number;
-  starsEarnedToday: number;
 }
 
 export function ReflectionScreen({
   currentUser,
   familyMembers,
-  tasksCompletedToday,
-  starsEarnedToday,
 }: ReflectionScreenProps) {
   const [reflections, setReflections] = useState<Reflection[]>([
     {
       id: 1,
       date: 'Monday, November 3, 2025',
-      content: 'Today was great! I finished all my homework and helped mom with the dishes. I earned enough stars to buy the gaming console!',
-      tasksCompleted: 5,
-      starsEarned: 38,
+      content: 'Today was great! I decorated my room and it looks amazing! I put the sofa next to the gaming console.',
       mood: '😊',
     },
     {
       id: 2,
       date: 'Sunday, November 2, 2025',
-      content: 'I cleaned my room and it looks so much better now. Dad said he was proud of me!',
-      tasksCompleted: 3,
-      starsEarned: 25,
+      content: 'I bought a cute pet for my virtual home! It looks so happy bouncing around.',
       mood: '🌟',
     },
   ]);
@@ -68,7 +58,7 @@ export function ReflectionScreen({
   ];
 
   const reflectionTemplates = [
-    { value: 'template1', label: 'I completed all my tasks and feel great!' },
+    { value: 'template1', label: 'I decorated my room and it looks amazing!' },
     { value: 'template2', label: 'I tried my best today and I\'m proud of myself.' },
     { value: 'template3', label: 'I helped someone today and it made me happy.' },
     { value: 'template4', label: 'I learned something new and interesting.' },
@@ -93,8 +83,6 @@ export function ReflectionScreen({
       id: Date.now(),
       date: formattedDate,
       content: newReflection,
-      tasksCompleted: tasksCompletedToday,
-      starsEarned: starsEarnedToday,
       mood: selectedMood || undefined,
     };
 
@@ -131,16 +119,6 @@ export function ReflectionScreen({
             <div className="flex items-center gap-2 mb-3 md:mb-4">
               <Heart className="text-pink-500 flex-shrink-0" size={20} />
               <h2 className="text-purple-900 text-base md:text-lg">Today's Reflection</h2>
-            </div>
-
-            {/* Task Summary */}
-            <div className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4">
-              <Badge className="bg-green-100 text-green-700 border-green-300 text-xs md:text-sm">
-                ✓ {tasksCompletedToday} tasks
-              </Badge>
-              <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs md:text-sm">
-                ⭐ {starsEarnedToday} stars
-              </Badge>
             </div>
 
             {/* Mood Selector */}
