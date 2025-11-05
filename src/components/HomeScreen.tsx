@@ -1,15 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star, ShoppingBag } from 'lucide-react';
+import { Star, ShoppingBag, Grid3x3 } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+
+const GRID_COLS = 30;
+const GRID_ROWS = 15;
 
 interface ShopItem {
   id: number;
   name: string;
   emoji: string;
   category: string;
-  x?: number;
-  y?: number;
+  gridX?: number;
+  gridY?: number;
+  gridWidth: number;
+  gridHeight: number;
 }
 
 interface FamilyMember {
@@ -22,7 +27,7 @@ interface FamilyMember {
 interface HomeScreenProps {
   stars: number;
   items: ShopItem[];
-  onUpdatePosition: (itemId: number, x: number, y: number) => void;
+  onUpdatePosition: (itemId: number, gridX: number, gridY: number) => void;
   familyMembers: FamilyMember[];
   currentUser: string;
   backgroundGradient?: string;
@@ -41,6 +46,7 @@ interface Character {
 
 export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showGrid, setShowGrid] = useState(true);
   
   // Initialize characters from family members plus parents
   const [characters, setCharacters] = useState<Character[]>(() => {
@@ -70,6 +76,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
   });
 
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
+  const [dragPreview, setDragPreview] = useState<{ gridX: number; gridY: number; width: number; height: number } | null>(null);
 
   // Update current user when it changes
   useEffect(() => {
@@ -96,6 +103,36 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
     return () => clearInterval(interval);
   }, []);
 
+  // Check if a position is valid (no overlaps)
+  const isValidPosition = (itemId: number, gridX: number, gridY: number, width: number, height: number) => {
+    // Check bounds
+    if (gridX < 0 || gridY < 0 || gridX + width > GRID_COLS || gridY + height > GRID_ROWS) {
+      return false;
+    }
+
+    // Check for overlaps with other items
+    for (const item of items) {
+      if (item.id === itemId || !item.gridX === undefined || !item.gridY === undefined) continue;
+      
+      const itemRight = (item.gridX || 0) + item.gridWidth;
+      const itemBottom = (item.gridY || 0) + item.gridHeight;
+      const newRight = gridX + width;
+      const newBottom = gridY + height;
+
+      // Check if rectangles overlap
+      if (
+        gridX < itemRight &&
+        newRight > (item.gridX || 0) &&
+        gridY < itemBottom &&
+        newBottom > (item.gridY || 0)
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleDragStart = (e: React.DragEvent, itemId: number) => {
     setDraggingItem(itemId);
     e.dataTransfer.effectAllowed = 'move';
@@ -103,61 +140,79 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
 
   const handleDragEnd = () => {
     setDraggingItem(null);
+    setDragPreview(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    if (draggingItem === null || !containerRef.current) return;
+
+    const item = items.find(i => i.id === draggingItem);
+    if (!item) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const cellWidth = rect.width / GRID_COLS;
+    const cellHeight = rect.height / GRID_ROWS;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const gridX = Math.floor(x / cellWidth);
+    const gridY = Math.floor(y / cellHeight);
+
+    setDragPreview({
+      gridX,
+      gridY,
+      width: item.gridWidth,
+      height: item.gridHeight,
+    });
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     if (draggingItem === null || !containerRef.current) return;
 
+    const item = items.find(i => i.id === draggingItem);
+    if (!item) return;
+
     const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const cellWidth = rect.width / GRID_COLS;
+    const cellHeight = rect.height / GRID_ROWS;
 
-    // Keep items within bounds
-    const clampedX = Math.max(5, Math.min(90, x));
-    const clampedY = Math.max(5, Math.min(90, y));
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    onUpdatePosition(draggingItem, clampedX, clampedY);
-  };
+    const gridX = Math.floor(x / cellWidth);
+    const gridY = Math.floor(y / cellHeight);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    // Validate position
+    if (isValidPosition(draggingItem, gridX, gridY, item.gridWidth, item.gridHeight)) {
+      onUpdatePosition(draggingItem, gridX, gridY);
+    }
+
+    setDragPreview(null);
   };
 
   // Generate default positions for items that don't have positions yet
-  const getItemPosition = (item: ShopItem, index: number) => {
-    if (item.x !== undefined && item.y !== undefined) {
-      return { x: item.x, y: item.y };
+  const getItemPosition = (item: ShopItem, index: number): { gridX: number; gridY: number } => {
+    if (item.gridX !== undefined && item.gridY !== undefined) {
+      return { gridX: item.gridX, gridY: item.gridY };
     }
 
     // Default positions based on category and index
-    const positions: Record<string, { x: number; y: number }[]> = {
-      furniture: [
-        { x: 15, y: 45 },
-        { x: 15, y: 60 },
-        { x: 85, y: 45 },
-        { x: 85, y: 60 },
-      ],
-      pets: [
-        { x: 40, y: 55 },
-        { x: 50, y: 65 },
-      ],
-      games: [
-        { x: 20, y: 80 },
-        { x: 30, y: 80 },
-      ],
-      toys: [
-        { x: 70, y: 80 },
-        { x: 80, y: 80 },
-      ],
-    };
-
-    const categoryPositions = positions[item.category] || [{ x: 50, y: 50 }];
     const categoryItems = items.filter(i => i.category === item.category);
     const itemIndex = categoryItems.findIndex(i => i.id === item.id);
-    
-    return categoryPositions[itemIndex % categoryPositions.length];
+
+    // Arrange items in rows, trying to fit them nicely
+    const row = Math.floor(itemIndex / 3);
+    const col = itemIndex % 3;
+
+    return {
+      gridX: 2 + col * 8,
+      gridY: 2 + row * 4,
+    };
   };
 
   return (
@@ -174,6 +229,12 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
               <Star className="fill-yellow-300 text-yellow-300" size={24} />
               <span className="text-white">{stars}</span>
             </div>
+            <Button
+              onClick={() => setShowGrid(!showGrid)}
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+            >
+              <Grid3x3 size={20} />
+            </Button>
             <Button
               onClick={onOpenShop}
               className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
@@ -209,8 +270,51 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
               {/* Wood Floor Pattern */}
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
+              {/* Grid Overlay */}
+              {showGrid && (
+                <div className="absolute inset-0 pointer-events-none z-5">
+                  <div 
+                    className="h-full w-full"
+                    style={{
+                      backgroundImage: `
+                        linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px)
+                      `,
+                      backgroundSize: `${100 / GRID_COLS}% ${100 / GRID_ROWS}%`,
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Drag Preview */}
+              {dragPreview && (
+                <div
+                  className="absolute pointer-events-none z-30 border-2 border-dashed rounded-lg"
+                  style={{
+                    left: `${(dragPreview.gridX / GRID_COLS) * 100}%`,
+                    top: `${(dragPreview.gridY / GRID_ROWS) * 100}%`,
+                    width: `${(dragPreview.width / GRID_COLS) * 100}%`,
+                    height: `${(dragPreview.height / GRID_ROWS) * 100}%`,
+                    borderColor: isValidPosition(
+                      draggingItem!,
+                      dragPreview.gridX,
+                      dragPreview.gridY,
+                      dragPreview.width,
+                      dragPreview.height
+                    ) ? '#22c55e' : '#ef4444',
+                    backgroundColor: isValidPosition(
+                      draggingItem!,
+                      dragPreview.gridX,
+                      dragPreview.gridY,
+                      dragPreview.width,
+                      dragPreview.height
+                    ) ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                  }}
+                />
+              )}
+
               {/* Windows */}
-              <div className="absolute top-4 left-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none">
+              <div className="absolute top-4 left-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none z-10">
                 <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
                   <div className="bg-sky-100/50"></div>
                   <div className="bg-sky-100/50"></div>
@@ -218,7 +322,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                   <div className="bg-sky-100/50"></div>
                 </div>
               </div>
-              <div className="absolute top-4 right-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none">
+              <div className="absolute top-4 right-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none z-10">
                 <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
                   <div className="bg-sky-100/50"></div>
                   <div className="bg-sky-100/50"></div>
@@ -230,22 +334,32 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
               {/* Draggable Items */}
               {items.map((item, index) => {
                 const position = getItemPosition(item, index);
+                const scaleFactor = Math.max(item.gridWidth, item.gridHeight);
+                
                 return (
                   <div
                     key={item.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, item.id)}
                     onDragEnd={handleDragEnd}
-                    className={`absolute cursor-move hover:scale-110 transition-transform z-10 ${
+                    className={`absolute cursor-move hover:scale-110 hover:z-40 transition-transform z-10 flex items-center justify-center ${
                       draggingItem === item.id ? 'opacity-50' : ''
                     } ${item.category === 'pets' ? 'animate-bounce-slow' : 'animate-fade-in'}`}
                     style={{
-                      left: `${position.x}%`,
-                      top: `${position.y}%`,
-                      transform: 'translate(-50%, -50%)',
+                      left: `${(position.gridX / GRID_COLS) * 100}%`,
+                      top: `${(position.gridY / GRID_ROWS) * 100}%`,
+                      width: `${(item.gridWidth / GRID_COLS) * 100}%`,
+                      height: `${(item.gridHeight / GRID_ROWS) * 100}%`,
                     }}
                   >
-                    <div className="text-5xl select-none">{item.emoji}</div>
+                    <div 
+                      className="select-none flex items-center justify-center w-full h-full"
+                      style={{ 
+                        fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
+                      }}
+                    >
+                      {item.emoji}
+                    </div>
                   </div>
                 );
               })}

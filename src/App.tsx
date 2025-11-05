@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, ListTodo, ShoppingBag, Sparkles, Users } from 'lucide-react';
+import { Home, ListTodo, ShoppingBag, Sparkles, Users, Lock } from 'lucide-react';
 import { HomeScreen } from './components/HomeScreen';
 import { TasksScreen } from './components/TasksScreen';
 import { ShopScreen } from './components/ShopScreen';
@@ -7,6 +7,7 @@ import { ReflectionScreen } from './components/ReflectionScreen';
 import { SocialScreen } from './components/SocialScreen';
 import { initialShopItems, type ShopItem } from './data/shop-items';
 import { getFamilyMembers, createFamilyMember } from './utils/api';
+import { toast, Toaster } from 'sonner@2.0.3';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
@@ -29,7 +30,7 @@ interface Task {
 }
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('tasks');
   const [stars, setStars] = useState(50);
   const [totalStarsEarned, setTotalStarsEarned] = useState(150);
   const [tasksCompleted, setTasksCompleted] = useState(12);
@@ -182,19 +183,42 @@ export default function App() {
   const equippedItems = shopItems.filter(item => item.equipped && item.category !== 'backgrounds');
   const equippedBackground = shopItems.find(item => item.equipped && item.category === 'backgrounds');
 
-  const handleUpdateItemPosition = (itemId: number, x: number, y: number) => {
+  const handleUpdateItemPosition = (itemId: number, gridX: number, gridY: number) => {
     setShopItems(prevItems =>
       prevItems.map(i =>
-        i.id === itemId ? { ...i, x, y } : i
+        i.id === itemId ? { ...i, gridX, gridY } : i
       )
     );
   };
 
+  // Check if current user has completed all their assigned daily tasks
+  const hasCompletedAllTasks = () => {
+    const userDailyTasks = tasks.filter(task => task.assignedTo === currentUser && task.category === 'daily');
+    if (userDailyTasks.length === 0) return true; // No daily tasks assigned
+    return userDailyTasks.every(task => task.completed);
+  };
+
+  // Handle navigation with lock check
+  const handleNavigation = (screenId: Screen) => {
+    const lockedScreens: Screen[] = ['home', 'social'];
+    
+    if (lockedScreens.includes(screenId) && !hasCompletedAllTasks()) {
+      const currentUserName = familyMembers.find(m => m.id === currentUser)?.name || 'You';
+      toast.error(`🔒 ${currentUserName} need${currentUserName === 'You' ? '' : 's'} to complete all daily tasks first!`, {
+        description: 'Finish your daily tasks to unlock this tab.',
+        duration: 3000,
+      });
+      return;
+    }
+    
+    setCurrentScreen(screenId);
+  };
+
   const navItems = [
-    { id: 'home' as Screen, label: 'Home', icon: Home },
-    { id: 'tasks' as Screen, label: 'Tasks', icon: ListTodo },
-    { id: 'social' as Screen, label: 'Friends', icon: Users },
-    { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles },
+    { id: 'home' as Screen, label: 'Home', icon: Home, lockable: true },
+    { id: 'tasks' as Screen, label: 'Tasks', icon: ListTodo, lockable: false },
+    { id: 'social' as Screen, label: 'Friends', icon: Users, lockable: true },
+    { id: 'reflect' as Screen, label: 'Reflect', icon: Sparkles, lockable: false },
   ];
 
   // Show loading state while fetching family members
@@ -211,6 +235,8 @@ export default function App() {
 
   return (
     <div className="size-full flex flex-col">
+      <Toaster position="top-center" richColors />
+      
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
         {currentScreen === 'home' && (
@@ -251,17 +277,28 @@ export default function App() {
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;
+            const isLocked = item.lockable && !hasCompletedAllTasks();
+            
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentScreen(item.id)}
-                className={`flex flex-col items-center gap-1 py-3 transition-colors ${
+                onClick={() => handleNavigation(item.id)}
+                className={`flex flex-col items-center gap-1 py-3 transition-colors relative ${
                   isActive
                     ? 'text-purple-600'
+                    : isLocked
+                    ? 'text-muted-foreground/40'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon size={24} />
+                <div className="relative">
+                  <Icon size={24} className={isLocked ? 'opacity-40' : ''} />
+                  {isLocked && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5">
+                      <Lock size={12} className="text-white" />
+                    </div>
+                  )}
+                </div>
                 <span className="text-xs">{item.label}</span>
               </button>
             );
