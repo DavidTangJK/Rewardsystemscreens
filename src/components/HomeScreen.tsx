@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Star, ShoppingBag, Grid3x3 } from 'lucide-react';
+import { Star, ShoppingBag, Grid3x3, Edit3, Check } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { AvatarDisplay } from './AvatarDisplay';
+import { momAvatar, dadAvatar } from '../data/avatars';
+import { AvatarConfig } from '../data/avatar-options';
+import { toast } from 'sonner@2.0.3';
 
 const GRID_COLS = 30;
 const GRID_ROWS = 15;
@@ -22,6 +26,7 @@ interface FamilyMember {
   name: string;
   emoji: string;
   color: string;
+  avatarConfig?: AvatarConfig;
 }
 
 interface HomeScreenProps {
@@ -42,11 +47,14 @@ interface Character {
   name: string;
   color: string;
   isCurrentUser: boolean;
+  avatarConfig?: AvatarConfig;
 }
 
 export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
   
   // Initialize characters from family members plus parents
   const [characters, setCharacters] = useState<Character[]>(() => {
@@ -64,12 +72,13 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
       name: member.name,
       color: member.color,
       isCurrentUser: member.id === currentUser,
+      avatarConfig: member.avatarConfig,
     }));
 
     // Add parents
     const parents = [
-      { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false },
-      { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false },
+      { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false, avatarConfig: momAvatar },
+      { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false, avatarConfig: dadAvatar },
     ];
 
     return [...familyCharacters, ...parents];
@@ -134,6 +143,10 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
   };
 
   const handleDragStart = (e: React.DragEvent, itemId: number) => {
+    if (!isEditMode) {
+      e.preventDefault();
+      return;
+    }
     setDraggingItem(itemId);
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -141,6 +154,58 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
   const handleDragEnd = () => {
     setDraggingItem(null);
     setDragPreview(null);
+  };
+
+  // Touch/Click handlers for mobile-friendly item selection
+  const handleItemClick = (itemId: number) => {
+    if (!isEditMode) return;
+    
+    if (selectedItem === itemId) {
+      // Deselect if clicking the same item
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(itemId);
+      toast.info('Tap anywhere to place the item');
+    }
+  };
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    if (!isEditMode || selectedItem === null || !containerRef.current) return;
+
+    const item = items.find(i => i.id === selectedItem);
+    if (!item) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const cellWidth = rect.width / GRID_COLS;
+    const cellHeight = rect.height / GRID_ROWS;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const gridX = Math.floor(x / cellWidth);
+    const gridY = Math.floor(y / cellHeight);
+
+    // Validate and update position
+    if (isValidPosition(selectedItem, gridX, gridY, item.gridWidth, item.gridHeight)) {
+      onUpdatePosition(selectedItem, gridX, gridY);
+      setSelectedItem(null);
+      toast.success('Item placed!');
+    } else {
+      toast.error('Cannot place item here');
+    }
+  };
+
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
+    setSelectedItem(null);
+    setDraggingItem(null);
+    setDragPreview(null);
+    
+    if (!isEditMode) {
+      toast.info('Edit mode enabled. Drag items or tap to select and place.');
+    } else {
+      toast.success('Edit mode disabled');
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -222,25 +287,68 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-white">My Virtual Home</h1>
-            <p className="text-purple-100 opacity-90">Drag items to arrange your room!</p>
+            <p className="text-purple-100 opacity-90">
+              {isEditMode ? 'Arrange your furniture!' : 'Enjoy your cozy space!'}
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2">
-              <Star className="fill-yellow-300 text-yellow-300" size={24} />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 md:px-4 py-2 flex items-center gap-2">
+              <Star className="fill-yellow-300 text-yellow-300" size={20} md:size={24} />
               <span className="text-white">{stars}</span>
             </div>
             <Button
-              onClick={() => setShowGrid(!showGrid)}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+              onClick={toggleEditMode}
+              className={`${
+                isEditMode 
+                  ? 'bg-green-500 hover:bg-green-600 border-green-400' 
+                  : 'bg-white/20 hover:bg-white/30 border-white/40'
+              } backdrop-blur-sm border-2 text-white hidden sm:flex`}
             >
-              <Grid3x3 size={20} />
+              {isEditMode ? (
+                <>
+                  <Check size={20} className="mr-2" />
+                  Done
+                </>
+              ) : (
+                <>
+                  <Edit3 size={20} className="mr-2" />
+                  Edit Home
+                </>
+              )}
             </Button>
             <Button
+              onClick={toggleEditMode}
+              size="icon"
+              className={`${
+                isEditMode 
+                  ? 'bg-green-500 hover:bg-green-600 border-green-400' 
+                  : 'bg-white/20 hover:bg-white/30 border-white/40'
+              } backdrop-blur-sm border-2 text-white sm:hidden`}
+            >
+              {isEditMode ? <Check size={20} /> : <Edit3 size={20} />}
+            </Button>
+            {isEditMode && (
+              <Button
+                onClick={() => setShowGrid(!showGrid)}
+                size="icon"
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+              >
+                <Grid3x3 size={20} />
+              </Button>
+            )}
+            <Button
               onClick={onOpenShop}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white hidden sm:flex"
             >
               <ShoppingBag size={20} className="mr-2" />
               Shop
+            </Button>
+            <Button
+              onClick={onOpenShop}
+              size="icon"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white sm:hidden"
+            >
+              <ShoppingBag size={20} />
             </Button>
           </div>
         </div>
@@ -260,9 +368,12 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
             {/* House Interior */}
             <div 
               ref={containerRef}
-              className={`flex-1 bg-gradient-to-b ${backgroundGradient} mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden`}
+              className={`flex-1 bg-gradient-to-b ${backgroundGradient} mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden ${
+                isEditMode ? 'cursor-crosshair' : ''
+              }`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
+              onClick={handleContainerClick}
             >
               {/* Floor */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30 pointer-events-none"></div>
@@ -271,7 +382,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
               {/* Grid Overlay */}
-              {showGrid && (
+              {isEditMode && showGrid && (
                 <div className="absolute inset-0 pointer-events-none z-5">
                   <div 
                     className="h-full w-full"
@@ -335,16 +446,23 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
               {items.map((item, index) => {
                 const position = getItemPosition(item, index);
                 const scaleFactor = Math.max(item.gridWidth, item.gridHeight);
+                const isSelected = selectedItem === item.id;
                 
                 return (
                   <div
                     key={item.id}
-                    draggable
+                    draggable={isEditMode}
                     onDragStart={(e) => handleDragStart(e, item.id)}
                     onDragEnd={handleDragEnd}
-                    className={`absolute cursor-move hover:scale-110 hover:z-40 transition-transform z-10 flex items-center justify-center ${
-                      draggingItem === item.id ? 'opacity-50' : ''
-                    } ${item.category === 'pets' ? 'animate-bounce-slow' : 'animate-fade-in'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleItemClick(item.id);
+                    }}
+                    className={`absolute transition-all z-10 flex items-center justify-center ${
+                      draggingItem === item.id ? 'opacity-50 scale-90' : ''
+                    } ${isSelected ? 'scale-110 z-50 animate-pulse' : ''} ${
+                      isEditMode ? 'cursor-pointer hover:scale-105 hover:z-40' : 'pointer-events-none'
+                    } ${!isEditMode && item.category === 'pets' ? 'animate-bounce-slow' : ''}`}
                     style={{
                       left: `${(position.gridX / GRID_COLS) * 100}%`,
                       top: `${(position.gridY / GRID_ROWS) * 100}%`,
@@ -353,13 +471,20 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                     }}
                   >
                     <div 
-                      className="select-none flex items-center justify-center w-full h-full"
+                      className={`select-none flex items-center justify-center w-full h-full rounded-xl ${
+                        isSelected ? 'bg-blue-500/30 border-4 border-blue-500 border-dashed' : ''
+                      } ${isEditMode && !isSelected ? 'hover:bg-white/20' : ''}`}
                       style={{ 
                         fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
                       }}
                     >
                       {item.emoji}
                     </div>
+                    {isEditMode && (
+                      <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        {item.name}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -387,8 +512,12 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
                     }}
                   >
                     <div className="relative">
-                      <div className={`text-5xl animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
-                        {char.emoji}
+                      <div className={`animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
+                        {char.avatarConfig ? (
+                          <AvatarDisplay config={char.avatarConfig} size="large" />
+                        ) : (
+                          <div className="text-5xl">{char.emoji}</div>
+                        )}
                       </div>
                       <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(char.color)} text-white px-2 py-0.5 rounded whitespace-nowrap ${
                         char.isCurrentUser ? 'ring-2 ring-yellow-400 ring-offset-2' : ''
@@ -417,8 +546,27 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
           </div>
         </div>
 
+        {/* Edit Mode Instructions */}
+        {isEditMode && items.length > 0 && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+            <Badge className="bg-blue-500 text-white px-4 py-2 text-sm shadow-lg">
+              <span className="hidden sm:inline">💡 Drag items or tap to select, then tap where to place</span>
+              <span className="sm:hidden">💡 Tap item, then tap location</span>
+            </Badge>
+          </div>
+        )}
+
+        {/* Selected Item Indicator */}
+        {selectedItem !== null && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+            <Badge className="bg-green-500 text-white px-4 py-2 text-sm shadow-lg animate-pulse">
+              ✓ Item selected - Tap where to place it
+            </Badge>
+          </div>
+        )}
+
         {/* Stats Badge */}
-        {items.length > 0 && (
+        {!isEditMode && items.length > 0 && (
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
             <Badge className="bg-purple-500 text-white hover:bg-purple-600 px-4 py-2">
               🎉 {items.length} item{items.length !== 1 ? 's' : ''} in your home!

@@ -1,3 +1,5 @@
+import { AvatarConfig } from './avatar-options';
+
 export interface Friend {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export interface Friend {
   stars: number;
   items: FriendItem[];
   background: string;
+  avatarConfig?: AvatarConfig;
 }
 
 export interface FriendItem {
@@ -17,6 +20,8 @@ export interface FriendItem {
   y: number;
 }
 
+import { friendAvatars } from './avatars';
+
 export const sampleFriends: Friend[] = [
   {
     id: 'friend1',
@@ -25,6 +30,7 @@ export const sampleFriends: Friend[] = [
     color: 'pink',
     stars: 85,
     background: 'from-pink-100 to-purple-200',
+    avatarConfig: friendAvatars.friend1,
     items: [
       { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', x: 20, y: 50 },
       { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', x: 75, y: 55 },
@@ -43,6 +49,7 @@ export const sampleFriends: Friend[] = [
     color: 'blue',
     stars: 120,
     background: 'from-cyan-100 to-blue-200',
+    avatarConfig: friendAvatars.friend2,
     items: [
       { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', x: 15, y: 48 },
       { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', x: 15, y: 62 },
@@ -62,6 +69,7 @@ export const sampleFriends: Friend[] = [
     color: 'purple',
     stars: 95,
     background: 'from-green-100 to-emerald-200',
+    avatarConfig: friendAvatars.friend3,
     items: [
       { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', x: 18, y: 52 },
       { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', x: 82, y: 50 },
@@ -79,6 +87,7 @@ export const sampleFriends: Friend[] = [
     color: 'green',
     stars: 150,
     background: 'from-orange-100 to-pink-200',
+    avatarConfig: friendAvatars.friend4,
     items: [
       { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', x: 20, y: 45 },
       { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', x: 20, y: 60 },
@@ -101,6 +110,7 @@ export const sampleFriends: Friend[] = [
     color: 'orange',
     stars: 72,
     background: 'from-indigo-200 to-purple-300',
+    avatarConfig: friendAvatars.friend5,
     items: [
       { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', x: 15, y: 50 },
       { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', x: 85, y: 52 },

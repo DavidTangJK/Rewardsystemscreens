@@ -4,6 +4,8 @@ import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { sampleFriends, Friend } from '../data/friends-data';
+import { AvatarDisplay } from './AvatarDisplay';
+import { defaultAvatarConfig } from '../data/avatar-options';
 
 export function SocialScreen() {
   const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
@@ -44,7 +46,13 @@ export function SocialScreen() {
                 {sampleFriends.map(friend => (
                   <SelectItem key={friend.id} value={friend.id}>
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{friend.emoji}</span>
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        {friend.avatarConfig ? (
+                          <AvatarDisplay config={friend.avatarConfig} size="small" />
+                        ) : (
+                          <span className="text-xl">{friend.emoji}</span>
+                        )}
+                      </div>
                       <span>{friend.name}</span>
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Star className="fill-yellow-400 text-yellow-400" size={12} />
@@ -122,8 +130,12 @@ export function SocialScreen() {
                 }}
               >
                 <div className="relative">
-                  <div className="text-5xl animate-bounce-slow">
-                    {selectedFriend.emoji}
+                  <div className="animate-bounce-slow">
+                    {selectedFriend.avatarConfig ? (
+                      <AvatarDisplay config={selectedFriend.avatarConfig} size="large" />
+                    ) : (
+                      <div className="text-5xl">{selectedFriend.emoji}</div>
+                    )}
                   </div>
                   <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(selectedFriend.color)} text-white px-2 py-0.5 rounded whitespace-nowrap`}>
                     {selectedFriend.name}
