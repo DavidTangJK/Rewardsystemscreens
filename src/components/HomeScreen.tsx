@@ -7,7 +7,7 @@ import { momAvatar, dadAvatar } from '../data/avatars';
 import { AvatarConfig } from '../data/avatar-options';
 import { toast } from 'sonner@2.0.3';
 
-const GRID_COLS = 30;
+const GRID_COLS = 20;
 const GRID_ROWS = 15;
 
 interface ShopItem {
@@ -275,7 +275,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, curr
     const col = itemIndex % 3;
 
     return {
-      gridX: 2 + col * 8,
+      gridX: 2 + col * 6,
       gridY: 2 + row * 4,
     };
   };
