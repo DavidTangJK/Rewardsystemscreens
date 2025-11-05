@@ -111,60 +111,60 @@ export function ReflectionScreen({
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-b from-purple-50 to-pink-50">
+    <div className="flex-1 flex flex-col bg-gradient-to-b from-purple-50 to-pink-50 overflow-hidden">
       {/* Header */}
-      <div className={`bg-gradient-to-r ${colorClasses[currentMember?.color as keyof typeof colorClasses] || 'from-purple-500 to-pink-500'} p-6 text-white`}>
+      <div className={`bg-gradient-to-r ${colorClasses[currentMember?.color as keyof typeof colorClasses] || 'from-purple-500 to-pink-500'} p-4 md:p-6 text-white flex-shrink-0`}>
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-white">Daily Reflection</h1>
-            <p className="text-white/90 opacity-90">How was your day today?</p>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-white truncate">Daily Reflection</h1>
+            <p className="text-white/90 opacity-90 text-sm md:text-base">How was your day today?</p>
           </div>
-          <Sparkles className="text-white" size={32} />
+          <Sparkles className="text-white flex-shrink-0 ml-2" size={28} />
         </div>
       </div>
 
       {/* Content */}
       <ScrollArea className="flex-1">
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-4 md:space-y-6 pb-6">
           {/* New Reflection Card */}
-          <Card className="p-6 bg-white border-2 border-purple-200">
-            <div className="flex items-center gap-2 mb-4">
-              <Heart className="text-pink-500" size={24} />
-              <h2 className="text-purple-900">Today's Reflection</h2>
+          <Card className="p-4 md:p-6 bg-white border-2 border-purple-200">
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <Heart className="text-pink-500 flex-shrink-0" size={20} />
+              <h2 className="text-purple-900 text-base md:text-lg">Today's Reflection</h2>
             </div>
 
             {/* Task Summary */}
-            <div className="flex gap-3 mb-4">
-              <Badge className="bg-green-100 text-green-700 border-green-300">
-                ✓ {tasksCompletedToday} tasks completed
+            <div className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4">
+              <Badge className="bg-green-100 text-green-700 border-green-300 text-xs md:text-sm">
+                ✓ {tasksCompletedToday} tasks
               </Badge>
-              <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300">
-                ⭐ {starsEarnedToday} stars earned
+              <Badge className="bg-yellow-100 text-yellow-700 border-yellow-300 text-xs md:text-sm">
+                ⭐ {starsEarnedToday} stars
               </Badge>
             </div>
 
             {/* Mood Selector */}
-            <div className="mb-4">
-              <p className="text-muted-foreground mb-2">How are you feeling?</p>
+            <div className="mb-3 md:mb-4">
+              <p className="text-muted-foreground mb-2 text-sm">How are you feeling?</p>
               <Popover open={isEmojiPickerOpen} onOpenChange={setIsEmojiPickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left h-auto py-3"
+                    className="w-full justify-start text-left h-auto py-2 md:py-3"
                   >
                     {selectedMood ? (
-                      <span className="text-3xl mr-2">{selectedMood}</span>
+                      <span className="text-2xl md:text-3xl mr-2">{selectedMood}</span>
                     ) : (
-                      <Smile className="mr-2" size={20} />
+                      <Smile className="mr-2 flex-shrink-0" size={18} />
                     )}
-                    <span className="text-muted-foreground">
+                    <span className="text-muted-foreground text-sm md:text-base truncate">
                       {selectedMood ? 'Change your mood' : 'Pick a mood emoji'}
                     </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-3" align="start">
-                  <ScrollArea className="h-64">
-                    <div className="grid grid-cols-8 gap-2 p-2">
+                <PopoverContent className="w-[calc(100vw-2rem)] max-w-[320px] p-2 md:p-3" align="start">
+                  <ScrollArea className="h-48 md:h-64">
+                    <div className="grid grid-cols-6 md:grid-cols-8 gap-1 md:gap-2 p-1 md:p-2">
                       {faceEmojis.map(emoji => (
                         <button
                           key={emoji}
@@ -172,7 +172,7 @@ export function ReflectionScreen({
                             setSelectedMood(emoji);
                             setIsEmojiPickerOpen(false);
                           }}
-                          className={`text-2xl p-2 rounded-lg transition-all hover:bg-purple-100 ${
+                          className={`text-xl md:text-2xl p-1.5 md:p-2 rounded-lg transition-all hover:bg-purple-100 ${
                             selectedMood === emoji
                               ? 'bg-purple-200 ring-2 ring-purple-400'
                               : 'bg-gray-50 hover:scale-110'
@@ -188,8 +188,8 @@ export function ReflectionScreen({
             </div>
 
             {/* Template Selector */}
-            <div className="mb-4">
-              <p className="text-muted-foreground mb-2">Quick reflection (optional)</p>
+            <div className="mb-3 md:mb-4">
+              <p className="text-muted-foreground mb-2 text-sm">Quick reflection (optional)</p>
               <Select
                 value=""
                 onValueChange={(value) => {
@@ -199,12 +199,12 @@ export function ReflectionScreen({
                   }
                 }}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choose a quick reflection or write your own below..." />
+                <SelectTrigger className="w-full text-sm md:text-base">
+                  <SelectValue placeholder="Choose a quick reflection..." />
                 </SelectTrigger>
                 <SelectContent>
                   {reflectionTemplates.map(template => (
-                    <SelectItem key={template.value} value={template.value}>
+                    <SelectItem key={template.value} value={template.value} className="text-sm">
                       {template.label}
                     </SelectItem>
                   ))}
@@ -217,13 +217,13 @@ export function ReflectionScreen({
               placeholder="Write about your day, or choose a quick reflection above..."
               value={newReflection}
               onChange={(e) => setNewReflection(e.target.value)}
-              className="min-h-32 mb-4 text-base"
+              className="min-h-24 md:min-h-32 mb-3 md:mb-4 text-sm md:text-base"
             />
 
             <Button
               onClick={handleSubmitReflection}
               disabled={!newReflection.trim()}
-              className="w-full"
+              className="w-full text-sm md:text-base"
             >
               Save Reflection
             </Button>
@@ -231,16 +231,16 @@ export function ReflectionScreen({
 
           {/* Past Reflections */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Calendar className="text-purple-600" size={24} />
-              <h2 className="text-purple-900">Past Reflections</h2>
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <Calendar className="text-purple-600 flex-shrink-0" size={20} />
+              <h2 className="text-purple-900 text-base md:text-lg">Past Reflections</h2>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {reflections.length === 0 ? (
-                <Card className="p-8 text-center bg-white/50">
-                  <div className="text-6xl mb-4">📝</div>
-                  <p className="text-muted-foreground">
+                <Card className="p-6 md:p-8 text-center bg-white/50">
+                  <div className="text-5xl md:text-6xl mb-3 md:mb-4">📝</div>
+                  <p className="text-muted-foreground text-sm md:text-base">
                     No reflections yet. Start writing about your day!
                   </p>
                 </Card>
@@ -248,27 +248,27 @@ export function ReflectionScreen({
                 reflections.map((reflection) => (
                   <Card
                     key={reflection.id}
-                    className="p-5 bg-white hover:shadow-lg transition-shadow"
+                    className="p-4 md:p-5 bg-white hover:shadow-lg transition-shadow"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="text-purple-400" size={18} />
-                        <p className="text-muted-foreground">{reflection.date}</p>
+                    <div className="flex items-start justify-between mb-2 md:mb-3 gap-2">
+                      <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1">
+                        <Calendar className="text-purple-400 flex-shrink-0" size={16} />
+                        <p className="text-muted-foreground text-xs md:text-sm truncate">{reflection.date}</p>
                       </div>
                       {reflection.mood && (
-                        <div className="text-3xl">{reflection.mood}</div>
+                        <div className="text-2xl md:text-3xl flex-shrink-0">{reflection.mood}</div>
                       )}
                     </div>
 
-                    <p className="text-foreground mb-3 leading-relaxed">
+                    <p className="text-foreground mb-2 md:mb-3 leading-relaxed text-sm md:text-base">
                       {reflection.content}
                     </p>
 
-                    <div className="flex gap-2">
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 text-xs">
                         ✓ {reflection.tasksCompleted} tasks
                       </Badge>
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300">
+                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300 text-xs">
                         ⭐ {reflection.starsEarned} stars
                       </Badge>
                     </div>
