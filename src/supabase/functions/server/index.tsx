@@ -39,13 +39,13 @@ app.get("/make-server-f53ad318/family-members", async (c) => {
 app.post("/make-server-f53ad318/family-members", async (c) => {
   try {
     const body = await c.req.json();
-    const { id, name, emoji, color } = body;
+    const { id, name, emoji, color, avatarConfig } = body;
     
     if (!id || !name || !emoji || !color) {
       return c.json({ error: "Missing required fields" }, 400);
     }
     
-    const member = { id, name, emoji, color };
+    const member = { id, name, emoji, color, avatarConfig };
     await kv.set(`family_member:${id}`, member);
     
     return c.json({ member });
@@ -60,7 +60,7 @@ app.put("/make-server-f53ad318/family-members/:id", async (c) => {
   try {
     const id = c.req.param("id");
     const body = await c.req.json();
-    const { name, emoji, color } = body;
+    const { name, emoji, color, avatarConfig } = body;
     
     const existingMember = await kv.get(`family_member:${id}`);
     if (!existingMember) {
@@ -69,9 +69,10 @@ app.put("/make-server-f53ad318/family-members/:id", async (c) => {
     
     const updatedMember = {
       ...existingMember,
-      name: name || existingMember.name,
-      emoji: emoji || existingMember.emoji,
-      color: color || existingMember.color,
+      name: name !== undefined ? name : existingMember.name,
+      emoji: emoji !== undefined ? emoji : existingMember.emoji,
+      color: color !== undefined ? color : existingMember.color,
+      avatarConfig: avatarConfig !== undefined ? avatarConfig : existingMember.avatarConfig,
     };
     
     await kv.set(`family_member:${id}`, updatedMember);

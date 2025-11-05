@@ -1,4 +1,5 @@
 import { projectId, publicAnonKey } from './supabase/info';
+import type { AvatarConfig } from '../data/avatar-options';
 
 const API_BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-f53ad318`;
 
@@ -7,6 +8,7 @@ interface FamilyMember {
   name: string;
   emoji: string;
   color: string;
+  avatarConfig?: AvatarConfig;
 }
 
 export async function getFamilyMembers(): Promise<FamilyMember[]> {

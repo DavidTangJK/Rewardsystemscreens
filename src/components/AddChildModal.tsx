@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { SimpleAvatarCustomizer } from './SimpleAvatarCustomizer';
@@ -60,90 +60,95 @@ export function AddChildModal({ open, onClose, onAdd, existingColors }: AddChild
             {step === 'color' && 'Choose a Color'}
             {step === 'avatar' && 'Create Avatar'}
           </DialogTitle>
+          <DialogDescription>
+            {step === 'name' && 'Enter the name of the child you want to add to the family.'}
+            {step === 'color' && 'Select a unique color to represent this child in the app.'}
+            {step === 'avatar' && 'Customize the avatar appearance for this child.'}
+          </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1">
+        {step === 'name' && (
           <div className="p-6 space-y-6">
-            {step === 'name' && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">👋</div>
-                  <p className="text-muted-foreground">
-                    What's the child's name?
-                  </p>
-                </div>
-                <Input
-                  type="text"
-                  placeholder="Enter name..."
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="text-center text-lg"
-                  autoFocus
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && name.trim()) {
-                      setStep('color');
-                    }
-                  }}
-                />
-                <Button
-                  onClick={() => setStep('color')}
-                  disabled={!name.trim()}
-                  className="w-full"
+            <div className="text-center">
+              <div className="text-6xl mb-4">👋</div>
+              <p className="text-muted-foreground">
+                What's the child's name?
+              </p>
+            </div>
+            <Input
+              type="text"
+              placeholder="Enter name..."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="text-center text-lg"
+              autoFocus
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && name.trim()) {
+                  setStep('color');
+                }
+              }}
+            />
+            <Button
+              onClick={() => setStep('color')}
+              disabled={!name.trim()}
+              className="w-full"
+            >
+              Continue <ArrowRight className="ml-2" size={20} />
+            </Button>
+          </div>
+        )}
+
+        {step === 'color' && (
+          <div className="p-6 space-y-6">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🎨</div>
+              <p className="text-muted-foreground">
+                Pick a color for {name}
+              </p>
+              {availableColors.length < colors.length && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  (Some colors are already taken)
+                </p>
+              )}
+            </div>
+            <div className="grid grid-cols-4 gap-4 max-w-lg mx-auto">
+              {availableColors.map((color) => (
+                <button
+                  key={color.id}
+                  onClick={() => setSelectedColor(color.id)}
+                  className={`aspect-square rounded-xl ${color.class} transition-all hover:scale-110 ${
+                    selectedColor === color.id
+                      ? 'ring-4 ring-offset-4 ring-gray-900 scale-110'
+                      : 'hover:ring-2 ring-offset-2 ring-gray-400'
+                  }`}
                 >
-                  Continue <ArrowRight className="ml-2" size={20} />
-                </Button>
-              </div>
-            )}
+                  <div className="w-full h-full flex items-center justify-center">
+                    {selectedColor === color.id && (
+                      <span className="text-white text-3xl">✓</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setStep('name')}
+                variant="outline"
+                className="flex-1"
+              >
+                <ArrowLeft className="mr-2" size={20} /> Back
+              </Button>
+              <Button onClick={() => setStep('avatar')} className="flex-1">
+                Continue <ArrowRight className="ml-2" size={20} />
+              </Button>
+            </div>
+          </div>
+        )}
 
-            {step === 'color' && (
-              <div className="space-y-6">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🎨</div>
-                  <p className="text-muted-foreground">
-                    Pick a color for {name}
-                  </p>
-                  {availableColors.length < colors.length && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      (Some colors are already taken)
-                    </p>
-                  )}
-                </div>
-                <div className="grid grid-cols-4 gap-4 max-w-lg mx-auto">
-                  {availableColors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() => setSelectedColor(color.id)}
-                      className={`aspect-square rounded-xl ${color.class} transition-all hover:scale-110 ${
-                        selectedColor === color.id
-                          ? 'ring-4 ring-offset-4 ring-gray-900 scale-110'
-                          : 'hover:ring-2 ring-offset-2 ring-gray-400'
-                      }`}
-                    >
-                      <div className="w-full h-full flex items-center justify-center">
-                        {selectedColor === color.id && (
-                          <span className="text-white text-3xl">✓</span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => setStep('name')}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ArrowLeft className="mr-2" size={20} /> Back
-                  </Button>
-                  <Button onClick={() => setStep('avatar')} className="flex-1">
-                    Continue <ArrowRight className="ml-2" size={20} />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {step === 'avatar' && (
-              <div className="space-y-6">
+        {step === 'avatar' && (
+          <>
+            <ScrollArea className="flex-1 px-6">
+              <div className="space-y-6 pb-4">
                 <div className="text-center">
                   <div className="text-5xl mb-4">✨</div>
                   <p className="text-muted-foreground">
@@ -154,22 +159,22 @@ export function AddChildModal({ open, onClose, onAdd, existingColors }: AddChild
                   avatarConfig={avatarConfig}
                   onAvatarChange={setAvatarConfig}
                 />
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => setStep('color')}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <ArrowLeft className="mr-2" size={20} /> Back
-                  </Button>
-                  <Button onClick={handleAdd} className="flex-1">
-                    Add {name}! <ArrowRight className="ml-2" size={20} />
-                  </Button>
-                </div>
               </div>
-            )}
-          </div>
-        </ScrollArea>
+            </ScrollArea>
+            <div className="p-6 pt-4 border-t flex gap-3 flex-shrink-0">
+              <Button
+                onClick={() => setStep('color')}
+                variant="outline"
+                className="flex-1"
+              >
+                <ArrowLeft className="mr-2" size={20} /> Back
+              </Button>
+              <Button onClick={handleAdd} className="flex-1">
+                Add {name}! <ArrowRight className="ml-2" size={20} />
+              </Button>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

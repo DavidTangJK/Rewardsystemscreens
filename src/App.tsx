@@ -8,7 +8,7 @@ import { SocialScreen } from './components/SocialScreen';
 import { OnboardingFlow } from './components/OnboardingFlow';
 import { AddChildModal } from './components/AddChildModal';
 import { initialShopItems, type ShopItem } from './data/shop-items';
-import { getFamilyMembers, createFamilyMember } from './utils/api';
+import { getFamilyMembers, createFamilyMember, updateFamilyMember } from './utils/api';
 import { toast, Toaster } from 'sonner@2.0.3';
 import confetti from 'canvas-confetti';
 import type { AvatarConfig } from './data/avatar-options';
@@ -265,17 +265,26 @@ export default function App() {
     );
   };
 
-  const handleUpdateAvatar = (userId: string, avatarConfig: AvatarConfig) => {
-    setFamilyMembers(prevMembers =>
-      prevMembers.map(member =>
-        member.id === userId ? { ...member, avatarConfig } : member
-      )
-    );
-    
-    toast.success('🎨 Avatar updated!', {
-      description: 'Your new look is saved!',
-      duration: 2000,
-    });
+  const handleUpdateAvatar = async (userId: string, avatarConfig: AvatarConfig) => {
+    try {
+      // Update in database
+      await updateFamilyMember(userId, { avatarConfig });
+      
+      // Update local state
+      setFamilyMembers(prevMembers =>
+        prevMembers.map(member =>
+          member.id === userId ? { ...member, avatarConfig } : member
+        )
+      );
+      
+      toast.success('🎨 Avatar updated!', {
+        description: 'Your new look is saved!',
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Failed to update avatar:', error);
+      toast.error('Failed to save avatar. Please try again.');
+    }
   };
 
   // Check if current user has completed all their assigned daily tasks
