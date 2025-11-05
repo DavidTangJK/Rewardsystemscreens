@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -17,26 +17,64 @@ interface AvatarCustomizerProps {
 export function AvatarCustomizer({ 
   isOpen, 
   onClose, 
-  initialConfig = defaultAvatarConfig,
+  initialConfig,
   onSave,
   userName 
 }: AvatarCustomizerProps) {
-  const [config, setConfig] = useState<AvatarConfig>(initialConfig);
+  // Initialize config with all properties to avoid undefined issues
+  const [config, setConfig] = useState<AvatarConfig>(() => ({
+    ...defaultAvatarConfig,
+    ...initialConfig
+  }));
+  
+  // Update config when initialConfig changes
+  useEffect(() => {
+    if (initialConfig) {
+      setConfig({
+        ...defaultAvatarConfig,
+        ...initialConfig
+      });
+    }
+  }, [initialConfig]);
+  
+  // Base config for previews - neutral look
+  const previewBaseConfig: AvatarConfig = {
+    baseColor: ['edb98a'],
+    backgroundColor: ['f0f0f0'],
+    ears: ['attached'],
+    earringColor: ['ffd700'],
+    earrings: [''],
+    eyebrows: ['up'],
+    eyes: ['eyes'],
+    eyeShadowColor: [''],
+    facialHair: [''],
+    glasses: [''],
+    glassesColor: ['000000'],
+    hairColor: ['724133'],
+    hair: ['full'],
+    mouth: ['smile'],
+    nose: ['curve'],
+    shirt: ['crew'],
+    shirtColor: ['5199e4'],
+  };
   
   const handleRandomize = () => {
     const randomConfig: AvatarConfig = {
       baseColor: [avatarOptions.skinColors[Math.floor(Math.random() * avatarOptions.skinColors.length)].id],
       backgroundColor: [avatarOptions.backgroundColors[Math.floor(Math.random() * avatarOptions.backgroundColors.length)].id],
+      ears: [avatarOptions.earTypes[Math.floor(Math.random() * avatarOptions.earTypes.length)].id],
       earringColor: [avatarOptions.earringColors[Math.floor(Math.random() * avatarOptions.earringColors.length)].id],
       earrings: [avatarOptions.earringTypes[Math.floor(Math.random() * avatarOptions.earringTypes.length)].id],
       eyebrows: [avatarOptions.eyebrowTypes[Math.floor(Math.random() * avatarOptions.eyebrowTypes.length)].id],
       eyes: [avatarOptions.eyeTypes[Math.floor(Math.random() * avatarOptions.eyeTypes.length)].id],
+      eyeShadowColor: [avatarOptions.eyeShadowColors[Math.floor(Math.random() * avatarOptions.eyeShadowColors.length)].id],
       facialHair: [avatarOptions.facialHairTypes[Math.floor(Math.random() * avatarOptions.facialHairTypes.length)].id],
       glasses: [avatarOptions.glassesTypes[Math.floor(Math.random() * avatarOptions.glassesTypes.length)].id],
       glassesColor: [avatarOptions.glassesColors[Math.floor(Math.random() * avatarOptions.glassesColors.length)].id],
       hairColor: [avatarOptions.hairColors[Math.floor(Math.random() * avatarOptions.hairColors.length)].id],
       hair: [avatarOptions.hairStyles[Math.floor(Math.random() * avatarOptions.hairStyles.length)].id],
       mouth: [avatarOptions.mouthTypes[Math.floor(Math.random() * avatarOptions.mouthTypes.length)].id],
+      nose: [avatarOptions.noseTypes[Math.floor(Math.random() * avatarOptions.noseTypes.length)].id],
       shirt: [avatarOptions.shirtTypes[Math.floor(Math.random() * avatarOptions.shirtTypes.length)].id],
       shirtColor: [avatarOptions.shirtColors[Math.floor(Math.random() * avatarOptions.shirtColors.length)].id],
     };
@@ -46,6 +84,13 @@ export function AvatarCustomizer({
   const handleSave = () => {
     onSave(config);
     onClose();
+  };
+  
+  const updateConfig = (key: keyof AvatarConfig, value: string[]) => {
+    setConfig(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
   
   return (
@@ -95,15 +140,43 @@ export function AvatarCustomizer({
                     {avatarOptions.eyeTypes.map(eye => (
                       <button
                         key={eye.id}
-                        onClick={() => setConfig({ ...config, eyes: [eye.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('eyes', [eye.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.eyes?.[0] === eye.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{eye.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, eyes: [eye.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{eye.name}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="mb-4 text-xl sticky top-0 bg-white py-2 z-10">Eye Shadow</h3>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                    {avatarOptions.eyeShadowColors.map(shadow => (
+                      <button
+                        key={shadow.id || 'none'}
+                        onClick={() => updateConfig('eyeShadowColor', [shadow.id])}
+                        className={`p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
+                          config.eyeShadowColor?.[0] === shadow.id
+                            ? 'border-purple-500 bg-purple-50 shadow-lg'
+                            : 'border-gray-200 hover:border-purple-300 bg-white'
+                        }`}
+                      >
+                        <div 
+                          className="w-14 h-14 rounded-full mx-auto mb-2 border-2 border-gray-300 shadow-sm"
+                          style={{ backgroundColor: shadow.color }}
+                        />
+                        <p className="text-xs text-center">{shadow.name}</p>
                       </button>
                     ))}
                   </div>
@@ -115,14 +188,19 @@ export function AvatarCustomizer({
                     {avatarOptions.eyebrowTypes.map(eyebrow => (
                       <button
                         key={eyebrow.id}
-                        onClick={() => setConfig({ ...config, eyebrows: [eyebrow.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('eyebrows', [eyebrow.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.eyebrows?.[0] === eyebrow.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{eyebrow.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, eyebrows: [eyebrow.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center leading-tight">{eyebrow.name}</p>
                       </button>
                     ))}
@@ -135,15 +213,70 @@ export function AvatarCustomizer({
                     {avatarOptions.mouthTypes.map(mouth => (
                       <button
                         key={mouth.id}
-                        onClick={() => setConfig({ ...config, mouth: [mouth.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('mouth', [mouth.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.mouth?.[0] === mouth.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{mouth.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, mouth: [mouth.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{mouth.name}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="mb-4 text-xl sticky top-0 bg-white py-2 z-10">Nose</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {avatarOptions.noseTypes.map(nose => (
+                      <button
+                        key={nose.id}
+                        onClick={() => updateConfig('nose', [nose.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                          config.nose?.[0] === nose.id
+                            ? 'border-purple-500 bg-purple-50 shadow-lg'
+                            : 'border-gray-200 hover:border-purple-300 bg-white'
+                        }`}
+                      >
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, nose: [nose.id] }} 
+                            size="medium" 
+                          />
+                        </div>
+                        <p className="text-sm text-center">{nose.name}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="mb-4 text-xl sticky top-0 bg-white py-2 z-10">Ears</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {avatarOptions.earTypes.map(ear => (
+                      <button
+                        key={ear.id}
+                        onClick={() => updateConfig('ears', [ear.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                          config.ears?.[0] === ear.id
+                            ? 'border-purple-500 bg-purple-50 shadow-lg'
+                            : 'border-gray-200 hover:border-purple-300 bg-white'
+                        }`}
+                      >
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, ears: [ear.id] }} 
+                            size="medium" 
+                          />
+                        </div>
+                        <p className="text-sm text-center">{ear.name}</p>
                       </button>
                     ))}
                   </div>
@@ -154,15 +287,20 @@ export function AvatarCustomizer({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {avatarOptions.facialHairTypes.map(facial => (
                       <button
-                        key={facial.id}
-                        onClick={() => setConfig({ ...config, facialHair: [facial.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        key={facial.id || 'none'}
+                        onClick={() => updateConfig('facialHair', [facial.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.facialHair?.[0] === facial.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{facial.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, facialHair: [facial.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{facial.name}</p>
                       </button>
                     ))}
@@ -178,14 +316,19 @@ export function AvatarCustomizer({
                     {avatarOptions.hairStyles.map(style => (
                       <button
                         key={style.id}
-                        onClick={() => setConfig({ ...config, hair: [style.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('hair', [style.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.hair?.[0] === style.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{style.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, hair: [style.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center leading-tight">{style.name}</p>
                       </button>
                     ))}
@@ -198,8 +341,8 @@ export function AvatarCustomizer({
                     {avatarOptions.hairColors.map(color => (
                       <button
                         key={color.id}
-                        onClick={() => setConfig({ ...config, hairColor: [color.id] })}
-                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('hairColor', [color.id])}
+                        className={`p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.hairColor?.[0] === color.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
@@ -223,15 +366,20 @@ export function AvatarCustomizer({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {avatarOptions.glassesTypes.map(glasses => (
                       <button
-                        key={glasses.id}
-                        onClick={() => setConfig({ ...config, glasses: [glasses.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        key={glasses.id || 'none'}
+                        onClick={() => updateConfig('glasses', [glasses.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.glasses?.[0] === glasses.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{glasses.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, glasses: [glasses.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{glasses.name}</p>
                       </button>
                     ))}
@@ -244,8 +392,8 @@ export function AvatarCustomizer({
                     {avatarOptions.glassesColors.map(color => (
                       <button
                         key={color.id}
-                        onClick={() => setConfig({ ...config, glassesColor: [color.id] })}
-                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('glassesColor', [color.id])}
+                        className={`p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.glassesColor?.[0] === color.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
@@ -266,15 +414,20 @@ export function AvatarCustomizer({
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {avatarOptions.earringTypes.map(earring => (
                       <button
-                        key={earring.id}
-                        onClick={() => setConfig({ ...config, earrings: [earring.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        key={earring.id || 'none'}
+                        onClick={() => updateConfig('earrings', [earring.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.earrings?.[0] === earring.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{earring.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, earrings: [earring.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{earring.name}</p>
                       </button>
                     ))}
@@ -287,8 +440,8 @@ export function AvatarCustomizer({
                     {avatarOptions.earringColors.map(color => (
                       <button
                         key={color.id}
-                        onClick={() => setConfig({ ...config, earringColor: [color.id] })}
-                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('earringColor', [color.id])}
+                        className={`p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.earringColor?.[0] === color.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
@@ -310,14 +463,19 @@ export function AvatarCustomizer({
                     {avatarOptions.shirtTypes.map(shirt => (
                       <button
                         key={shirt.id}
-                        onClick={() => setConfig({ ...config, shirt: [shirt.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('shirt', [shirt.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.shirt?.[0] === shirt.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
                         }`}
                       >
-                        <div className="text-4xl mb-2">{shirt.emoji}</div>
+                        <div className="mb-2 flex justify-center">
+                          <AvatarDisplay 
+                            config={{ ...previewBaseConfig, shirt: [shirt.id] }} 
+                            size="medium" 
+                          />
+                        </div>
                         <p className="text-sm text-center">{shirt.name}</p>
                       </button>
                     ))}
@@ -330,8 +488,8 @@ export function AvatarCustomizer({
                     {avatarOptions.shirtColors.map(color => (
                       <button
                         key={color.id}
-                        onClick={() => setConfig({ ...config, shirtColor: [color.id] })}
-                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('shirtColor', [color.id])}
+                        className={`p-3 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.shirtColor?.[0] === color.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
@@ -356,8 +514,8 @@ export function AvatarCustomizer({
                     {avatarOptions.skinColors.map(tone => (
                       <button
                         key={tone.id}
-                        onClick={() => setConfig({ ...config, baseColor: [tone.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('baseColor', [tone.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.baseColor?.[0] === tone.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
@@ -379,8 +537,8 @@ export function AvatarCustomizer({
                     {avatarOptions.backgroundColors.map(bg => (
                       <button
                         key={bg.id}
-                        onClick={() => setConfig({ ...config, backgroundColor: [bg.id] })}
-                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
+                        onClick={() => updateConfig('backgroundColor', [bg.id])}
+                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-105 ${
                           config.backgroundColor?.[0] === bg.id
                             ? 'border-purple-500 bg-purple-50 shadow-lg'
                             : 'border-gray-200 hover:border-purple-300 bg-white'
