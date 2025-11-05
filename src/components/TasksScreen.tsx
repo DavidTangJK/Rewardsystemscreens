@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, Star, Users, Clock, Palette } from 'lucide-react';
+import { CheckCircle2, Circle, Star, Users, Clock, UserCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
@@ -13,7 +13,7 @@ import {
 } from './ui/select';
 import { AvatarCustomizer } from './AvatarCustomizer';
 import { AvatarDisplay } from './AvatarDisplay';
-import type { AvatarConfig } from '../data/avatar-options';
+import { defaultAvatarConfig, type AvatarConfig } from '../data/avatar-options';
 
 interface FamilyMember {
   id: string;
@@ -45,7 +45,7 @@ interface TasksScreenProps {
 
 export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, onUserChange, onUpdateAvatar }: TasksScreenProps) {
   const [showAllTasks, setShowAllTasks] = useState(true);
-  const [isAvatarCustomizerOpen, setIsAvatarCustomizerOpen] = useState(false);
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
   
   // Filter tasks based on view preference
   const visibleTasks = showAllTasks ? tasks : tasks.filter(t => t.assignedTo === currentUser);
@@ -59,6 +59,12 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
   const previousCompletedCount = useRef(myDailyTasks.filter(t => t.completed).length);
 
   const currentMember = familyMembers.find(m => m.id === currentUser);
+
+  const handleSaveAvatar = (avatarConfig: AvatarConfig) => {
+    if (onUpdateAvatar) {
+      onUpdateAvatar(currentUser, avatarConfig);
+    }
+  };
 
   // Check if all daily tasks are completed and trigger confetti
   useEffect(() => {
@@ -124,14 +130,14 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-white">Family Tasks</h1>
           <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setIsAvatarCustomizerOpen(true)}
-              variant="ghost"
+            <Button 
+              variant="outline" 
               size="sm"
-              className="bg-white/20 hover:bg-white/30 text-white"
+              onClick={() => setIsCustomizerOpen(true)}
+              className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white"
             >
-              <Palette size={16} className="mr-2" />
-              Customize Avatar
+              <UserCircle size={16} className="mr-2" />
+              Edit Avatar
             </Button>
             <Select value={currentUser} onValueChange={onUserChange}>
               <SelectTrigger className="w-[160px] bg-white/20 border-white/30 text-white">
@@ -141,7 +147,13 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
                 {familyMembers.map(member => (
                   <SelectItem key={member.id} value={member.id}>
                     <div className="flex items-center gap-2">
-                      <span>{member.emoji}</span>
+                      {member.avatarConfig ? (
+                        <div className="w-6 h-6">
+                          <AvatarDisplay config={member.avatarConfig} size="small" />
+                        </div>
+                      ) : (
+                        <span>{member.emoji}</span>
+                      )}
                       <span>{member.name}</span>
                     </div>
                   </SelectItem>
@@ -152,14 +164,14 @@ export function TasksScreen({ tasks, onToggleTask, currentUser, familyMembers, o
         </div>
         <p className="text-blue-100 opacity-90">Complete tasks to earn stars!</p>
       </div>
-      
+
       {/* Avatar Customizer Dialog */}
-      {onUpdateAvatar && currentMember && (
+      {currentMember && (
         <AvatarCustomizer
-          isOpen={isAvatarCustomizerOpen}
-          onClose={() => setIsAvatarCustomizerOpen(false)}
-          initialConfig={currentMember.avatarConfig}
-          onSave={(config) => onUpdateAvatar(currentUser, config)}
+          isOpen={isCustomizerOpen}
+          onClose={() => setIsCustomizerOpen(false)}
+          initialConfig={currentMember.avatarConfig || defaultAvatarConfig}
+          onSave={handleSaveAvatar}
           userName={currentMember.name}
         />
       )}

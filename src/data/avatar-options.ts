@@ -1,194 +1,173 @@
 export interface AvatarConfig {
-  top?: string[];
-  accessories?: string[];
-  hairColor?: string[];
-  facialHair?: string[];
-  facialHairColor?: string[];
-  clothes?: string[];
-  clothesColor?: string[];
-  eyes?: string[];
+  baseColor?: string[];
+  backgroundColor?: string[];
+  earringColor?: string[];
+  earrings?: string[];
   eyebrows?: string[];
+  eyes?: string[];
+  glasses?: string[];
+  glassesColor?: string[];
+  hairColor?: string[];
+  hair?: string[];
   mouth?: string[];
-  skin?: string[];
+  nose?: string[];
+  shirt?: string[];
+  shirtColor?: string[];
 }
 
 export const avatarOptions = {
   // Skin tones
   skinColors: [
-    { id: 'ffdbb4', name: 'Pale' },
-    { id: 'edb98a', name: 'Light' },
-    { id: 'fd9841', name: 'Tanned' },
-    { id: 'd08b5b', name: 'Brown' },
-    { id: 'ae5d29', name: 'Dark Brown' },
-    { id: '614335', name: 'Black' },
+    { id: 'ffdbb4', name: 'Pale', emoji: '🤍' },
+    { id: 'edb98a', name: 'Light', emoji: '🧡' },
+    { id: 'fd9841', name: 'Tanned', emoji: '🧡' },
+    { id: 'd08b5b', name: 'Brown', emoji: '🤎' },
+    { id: 'ae5d29', name: 'Dark Brown', emoji: '🤎' },
+    { id: '614335', name: 'Deep', emoji: '🖤' },
   ],
-  
-  // Hair/Top types
-  topTypes: [
-    { id: 'bigHair', name: 'Big Hair', emoji: '💁' },
-    { id: 'bob', name: 'Bob', emoji: '💇' },
-    { id: 'bun', name: 'Bun', emoji: '🥰' },
-    { id: 'curly', name: 'Curly', emoji: '🌀' },
-    { id: 'curvy', name: 'Curvy', emoji: '🌊' },
-    { id: 'dreads', name: 'Dreads', emoji: '🎸' },
-    { id: 'frida', name: 'Frida', emoji: '🌺' },
-    { id: 'fro', name: 'Fro', emoji: '☁️' },
-    { id: 'froBand', name: 'Fro Band', emoji: '🎯' },
-    { id: 'frizzle', name: 'Frizzle', emoji: '⚡' },
-    { id: 'hat', name: 'Hat', emoji: '🎩' },
-    { id: 'longButNotTooLong', name: 'Not Too Long', emoji: '😊' },
-    { id: 'miaWallace', name: 'Mia Wallace', emoji: '🎬' },
-    { id: 'shaggy', name: 'Shaggy', emoji: '🎸' },
-    { id: 'shaggyMullet', name: 'Shaggy Mullet', emoji: '🎸' },
-    { id: 'shavedSides', name: 'Shaved Sides', emoji: '⚡' },
-    { id: 'shortCurly', name: 'Short Curly', emoji: '😄' },
-    { id: 'shortDreads01', name: 'Short Dreads 1', emoji: '🎵' },
-    { id: 'shortDreads02', name: 'Short Dreads 2', emoji: '🎶' },
-    { id: 'shortFlat', name: 'Short Flat', emoji: '😌' },
-    { id: 'shortRound', name: 'Short Round', emoji: '🙂' },
-    { id: 'shortWaved', name: 'Short Waved', emoji: '〰️' },
-    { id: 'sides', name: 'Sides', emoji: '✂️' },
-    { id: 'straight01', name: 'Straight 1', emoji: '💫' },
-    { id: 'straight02', name: 'Straight 2', emoji: '✨' },
-    { id: 'straightAndStrand', name: 'Straight Strand', emoji: '🌟' },
-    { id: 'theCaesar', name: 'Caesar', emoji: '🏛️' },
-    { id: 'theCaesarAndSidePart', name: 'Caesar Side', emoji: '👑' },
+
+  // Background colors
+  backgroundColors: [
+    { id: 'b6e3f4', name: 'Sky Blue', color: '#b6e3f4' },
+    { id: 'c0aede', name: 'Purple', color: '#c0aede' },
+    { id: 'd1d4f9', name: 'Lavender', color: '#d1d4f9' },
+    { id: 'ffd5dc', name: 'Pink', color: '#ffd5dc' },
+    { id: 'ffdfbf', name: 'Peach', color: '#ffdfbf' },
+    { id: 'd2eff3', name: 'Mint', color: '#d2eff3' },
+    { id: 'fff4e6', name: 'Cream', color: '#fff4e6' },
+  ],
+
+  // Hair styles
+  hairStyles: [
+    { id: 'dannyPhantom', name: 'Danny', emoji: '✨' },
+    { id: 'dougFunny', name: 'Doug', emoji: '🎨' },
+    { id: 'fonze', name: 'Fonze', emoji: '😎' },
+    { id: 'full', name: 'Full', emoji: '🌊' },
+    { id: 'mrClean', name: 'Bald', emoji: '✨' },
+    { id: 'mrT', name: 'Mr T', emoji: '💪' },
     { id: 'turban', name: 'Turban', emoji: '👳' },
-    { id: 'winterHat01', name: 'Winter Hat 1', emoji: '🧢' },
-    { id: 'winterHat02', name: 'Winter Hat 2', emoji: '🎿' },
-    { id: 'winterHat03', name: 'Winter Hat 3', emoji: '⛷️' },
-    { id: 'winterHat04', name: 'Beanie', emoji: '🏂' },
   ],
-  
+
   // Hair colors
   hairColors: [
-    { id: '2c1b18', name: 'Black' },
-    { id: '4a312c', name: 'Dark Brown' },
-    { id: '724133', name: 'Brown' },
-    { id: 'a55728', name: 'Auburn' },
-    { id: 'b58143', name: 'Blonde' },
-    { id: 'd6b370', name: 'Golden' },
-    { id: 'c93305', name: 'Red' },
-    { id: 'f59797', name: 'Pink' },
-    { id: '4a90e2', name: 'Blue' },
-    { id: 'ecdcbf', name: 'Platinum' },
-    { id: 'e8e1e1', name: 'Silver' },
+    { id: '2c1b18', name: 'Black', color: '#2c1b18' },
+    { id: '4a312c', name: 'Dark Brown', color: '#4a312c' },
+    { id: '724133', name: 'Brown', color: '#724133' },
+    { id: 'a55728', name: 'Auburn', color: '#a55728' },
+    { id: 'b58143', name: 'Blonde', color: '#b58143' },
+    { id: 'd6b370', name: 'Golden', color: '#d6b370' },
+    { id: 'c93305', name: 'Red', color: '#c93305' },
+    { id: 'f59797', name: 'Pink', color: '#f59797' },
+    { id: '6c4ba6', name: 'Purple', color: '#6c4ba6' },
+    { id: '4a90e2', name: 'Blue', color: '#4a90e2' },
+    { id: '78c251', name: 'Green', color: '#78c251' },
   ],
-  
-  // Accessories
-  accessoriesTypes: [
-    { id: 'none', name: 'None', emoji: '·' },
-    { id: 'eyepatch', name: 'Eyepatch', emoji: '🏴‍☠️' },
-    { id: 'kurt', name: 'Kurt', emoji: '🕶️' },
-    { id: 'prescription01', name: 'Glasses 1', emoji: '👓' },
-    { id: 'prescription02', name: 'Glasses 2', emoji: '🤓' },
-    { id: 'round', name: 'Round', emoji: '⭕' },
-    { id: 'sunglasses', name: 'Sunglasses', emoji: '😎' },
-    { id: 'wayfarers', name: 'Wayfarers', emoji: '🕶️' },
-  ],
-  
-  // Facial hair
-  facialHairTypes: [
-    { id: 'none', name: 'None', emoji: '·' },
-    { id: 'beardLight', name: 'Light Beard', emoji: '🧔‍♂️' },
-    { id: 'beardMedium', name: 'Medium Beard', emoji: '🧔' },
-    { id: 'beardMajestic', name: 'Majestic', emoji: '🧙' },
-    { id: 'moustacheFancy', name: 'Fancy Mustache', emoji: '🥸' },
-    { id: 'moustacheMagnum', name: 'Magnum', emoji: '👨' },
-  ],
-  
-  // Clothes
-  clotheTypes: [
-    { id: 'blazerAndShirt', name: 'Blazer', emoji: '👔' },
-    { id: 'blazerAndSweater', name: 'Sweater', emoji: '🧥' },
-    { id: 'collarAndSweater', name: 'Collar Sweater', emoji: '👕' },
-    { id: 'graphicShirt', name: 'Graphic Tee', emoji: '👕' },
-    { id: 'hoodie', name: 'Hoodie', emoji: '🧥' },
-    { id: 'overall', name: 'Overall', emoji: '👖' },
-    { id: 'shirtCrewNeck', name: 'Crew Neck', emoji: '👔' },
-    { id: 'shirtScoopNeck', name: 'Scoop Neck', emoji: '👚' },
-    { id: 'shirtVNeck', name: 'V-Neck', emoji: '👕' },
-  ],
-  
-  // Clothe colors
-  clotheColors: [
-    { id: '262e33', name: 'Black' },
-    { id: '65c9ff', name: 'Sky Blue' },
-    { id: '5199e4', name: 'Blue' },
-    { id: '25557c', name: 'Navy' },
-    { id: 'e6e6e6', name: 'Light Gray' },
-    { id: '929598', name: 'Gray' },
-    { id: '3c4f5c', name: 'Heather' },
-    { id: 'b1e2ff', name: 'Baby Blue' },
-    { id: 'a7ffc4', name: 'Mint' },
-    { id: 'ffdeb5', name: 'Peach' },
-    { id: 'ffafb9', name: 'Rose' },
-    { id: 'ffffb1', name: 'Yellow' },
-    { id: 'ff488e', name: 'Pink' },
-    { id: 'ff5c5c', name: 'Red' },
-    { id: 'ffffff', name: 'White' },
-  ],
-  
+
   // Eyes
   eyeTypes: [
-    { id: 'close', name: 'Closed', emoji: '😌' },
-    { id: 'cry', name: 'Crying', emoji: '😢' },
-    { id: 'default', name: 'Default', emoji: '😊' },
-    { id: 'dizzy', name: 'Dizzy', emoji: '😵' },
-    { id: 'eyeRoll', name: 'Eye Roll', emoji: '🙄' },
-    { id: 'happy', name: 'Happy', emoji: '😄' },
-    { id: 'hearts', name: 'Hearts', emoji: '😍' },
-    { id: 'side', name: 'Side', emoji: '👀' },
-    { id: 'squint', name: 'Squint', emoji: '😑' },
-    { id: 'surprised', name: 'Surprised', emoji: '😮' },
-    { id: 'wink', name: 'Wink', emoji: '😉' },
-    { id: 'winkWacky', name: 'Wink Wacky', emoji: '🤪' },
+    { id: 'eyes', name: 'Normal', emoji: '👀' },
+    { id: 'eyesShadow', name: 'Shadow', emoji: '😊' },
+    { id: 'round', name: 'Round', emoji: '😮' },
+    { id: 'smiling', name: 'Smiling', emoji: '😄' },
   ],
-  
+
   // Eyebrows
   eyebrowTypes: [
-    { id: 'angry', name: 'Angry', emoji: '😠' },
-    { id: 'angryNatural', name: 'Angry Natural', emoji: '😤' },
-    { id: 'default', name: 'Default', emoji: '🙂' },
-    { id: 'defaultNatural', name: 'Natural', emoji: '😊' },
-    { id: 'flatNatural', name: 'Flat', emoji: '😐' },
-    { id: 'frownNatural', name: 'Frown', emoji: '😟' },
-    { id: 'raisedExcited', name: 'Excited', emoji: '😃' },
-    { id: 'raisedExcitedNatural', name: 'Excited Natural', emoji: '🤗' },
-    { id: 'sadConcerned', name: 'Sad', emoji: '😟' },
-    { id: 'sadConcernedNatural', name: 'Sad Natural', emoji: '😞' },
-    { id: 'unibrowNatural', name: 'Unibrow', emoji: '🤨' },
-    { id: 'upDown', name: 'Up Down', emoji: '🤔' },
-    { id: 'upDownNatural', name: 'Up Down Natural', emoji: '🧐' },
+    { id: 'down', name: 'Down', emoji: '😔' },
+    { id: 'eyelashesDown', name: 'Sad', emoji: '😢' },
+    { id: 'eyelashesUp', name: 'Happy', emoji: '😊' },
+    { id: 'up', name: 'Up', emoji: '😃' },
   ],
-  
-  // Mouths
+
+  // Mouth
   mouthTypes: [
-    { id: 'concerned', name: 'Concerned', emoji: '😟' },
-    { id: 'default', name: 'Default', emoji: '🙂' },
-    { id: 'disbelief', name: 'Disbelief', emoji: '😲' },
-    { id: 'eating', name: 'Eating', emoji: '😋' },
-    { id: 'grimace', name: 'Grimace', emoji: '😬' },
+    { id: 'frown', name: 'Frown', emoji: '☹️' },
+    { id: 'laughing', name: 'Laughing', emoji: '😆' },
+    { id: 'nervous', name: 'Nervous', emoji: '😬' },
+    { id: 'pucker', name: 'Pucker', emoji: '😗' },
     { id: 'sad', name: 'Sad', emoji: '😢' },
-    { id: 'scream', name: 'Scream', emoji: '😱' },
-    { id: 'serious', name: 'Serious', emoji: '😐' },
     { id: 'smile', name: 'Smile', emoji: '😊' },
-    { id: 'tongue', name: 'Tongue', emoji: '😛' },
-    { id: 'twinkle', name: 'Twinkle', emoji: '✨' },
-    { id: 'vomit', name: 'Vomit', emoji: '🤮' },
+    { id: 'smirk', name: 'Smirk', emoji: '😏' },
+    { id: 'surprised', name: 'Surprised', emoji: '😲' },
+  ],
+
+  // Nose
+  noseTypes: [
+    { id: 'curve', name: 'Curve', emoji: '👃' },
+    { id: 'pointed', name: 'Pointed', emoji: '👃' },
+    { id: 'round', name: 'Round', emoji: '👃' },
+  ],
+
+  // Glasses
+  glassesTypes: [
+    { id: 'none', name: 'None', emoji: '·' },
+    { id: 'round', name: 'Round', emoji: '👓' },
+    { id: 'square', name: 'Square', emoji: '🤓' },
+  ],
+
+  // Glasses colors
+  glassesColors: [
+    { id: '000000', name: 'Black', color: '#000000' },
+    { id: '4a90e2', name: 'Blue', color: '#4a90e2' },
+    { id: 'c93305', name: 'Red', color: '#c93305' },
+    { id: '6c4ba6', name: 'Purple', color: '#6c4ba6' },
+    { id: 'f59797', name: 'Pink', color: '#f59797' },
+  ],
+
+  // Earrings
+  earringTypes: [
+    { id: 'none', name: 'None', emoji: '·' },
+    { id: 'hoop', name: 'Hoop', emoji: '⭕' },
+    { id: 'stud', name: 'Stud', emoji: '💎' },
+  ],
+
+  // Earring colors
+  earringColors: [
+    { id: 'ffd700', name: 'Gold', color: '#ffd700' },
+    { id: 'c0c0c0', name: 'Silver', color: '#c0c0c0' },
+    { id: '4a90e2', name: 'Blue', color: '#4a90e2' },
+    { id: 'c93305', name: 'Red', color: '#c93305' },
+    { id: '6c4ba6', name: 'Purple', color: '#6c4ba6' },
+  ],
+
+  // Shirts
+  shirtTypes: [
+    { id: 'collared', name: 'Collared', emoji: '👔' },
+    { id: 'crew', name: 'Crew', emoji: '👕' },
+    { id: 'open', name: 'Open', emoji: '🧥' },
+  ],
+
+  // Shirt colors
+  shirtColors: [
+    { id: '262e33', name: 'Black', color: '#262e33' },
+    { id: 'ffffff', name: 'White', color: '#ffffff' },
+    { id: '65c9ff', name: 'Sky Blue', color: '#65c9ff' },
+    { id: '5199e4', name: 'Blue', color: '#5199e4' },
+    { id: '25557c', name: 'Navy', color: '#25557c' },
+    { id: 'a7ffc4', name: 'Mint', color: '#a7ffc4' },
+    { id: '78c251', name: 'Green', color: '#78c251' },
+    { id: 'ffdeb5', name: 'Peach', color: '#ffdeb5' },
+    { id: 'ffafb9', name: 'Rose', color: '#ffafb9' },
+    { id: 'ff488e', name: 'Pink', color: '#ff488e' },
+    { id: 'ff5c5c', name: 'Red', color: '#ff5c5c' },
+    { id: '6c4ba6', name: 'Purple', color: '#6c4ba6' },
+    { id: 'ffffb1', name: 'Yellow', color: '#ffffb1' },
   ],
 };
 
 export const defaultAvatarConfig: AvatarConfig = {
-  top: ['shortFlat'],
-  accessories: ['none'],
+  baseColor: ['edb98a'],
+  backgroundColor: ['b6e3f4'],
+  earringColor: ['ffd700'],
+  earrings: ['none'],
+  eyebrows: ['up'],
+  eyes: ['eyes'],
+  glasses: ['none'],
+  glassesColor: ['000000'],
   hairColor: ['724133'],
-  facialHair: ['none'],
-  facialHairColor: ['724133'],
-  clothes: ['hoodie'],
-  clothesColor: ['25557c'],
-  eyes: ['happy'],
-  eyebrows: ['default'],
+  hair: ['full'],
   mouth: ['smile'],
-  skin: ['edb98a'],
+  nose: ['curve'],
+  shirt: ['crew'],
+  shirtColor: ['5199e4'],
 };

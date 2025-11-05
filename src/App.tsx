@@ -9,7 +9,7 @@ import { initialShopItems, type ShopItem } from './data/shop-items';
 import { getFamilyMembers, createFamilyMember } from './utils/api';
 import { toast, Toaster } from 'sonner@2.0.3';
 import confetti from 'canvas-confetti';
-import { type AvatarConfig, defaultAvatarConfig } from './data/avatar-options';
+import type { AvatarConfig } from './data/avatar-options';
 
 type Screen = 'home' | 'tasks' | 'shop' | 'reflect' | 'social';
 
@@ -52,9 +52,9 @@ export default function App() {
         // If no members exist, initialize with default members
         if (members.length === 0) {
           const defaultMembers = [
-            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
-            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, top: ['bun'], hairColor: ['d6b370'], clothes: ['shirtScoopNeck'], clothesColor: ['ff488e'] } },
-            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, top: ['shortFlat'], hairColor: ['2c1b18'], clothes: ['hoodie'], clothesColor: ['a7ffc4'] } },
+            { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
+            { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
+            { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
           ];
           
           // Create default members in database
@@ -65,21 +65,16 @@ export default function App() {
           setFamilyMembers(defaultMembers);
           setCurrentUser(defaultMembers[0].id);
         } else {
-          // Add default avatar config to existing members if they don't have one
-          const membersWithAvatars = members.map(m => ({
-            ...m,
-            avatarConfig: m.avatarConfig || defaultAvatarConfig
-          }));
-          setFamilyMembers(membersWithAvatars);
-          setCurrentUser(membersWithAvatars[0].id);
+          setFamilyMembers(members);
+          setCurrentUser(members[0].id);
         }
       } catch (error) {
         console.error('Failed to load family members:', error);
         // Fallback to hardcoded data if database fails
         const fallbackMembers = [
-          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue', avatarConfig: defaultAvatarConfig },
-          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink', avatarConfig: { ...defaultAvatarConfig, top: ['bun'], hairColor: ['d6b370'], clothes: ['shirtScoopNeck'], clothesColor: ['ff488e'] } },
-          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green', avatarConfig: { ...defaultAvatarConfig, top: ['shortFlat'], hairColor: ['2c1b18'], clothes: ['hoodie'], clothesColor: ['a7ffc4'] } },
+          { id: 'alex', name: 'Alex', emoji: '🧒', color: 'blue' },
+          { id: 'emma', name: 'Emma', emoji: '👧', color: 'pink' },
+          { id: 'ryan', name: 'Ryan', emoji: '👦', color: 'green' },
         ];
         setFamilyMembers(fallbackMembers);
         setCurrentUser(fallbackMembers[0].id);
@@ -221,10 +216,11 @@ export default function App() {
 
   const handleUpdateAvatar = (userId: string, avatarConfig: AvatarConfig) => {
     setFamilyMembers(prevMembers =>
-      prevMembers.map(m =>
-        m.id === userId ? { ...m, avatarConfig } : m
+      prevMembers.map(member =>
+        member.id === userId ? { ...member, avatarConfig } : member
       )
     );
+    
     toast.success('🎨 Avatar updated!', {
       description: 'Your new look is saved!',
       duration: 2000,

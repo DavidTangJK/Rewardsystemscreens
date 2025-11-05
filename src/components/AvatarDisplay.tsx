@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { createAvatar } from '@dicebear/core';
-import { avataaars } from '@dicebear/collection';
+import { micah } from '@dicebear/collection';
 import type { AvatarConfig } from '../data/avatar-options';
 
 interface AvatarDisplayProps {
@@ -10,7 +10,7 @@ interface AvatarDisplayProps {
 
 export function AvatarDisplay({ config, size = 'medium' }: AvatarDisplayProps) {
   const sizeMap = {
-    small: 64,
+    small: 24,
     medium: 96,
     large: 128,
   };
@@ -18,10 +18,9 @@ export function AvatarDisplay({ config, size = 'medium' }: AvatarDisplayProps) {
   const avatarSize = sizeMap[size];
   
   const avatarSvg = useMemo(() => {
-    const avatar = createAvatar(avataaars, {
+    const avatar = createAvatar(micah, {
       size: avatarSize,
-      seed: JSON.stringify(config), // Use config as seed for consistency
-      // Map our config to DiceBear options
+      seed: JSON.stringify(config),
       ...config,
     });
     
@@ -31,6 +30,7 @@ export function AvatarDisplay({ config, size = 'medium' }: AvatarDisplayProps) {
   return (
     <div 
       style={{ width: `${avatarSize}px`, height: `${avatarSize}px` }}
+      className="flex items-center justify-center"
       dangerouslySetInnerHTML={{ __html: avatarSvg }}
     />
   );
