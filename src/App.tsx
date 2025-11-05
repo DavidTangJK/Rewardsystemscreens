@@ -45,6 +45,7 @@ export default function App() {
   const [isLoadingMembers, setIsLoadingMembers] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddChild, setShowAddChild] = useState(false);
+  const [pendingChildFromUrl, setPendingChildFromUrl] = useState<{ id: string; name: string } | null>(null);
 
   const [currentUser, setCurrentUser] = useState<string>('');
 
@@ -52,9 +53,45 @@ export default function App() {
   useEffect(() => {
     const loadFamilyMembers = async () => {
       try {
+        // Check URL parameters for child_id and child_name
+        const urlParams = new URLSearchParams(window.location.search);
+        const childId = urlParams.get('child_id');
+        const childName = urlParams.get('child_name');
+        
         const members = await getFamilyMembers();
         
-        // If no members exist, show onboarding
+        // If URL has child_id, check if it exists
+        if (childId && childName) {
+          const childExists = members.some(m => m.id === childId);
+          
+          if (!childExists) {
+            // Child doesn't exist, prepare for onboarding
+            setPendingChildFromUrl({ id: childId, name: childName });
+            setShowOnboarding(true);
+            setIsLoadingMembers(false);
+            
+            toast.info(`👋 Welcome ${childName}!`, {
+              description: "Let's set up your account!",
+              duration: 4000,
+            });
+            
+            return;
+          } else {
+            // Child exists, set as current user
+            setFamilyMembers(members);
+            setCurrentUser(childId);
+            setIsLoadingMembers(false);
+            
+            toast.success(`🎉 Welcome back, ${childName}!`, {
+              description: 'Loading your tasks...',
+              duration: 3000,
+            });
+            
+            return;
+          }
+        }
+        
+        // Normal flow: no URL parameters
         if (members.length === 0) {
           setShowOnboarding(true);
         } else {
@@ -78,8 +115,11 @@ export default function App() {
   const [shopItems, setShopItems] = useState<ShopItem[]>(initialShopItems);
 
   const handleOnboardingComplete = async (name: string, avatarConfig: AvatarConfig, color: string) => {
+    // Use ID from URL if available, otherwise generate from name
+    const memberId = pendingChildFromUrl?.id || name.toLowerCase().replace(/\s+/g, '-');
+    
     const newMember: FamilyMember = {
-      id: name.toLowerCase().replace(/\s+/g, '-'),
+      id: memberId,
       name,
       emoji: '👤',
       color,
@@ -88,9 +128,19 @@ export default function App() {
 
     try {
       await createFamilyMember(newMember);
-      setFamilyMembers([newMember]);
+      
+      // Load existing members and add the new one
+      const existingMembers = await getFamilyMembers();
+      const allMembers = existingMembers.filter(m => m.id !== memberId);
+      allMembers.push(newMember);
+      
+      setFamilyMembers(allMembers);
       setCurrentUser(newMember.id);
       setShowOnboarding(false);
+      setPendingChildFromUrl(null);
+      
+      // Clear URL parameters
+      window.history.replaceState({}, '', window.location.pathname);
       
       // Create initial tasks for the new member
       const initialTasks: Task[] = [
@@ -319,7 +369,7 @@ export default function App() {
 
   // Show onboarding
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+    return <OnboardingFlow onComplete={handleOnboardingComplete} defaultName={pendingChildFromUrl?.name} />;
   }
 
   // Show loading state while fetching family members

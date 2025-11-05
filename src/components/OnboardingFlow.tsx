@@ -10,6 +10,7 @@ import { defaultAvatarConfig } from '../data/avatar-options';
 
 interface OnboardingFlowProps {
   onComplete: (name: string, avatarConfig: AvatarConfig, color: string) => void;
+  defaultName?: string;
 }
 
 type OnboardingStep = 'welcome' | 'name' | 'avatar' | 'color' | 'tour-tasks' | 'tour-home' | 'tour-shop' | 'tour-reflect' | 'tour-social' | 'complete';
@@ -22,9 +23,9 @@ const colors = [
   { id: 'orange', name: 'Orange', class: 'bg-orange-500', gradient: 'from-orange-500 to-yellow-500' },
 ];
 
-export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+export function OnboardingFlow({ onComplete, defaultName }: OnboardingFlowProps) {
   const [step, setStep] = useState<OnboardingStep>('welcome');
-  const [name, setName] = useState('');
+  const [name, setName] = useState(defaultName || '');
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(defaultAvatarConfig);
   const [selectedColor, setSelectedColor] = useState('blue');
 
