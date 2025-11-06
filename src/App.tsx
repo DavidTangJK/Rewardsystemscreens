@@ -43,7 +43,7 @@ export default function App() {
     const loadChildren = async () => {
       try {
         // Wipe database on first load (development)
-        await wipeDatabase();
+        //await wipeDatabase();
         
         // Check URL parameters for child_id and child_name
         const urlParams = new URLSearchParams(window.location.search);
