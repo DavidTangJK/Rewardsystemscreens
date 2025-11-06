@@ -82,23 +82,23 @@ export function SocialScreen({
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-4 text-white flex-shrink-0">
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <p className="text-blue-100 opacity-90 flex-shrink-0">Visit your friends' virtual homes!</p>
+      {/* Header - Compact */}
+      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-2 text-white flex-shrink-0">
+        <div className="flex items-center gap-2 mb-2">
+          <p className="text-blue-100 opacity-90 text-sm flex-shrink-0">Visit friends:</p>
           <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
-            <SelectTrigger className={`w-[180px] ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10`}>
+            <SelectTrigger className={`w-[140px] h-8 ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10 text-sm`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {sampleFriends.map(friend => (
                 <SelectItem key={friend.id} value={friend.id}>
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
+                    <div className="w-5 h-5 flex items-center justify-center">
                       {friend.avatarConfig ? (
                         <AvatarDisplay config={friend.avatarConfig} size="small" />
                       ) : (
-                        <span className="text-xl">{friend.emoji}</span>
+                        <span className="text-lg">{friend.emoji}</span>
                       )}
                     </div>
                     <span>{friend.name}</span>
@@ -113,41 +113,41 @@ export function SocialScreen({
           </Select>
         </div>
 
-        {/* Edit Avatar Buttons */}
-        <div className="flex items-center gap-2 justify-center">
+        {/* Edit Avatar Buttons - Compact */}
+        <div className="flex items-center gap-1.5">
           <Button
             onClick={() => setEditingAvatar('user')}
-            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
-            <UserCircle size={16} className="mr-2" />
-            Edit My Avatar
+            <UserCircle size={14} className="mr-1" />
+            My Avatar
           </Button>
           <Button
             onClick={() => setEditingAvatar('mom')}
-            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
-            <div className="w-5 h-5 mr-2">
+            <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={momAvatarConfig} size="small" />
             </div>
-            Edit Mom
+            Mom
           </Button>
           <Button
             onClick={() => setEditingAvatar('dad')}
-            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
-            <div className="w-5 h-5 mr-2">
+            <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={dadAvatarConfig} size="small" />
             </div>
-            Edit Dad
+            Dad
           </Button>
         </div>
       </div>
 
-      {/* Friend's Home View */}
-      <div className="flex-1 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
+      {/* Friend's Home View - Takes up remaining space (at least 70% of screen) */}
+      <div className="flex-1 min-h-0 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
           {/* House Structure */}
           <div className="flex flex-col h-full">
