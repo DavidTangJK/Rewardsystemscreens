@@ -21,20 +21,11 @@ interface ShopItem {
   gridHeight: number;
 }
 
-interface FamilyMember {
-  id: string;
-  name: string;
-  emoji: string;
-  color: string;
-  avatarConfig?: AvatarConfig;
-}
-
 interface HomeScreenProps {
   stars: number;
   items: ShopItem[];
   onUpdatePosition: (itemId: number, gridX: number, gridY: number) => void;
-  familyMembers: FamilyMember[];
-  currentUser: string;
+  avatarConfig: AvatarConfig;
   backgroundGradient?: string;
   onOpenShop: () => void;
 }
@@ -50,52 +41,32 @@ interface Character {
   avatarConfig?: AvatarConfig;
 }
 
-export function HomeScreen({ stars, items, onUpdatePosition, familyMembers, currentUser, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
+export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   
-  // Initialize characters from family members plus parents
+  // Initialize characters - user plus parents
   const [characters, setCharacters] = useState<Character[]>(() => {
-    const basePositions = [
-      { x: 30, y: 60 },
-      { x: 60, y: 50 },
-      { x: 45, y: 70 },
-    ];
-    
-    const familyCharacters = familyMembers.map((member, index) => ({
-      id: member.id,
-      emoji: member.emoji,
-      x: basePositions[index % basePositions.length].x,
-      y: basePositions[index % basePositions.length].y,
-      name: member.name,
-      color: member.color,
-      isCurrentUser: member.id === currentUser,
-      avatarConfig: member.avatarConfig,
-    }));
-
-    // Add parents
-    const parents = [
+    return [
+      { id: 'user', emoji: '👤', x: 45, y: 60, name: 'Me', color: 'blue', isCurrentUser: true, avatarConfig },
       { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false, avatarConfig: momAvatar },
       { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false, avatarConfig: dadAvatar },
     ];
-
-    return [...familyCharacters, ...parents];
   });
 
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [dragPreview, setDragPreview] = useState<{ gridX: number; gridY: number; width: number; height: number } | null>(null);
 
-  // Update current user when it changes
+  // Update user avatar when it changes
   useEffect(() => {
     setCharacters(prev =>
-      prev.map(char => ({
-        ...char,
-        isCurrentUser: char.id === currentUser,
-      }))
+      prev.map(char =>
+        char.id === 'user' ? { ...char, avatarConfig } : char
+      )
     );
-  }, [currentUser]);
+  }, [avatarConfig]);
 
   // Animate characters to move around randomly
   useEffect(() => {

@@ -15,15 +15,7 @@ interface Reflection {
   mood?: string;
 }
 
-interface ReflectionScreenProps {
-  currentUser: string;
-  familyMembers: Array<{ id: string; name: string; color: string }>;
-}
-
-export function ReflectionScreen({
-  currentUser,
-  familyMembers,
-}: ReflectionScreenProps) {
+export function ReflectionScreen() {
   const [reflections, setReflections] = useState<Reflection[]>([
     {
       id: 1,
@@ -91,17 +83,10 @@ export function ReflectionScreen({
     setSelectedMood('');
   };
 
-  const currentMember = familyMembers.find(m => m.id === currentUser);
-  const colorClasses = {
-    blue: 'from-blue-500 to-cyan-500',
-    pink: 'from-pink-500 to-rose-500',
-    green: 'from-green-500 to-emerald-500',
-  };
-
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-b from-purple-50 to-pink-50 overflow-hidden">
       {/* Header */}
-      <div className={`bg-gradient-to-r ${colorClasses[currentMember?.color as keyof typeof colorClasses] || 'from-purple-500 to-pink-500'} p-4 md:p-6 text-white flex-shrink-0`}>
+      <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-4 md:p-6 text-white flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <h1 className="text-white truncate">Daily Reflection</h1>
@@ -238,18 +223,9 @@ export function ReflectionScreen({
                       )}
                     </div>
 
-                    <p className="text-foreground mb-2 md:mb-3 leading-relaxed text-sm md:text-base">
+                    <p className="text-foreground leading-relaxed text-sm md:text-base">
                       {reflection.content}
                     </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300 text-xs">
-                        ✓ {reflection.tasksCompleted} tasks
-                      </Badge>
-                      <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-300 text-xs">
-                        ⭐ {reflection.starsEarned} stars
-                      </Badge>
-                    </div>
                   </Card>
                 ))
               )}

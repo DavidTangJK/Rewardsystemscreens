@@ -4,33 +4,32 @@ import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { sampleFriends, Friend } from '../data/friends-data';
 import { AvatarDisplay } from './AvatarDisplay';
 import { AvatarCustomizer } from './AvatarCustomizer';
-import { defaultAvatarConfig, type AvatarConfig } from '../data/avatar-options';
-
-interface FamilyMember {
-  id: string;
-  name: string;
-  emoji: string;
-  color: string;
-  avatarConfig?: AvatarConfig;
-  familyId: string;
-}
+import type { AvatarConfig } from '../data/avatar-options';
 
 interface SocialScreenProps {
-  currentUser: string;
-  familyMembers: FamilyMember[];
-  onUserChange: (userId: string) => void;
-  onUpdateAvatar?: (userId: string, avatarConfig: AvatarConfig) => void;
+  avatarConfig: AvatarConfig;
+  onUpdateAvatar: (avatarConfig: AvatarConfig) => void;
+  momAvatarConfig: AvatarConfig;
+  onUpdateMomAvatar: (avatarConfig: AvatarConfig) => void;
+  dadAvatarConfig: AvatarConfig;
+  onUpdateDadAvatar: (avatarConfig: AvatarConfig) => void;
 }
 
-export function SocialScreen({ currentUser, familyMembers, onUserChange, onUpdateAvatar }: SocialScreenProps) {
-  const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
-  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+type EditingAvatar = 'user' | 'mom' | 'dad' | null;
 
-  const currentMember = familyMembers.find(m => m.id === currentUser);
+export function SocialScreen({ 
+  avatarConfig, 
+  onUpdateAvatar,
+  momAvatarConfig,
+  onUpdateMomAvatar,
+  dadAvatarConfig,
+  onUpdateDadAvatar
+}: SocialScreenProps) {
+  const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
+  const [editingAvatar, setEditingAvatar] = useState<EditingAvatar>(null);
 
   const handleFriendChange = (friendId: string) => {
     const friend = sampleFriends.find(f => f.id === friendId);
@@ -39,9 +38,34 @@ export function SocialScreen({ currentUser, familyMembers, onUserChange, onUpdat
     }
   };
 
-  const handleSaveAvatar = (avatarConfig: AvatarConfig) => {
-    if (onUpdateAvatar) {
-      onUpdateAvatar(currentUser, avatarConfig);
+  const handleSaveAvatar = (newAvatarConfig: AvatarConfig) => {
+    if (editingAvatar === 'mom') {
+      onUpdateMomAvatar(newAvatarConfig);
+    } else if (editingAvatar === 'dad') {
+      onUpdateDadAvatar(newAvatarConfig);
+    } else {
+      onUpdateAvatar(newAvatarConfig);
+    }
+    setEditingAvatar(null);
+  };
+
+  const getCurrentAvatarConfig = () => {
+    if (editingAvatar === 'mom') {
+      return momAvatarConfig;
+    } else if (editingAvatar === 'dad') {
+      return dadAvatarConfig;
+    } else {
+      return avatarConfig;
+    }
+  };
+
+  const getAvatarName = () => {
+    if (editingAvatar === 'mom') {
+      return "Mom's Avatar";
+    } else if (editingAvatar === 'dad') {
+      return "Dad's Avatar";
+    } else {
+      return "My Character";
     }
   };
 
@@ -59,121 +83,71 @@ export function SocialScreen({ currentUser, familyMembers, onUserChange, onUpdat
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-white">Family & Friends</h1>
-            <p className="text-blue-100 opacity-90">Switch profiles and visit friends!</p>
-          </div>
+      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-4 text-white flex-shrink-0">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <p className="text-blue-100 opacity-90 flex-shrink-0">Visit your friends' virtual homes!</p>
+          <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
+            <SelectTrigger className={`w-[180px] ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sampleFriends.map(friend => (
+                <SelectItem key={friend.id} value={friend.id}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 flex items-center justify-center">
+                      {friend.avatarConfig ? (
+                        <AvatarDisplay config={friend.avatarConfig} size="small" />
+                      ) : (
+                        <span className="text-xl">{friend.emoji}</span>
+                      )}
+                    </div>
+                    <span>{friend.name}</span>
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Star className="fill-yellow-400 text-yellow-400" size={12} />
+                      <span>{friend.stars}</span>
+                    </div>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Edit Avatar Buttons */}
+        <div className="flex items-center gap-2 justify-center">
+          <Button
+            onClick={() => setEditingAvatar('user')}
+            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            size="sm"
+          >
+            <UserCircle size={16} className="mr-2" />
+            Edit My Avatar
+          </Button>
+          <Button
+            onClick={() => setEditingAvatar('mom')}
+            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            size="sm"
+          >
+            <div className="w-5 h-5 mr-2">
+              <AvatarDisplay config={momAvatarConfig} size="small" />
+            </div>
+            Edit Mom
+          </Button>
+          <Button
+            onClick={() => setEditingAvatar('dad')}
+            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/40 flex-1"
+            size="sm"
+          >
+            <div className="w-5 h-5 mr-2">
+              <AvatarDisplay config={dadAvatarConfig} size="small" />
+            </div>
+            Edit Dad
+          </Button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="family" className="flex-1 flex flex-col">
-        <TabsList className="w-full rounded-none border-b bg-white">
-          <TabsTrigger value="family" className="flex-1">My Family</TabsTrigger>
-          <TabsTrigger value="friends" className="flex-1">Friends</TabsTrigger>
-        </TabsList>
-
-        {/* Family Tab */}
-        <TabsContent value="family" className="flex-1 m-0 overflow-auto">
-          <div className="p-6 space-y-6">
-            {/* Switch Profile Section */}
-            <Card className="p-6">
-              <h3 className="mb-4">Switch Profile</h3>
-              <div className="space-y-4">
-                <Select value={currentUser} onValueChange={onUserChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {familyMembers.map(member => (
-                      <SelectItem key={member.id} value={member.id}>
-                        <div className="flex items-center gap-2">
-                          {member.avatarConfig ? (
-                            <div className="w-6 h-6">
-                              <AvatarDisplay config={member.avatarConfig} size="small" />
-                            </div>
-                          ) : (
-                            <span>{member.emoji}</span>
-                          )}
-                          <span>{member.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </Card>
-
-            {/* Current Profile Section */}
-            {currentMember && (
-              <Card className="p-6">
-                <h3 className="mb-4">Your Profile</h3>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-24 h-24">
-                    {currentMember.avatarConfig ? (
-                      <AvatarDisplay config={currentMember.avatarConfig} size="medium" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-6xl">
-                        {currentMember.emoji}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h2>{currentMember.name}</h2>
-                    <div className={`inline-block px-3 py-1 rounded-full text-white text-sm mt-2 ${getBadgeColor(currentMember.color)}`}>
-                      {currentMember.color}
-                    </div>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => setIsCustomizerOpen(true)}
-                  className="w-full"
-                >
-                  <UserCircle size={16} className="mr-2" />
-                  Edit Avatar
-                </Button>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* Friends Tab */}
-        <TabsContent value="friends" className="flex-1 m-0 flex flex-col">
-          <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-4 text-white flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <p className="text-blue-100 opacity-90">Visit your friends' virtual homes!</p>
-              <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
-                <SelectTrigger className={`w-[180px] ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10`}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {sampleFriends.map(friend => (
-                    <SelectItem key={friend.id} value={friend.id}>
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          {friend.avatarConfig ? (
-                            <AvatarDisplay config={friend.avatarConfig} size="small" />
-                          ) : (
-                            <span className="text-xl">{friend.emoji}</span>
-                          )}
-                        </div>
-                        <span>{friend.name}</span>
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                          <Star className="fill-yellow-400 text-yellow-400" size={12} />
-                          <span>{friend.stars}</span>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Friend's Home View */}
-          <div className="flex-1 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
+      {/* Friend's Home View */}
+      <div className="flex-1 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
           {/* House Structure */}
           <div className="flex flex-col h-full">
@@ -259,37 +233,33 @@ export function SocialScreen({ currentUser, familyMembers, onUserChange, onUpdat
             {/* Ground/Grass */}
             <div className="h-[10%] bg-green-600 border-t-4 border-green-700"></div>
           </div>
-          </div>
-
-          {/* Stats Info */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-            <Card className="bg-white/90 backdrop-blur-sm p-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Star className="fill-yellow-400 text-yellow-400" size={20} />
-                  <span>{selectedFriend.stars} Stars</span>
-                </div>
-                <div className="w-px h-6 bg-gray-300"></div>
-                <div>
-                  {selectedFriend.items.length} items
-                </div>
-              </div>
-            </Card>
-          </div>
         </div>
-        </TabsContent>
-      </Tabs>
+
+        {/* Stats Info */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+          <Card className="bg-white/90 backdrop-blur-sm p-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Star className="fill-yellow-400 text-yellow-400" size={20} />
+                <span>{selectedFriend.stars} Stars</span>
+              </div>
+              <div className="w-px h-6 bg-gray-300"></div>
+              <div>
+                {selectedFriend.items.length} items
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
 
       {/* Avatar Customizer Dialog */}
-      {currentMember && (
-        <AvatarCustomizer
-          isOpen={isCustomizerOpen}
-          onClose={() => setIsCustomizerOpen(false)}
-          initialConfig={currentMember.avatarConfig || defaultAvatarConfig}
-          onSave={handleSaveAvatar}
-          userName={currentMember.name}
-        />
-      )}
+      <AvatarCustomizer
+        isOpen={editingAvatar !== null}
+        onClose={() => setEditingAvatar(null)}
+        initialConfig={getCurrentAvatarConfig()}
+        onSave={handleSaveAvatar}
+        userName={getAvatarName()}
+      />
     </div>
   );
 }
