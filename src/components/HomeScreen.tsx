@@ -3,7 +3,6 @@ import { Star, ShoppingBag, Grid3x3, Edit3, Check } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { AvatarDisplay } from './AvatarDisplay';
-import { momAvatar, dadAvatar } from '../data/avatars';
 import { AvatarConfig } from '../data/avatar-options';
 import { toast } from 'sonner@2.0.3';
 
@@ -26,6 +25,8 @@ interface HomeScreenProps {
   items: ShopItem[];
   onUpdatePosition: (itemId: number, gridX: number, gridY: number) => void;
   avatarConfig: AvatarConfig;
+  momAvatarConfig: AvatarConfig;
+  dadAvatarConfig: AvatarConfig;
   backgroundGradient?: string;
   onOpenShop: () => void;
 }
@@ -41,7 +42,7 @@ interface Character {
   avatarConfig?: AvatarConfig;
 }
 
-export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
+export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAvatarConfig, dadAvatarConfig, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -51,22 +52,29 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, backg
   const [characters, setCharacters] = useState<Character[]>(() => {
     return [
       { id: 'user', emoji: '👤', x: 45, y: 60, name: 'Me', color: 'blue', isCurrentUser: true, avatarConfig },
-      { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false, avatarConfig: momAvatar },
-      { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false, avatarConfig: dadAvatar },
+      { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false, avatarConfig: momAvatarConfig },
+      { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false, avatarConfig: dadAvatarConfig },
     ];
   });
 
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [dragPreview, setDragPreview] = useState<{ gridX: number; gridY: number; width: number; height: number } | null>(null);
 
-  // Update user avatar when it changes
+  // Update avatars when they change
   useEffect(() => {
     setCharacters(prev =>
-      prev.map(char =>
-        char.id === 'user' ? { ...char, avatarConfig } : char
-      )
+      prev.map(char => {
+        if (char.id === 'user') {
+          return { ...char, avatarConfig };
+        } else if (char.id === 'mom') {
+          return { ...char, avatarConfig: momAvatarConfig };
+        } else if (char.id === 'dad') {
+          return { ...char, avatarConfig: dadAvatarConfig };
+        }
+        return char;
+      })
     );
-  }, [avatarConfig]);
+  }, [avatarConfig, momAvatarConfig, dadAvatarConfig]);
 
   // Animate characters to move around randomly
   useEffect(() => {

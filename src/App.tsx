@@ -104,26 +104,22 @@ export default function App() {
     setIsLoading(false);
   }, []);
 
-  const saveChildData = () => {
-    const childDataKey = `child_${childId}`;
-    const childData = {
-      onboardingCompleted: hasCompletedOnboarding,
-      userName,
-      avatarConfig,
-      momAvatarConfig,
-      dadAvatarConfig,
-      stars,
-      shopItems,
-    };
-    localStorage.setItem(childDataKey, JSON.stringify(childData));
-  };
-
   // Save child data whenever relevant state changes
   useEffect(() => {
     if (childId && hasCompletedOnboarding) {
-      saveChildData();
+      const childDataKey = `child_${childId}`;
+      const childData = {
+        onboardingCompleted: hasCompletedOnboarding,
+        userName,
+        avatarConfig,
+        momAvatarConfig,
+        dadAvatarConfig,
+        stars,
+        shopItems,
+      };
+      localStorage.setItem(childDataKey, JSON.stringify(childData));
     }
-  }, [userName, avatarConfig, momAvatarConfig, dadAvatarConfig, stars, shopItems, hasCompletedOnboarding]);
+  }, [childId, userName, avatarConfig, momAvatarConfig, dadAvatarConfig, stars, shopItems, hasCompletedOnboarding]);
 
   const handleOnboardingComplete = (data: {
     userName: string;
@@ -324,6 +320,8 @@ export default function App() {
             items={equippedItems} 
             onUpdatePosition={handleUpdateItemPosition}
             avatarConfig={avatarConfig}
+            momAvatarConfig={momAvatarConfig}
+            dadAvatarConfig={dadAvatarConfig}
             backgroundGradient={equippedBackground?.gradient}
             onOpenShop={() => setCurrentScreen('shop')}
           />

@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, UserCircle } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
 import { sampleFriends, Friend } from '../data/friends-data';
 import { AvatarDisplay } from './AvatarDisplay';
-import { AvatarCustomizer } from './AvatarCustomizer';
+import { SimpleAvatarCustomizer } from './SimpleAvatarCustomizer';
 import type { AvatarConfig } from '../data/avatar-options';
 
 interface SocialScreenProps {
@@ -30,6 +31,18 @@ export function SocialScreen({
 }: SocialScreenProps) {
   const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
   const [editingAvatar, setEditingAvatar] = useState<EditingAvatar>(null);
+  const [tempAvatarConfig, setTempAvatarConfig] = useState<AvatarConfig>(avatarConfig);
+
+  // Update tempAvatarConfig when editingAvatar changes
+  useEffect(() => {
+    if (editingAvatar === 'mom') {
+      setTempAvatarConfig(momAvatarConfig);
+    } else if (editingAvatar === 'dad') {
+      setTempAvatarConfig(dadAvatarConfig);
+    } else if (editingAvatar === 'user') {
+      setTempAvatarConfig(avatarConfig);
+    }
+  }, [editingAvatar, avatarConfig, momAvatarConfig, dadAvatarConfig]);
 
   const handleFriendChange = (friendId: string) => {
     const friend = sampleFriends.find(f => f.id === friendId);
@@ -38,25 +51,23 @@ export function SocialScreen({
     }
   };
 
-  const handleSaveAvatar = (newAvatarConfig: AvatarConfig) => {
+  const handleOpenEditor = (type: EditingAvatar) => {
+    setEditingAvatar(type);
+  };
+
+  const handleSaveAvatar = () => {
     if (editingAvatar === 'mom') {
-      onUpdateMomAvatar(newAvatarConfig);
+      onUpdateMomAvatar(tempAvatarConfig);
     } else if (editingAvatar === 'dad') {
-      onUpdateDadAvatar(newAvatarConfig);
+      onUpdateDadAvatar(tempAvatarConfig);
     } else {
-      onUpdateAvatar(newAvatarConfig);
+      onUpdateAvatar(tempAvatarConfig);
     }
     setEditingAvatar(null);
   };
 
-  const getCurrentAvatarConfig = () => {
-    if (editingAvatar === 'mom') {
-      return momAvatarConfig;
-    } else if (editingAvatar === 'dad') {
-      return dadAvatarConfig;
-    } else {
-      return avatarConfig;
-    }
+  const handleCancelEdit = () => {
+    setEditingAvatar(null);
   };
 
   const getAvatarName = () => {
@@ -65,7 +76,7 @@ export function SocialScreen({
     } else if (editingAvatar === 'dad') {
       return "Dad's Avatar";
     } else {
-      return "My Character";
+      return "My Avatar";
     }
   };
 
@@ -116,7 +127,7 @@ export function SocialScreen({
         {/* Edit Avatar Buttons - Compact */}
         <div className="flex items-center gap-1.5">
           <Button
-            onClick={() => setEditingAvatar('user')}
+            onClick={() => handleOpenEditor('user')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
@@ -124,7 +135,7 @@ export function SocialScreen({
             My Avatar
           </Button>
           <Button
-            onClick={() => setEditingAvatar('mom')}
+            onClick={() => handleOpenEditor('mom')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
@@ -134,7 +145,7 @@ export function SocialScreen({
             Mom
           </Button>
           <Button
-            onClick={() => setEditingAvatar('dad')}
+            onClick={() => handleOpenEditor('dad')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
@@ -253,13 +264,39 @@ export function SocialScreen({
       </div>
 
       {/* Avatar Customizer Dialog */}
-      <AvatarCustomizer
-        isOpen={editingAvatar !== null}
-        onClose={() => setEditingAvatar(null)}
-        initialConfig={getCurrentAvatarConfig()}
-        onSave={handleSaveAvatar}
-        userName={getAvatarName()}
-      />
+      <Dialog open={editingAvatar !== null} onOpenChange={(open) => !open && handleCancelEdit()}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Customize {getAvatarName()}</DialogTitle>
+            <DialogDescription>
+              Choose different features to personalize this avatar.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto px-1">
+            <SimpleAvatarCustomizer
+              avatarConfig={tempAvatarConfig}
+              onAvatarChange={setTempAvatarConfig}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t">
+            <Button 
+              onClick={handleCancelEdit} 
+              variant="outline" 
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSaveAvatar}
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            >
+              Save Avatar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
