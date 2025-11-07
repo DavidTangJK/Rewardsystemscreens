@@ -1,12 +1,11 @@
-import { useState } from 'react';
-import { Card } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { SimpleAvatarCustomizer } from './SimpleAvatarCustomizer';
-import { AvatarDisplay } from './AvatarDisplay';
-import { defaultAvatarConfig, type AvatarConfig } from '../data/avatar-options';
-import { Sparkles, Home, Users, Star } from 'lucide-react';
+import { useState } from "react";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { SimpleAvatarCustomizer } from "./SimpleAvatarCustomizer";
+import { defaultAvatarConfig, type AvatarConfig } from "../data/avatar-options";
+import { Sparkles, Home, Users, Star } from "lucide-react";
 
 interface OnboardingFlowProps {
   onComplete: (data: {
@@ -18,29 +17,33 @@ interface OnboardingFlowProps {
   initialUserName?: string;
 }
 
-export function OnboardingFlow({ onComplete, initialUserName = '' }: OnboardingFlowProps) {
+export function OnboardingFlow({
+  onComplete,
+  initialUserName = "",
+}: OnboardingFlowProps) {
   const [step, setStep] = useState(1);
   const [userName, setUserName] = useState(initialUserName);
-  const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(defaultAvatarConfig);
+  const [avatarConfig, setAvatarConfig] =
+    useState<AvatarConfig>(defaultAvatarConfig);
   const [momAvatarConfig, setMomAvatarConfig] = useState<AvatarConfig>({
-    skinTone: '#f0c8a0',
-    hairColor: '#6b4423',
-    hairStyle: 'curly',
-    eyeColor: '#4a3c27',
-    outfit: 'casual',
-    accessory: 'none',
+    skinTone: "#f0c8a0",
+    hairColor: "#6b4423",
+    hairStyle: "curly",
+    eyeColor: "#4a3c27",
+    outfit: "casual",
+    accessory: "none",
   });
   const [dadAvatarConfig, setDadAvatarConfig] = useState<AvatarConfig>({
-    skinTone: '#d4a574',
-    hairColor: '#3d2817',
-    hairStyle: 'short',
-    eyeColor: '#2d2520',
-    outfit: 'casual',
-    accessory: 'glasses',
+    skinTone: "#d4a574",
+    hairColor: "#3d2817",
+    hairStyle: "short",
+    eyeColor: "#2d2520",
+    outfit: "casual",
+    accessory: "glasses",
   });
 
   const handleNext = () => {
-    if (step === 1 && userName.trim() === '') {
+    if (step === 1 && userName.trim() === "") {
       return;
     }
     if (step < 4) {
@@ -61,11 +64,13 @@ export function OnboardingFlow({ onComplete, initialUserName = '' }: OnboardingF
       <Card className="w-full max-w-2xl bg-white/95 backdrop-blur-sm shadow-2xl">
         {/* Progress Indicator */}
         <div className="flex gap-2 p-6 pb-3">
-          {[1, 2, 3, 4].map(i => (
+          {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className={`h-2 flex-1 rounded-full transition-all ${
-                i <= step ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-200'
+                i <= step
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500"
+                  : "bg-gray-200"
               }`}
             ></div>
           ))}
@@ -118,7 +123,7 @@ export function OnboardingFlow({ onComplete, initialUserName = '' }: OnboardingF
             <div className="flex justify-end">
               <Button
                 onClick={handleNext}
-                disabled={userName.trim() === ''}
+                disabled={userName.trim() === ""}
                 className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
               >
                 Next
@@ -133,7 +138,8 @@ export function OnboardingFlow({ onComplete, initialUserName = '' }: OnboardingF
             <div className="text-center space-y-2">
               <h2 className="text-purple-600">Create Your Avatar</h2>
               <p className="text-gray-600">
-                Customize your character - this is how you'll appear in your virtual home!
+                Customize your character - this is how you'll appear in your
+                virtual home!
               </p>
             </div>
 

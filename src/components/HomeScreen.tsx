@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
-import { Star, ShoppingBag, Grid3x3, Edit3, Check } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { AvatarDisplay } from './AvatarDisplay';
-import { AvatarConfig } from '../data/avatar-options';
-import { toast } from 'sonner@2.0.3';
+import { useState, useEffect, useRef } from "react";
+import { Star, ShoppingBag, Grid3x3, Edit3, Check } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { AvatarDisplay } from "./AvatarDisplay";
+import { AvatarConfig } from "../data/avatar-options";
+import { toast } from "sonner";
 
 const GRID_COLS = 20;
 const GRID_ROWS = 15;
@@ -42,33 +42,74 @@ interface Character {
   avatarConfig?: AvatarConfig;
 }
 
-export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAvatarConfig, dadAvatarConfig, backgroundGradient = 'from-amber-50 to-amber-100', onOpenShop }: HomeScreenProps) {
+export function HomeScreen({
+  stars,
+  items,
+  onUpdatePosition,
+  avatarConfig,
+  momAvatarConfig,
+  dadAvatarConfig,
+  backgroundGradient = "from-amber-50 to-amber-100",
+  onOpenShop,
+}: HomeScreenProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
-  
+
   // Initialize characters - user plus parents
   const [characters, setCharacters] = useState<Character[]>(() => {
     return [
-      { id: 'user', emoji: '👤', x: 45, y: 60, name: 'Me', color: 'blue', isCurrentUser: true, avatarConfig },
-      { id: 'mom', emoji: '👩', x: 70, y: 45, name: 'Mom', color: 'purple', isCurrentUser: false, avatarConfig: momAvatarConfig },
-      { id: 'dad', emoji: '👨', x: 55, y: 75, name: 'Dad', color: 'orange', isCurrentUser: false, avatarConfig: dadAvatarConfig },
+      {
+        id: "user",
+        emoji: "👤",
+        x: 45,
+        y: 60,
+        name: "Me",
+        color: "blue",
+        isCurrentUser: true,
+        avatarConfig,
+      },
+      {
+        id: "mom",
+        emoji: "👩",
+        x: 70,
+        y: 45,
+        name: "Mom",
+        color: "purple",
+        isCurrentUser: false,
+        avatarConfig: momAvatarConfig,
+      },
+      {
+        id: "dad",
+        emoji: "👨",
+        x: 55,
+        y: 75,
+        name: "Dad",
+        color: "orange",
+        isCurrentUser: false,
+        avatarConfig: dadAvatarConfig,
+      },
     ];
   });
 
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
-  const [dragPreview, setDragPreview] = useState<{ gridX: number; gridY: number; width: number; height: number } | null>(null);
+  const [dragPreview, setDragPreview] = useState<{
+    gridX: number;
+    gridY: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   // Update avatars when they change
   useEffect(() => {
-    setCharacters(prev =>
-      prev.map(char => {
-        if (char.id === 'user') {
+    setCharacters((prev) =>
+      prev.map((char) => {
+        if (char.id === "user") {
           return { ...char, avatarConfig };
-        } else if (char.id === 'mom') {
+        } else if (char.id === "mom") {
           return { ...char, avatarConfig: momAvatarConfig };
-        } else if (char.id === 'dad') {
+        } else if (char.id === "dad") {
           return { ...char, avatarConfig: dadAvatarConfig };
         }
         return char;
@@ -79,8 +120,8 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
   // Animate characters to move around randomly
   useEffect(() => {
     const interval = setInterval(() => {
-      setCharacters(prev =>
-        prev.map(char => ({
+      setCharacters((prev) =>
+        prev.map((char) => ({
           ...char,
           x: Math.max(15, Math.min(80, char.x + (Math.random() - 0.5) * 20)),
           y: Math.max(40, Math.min(80, char.y + (Math.random() - 0.5) * 20)),
@@ -92,16 +133,32 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
   }, []);
 
   // Check if a position is valid (no overlaps)
-  const isValidPosition = (itemId: number, gridX: number, gridY: number, width: number, height: number) => {
+  const isValidPosition = (
+    itemId: number,
+    gridX: number,
+    gridY: number,
+    width: number,
+    height: number
+  ) => {
     // Check bounds
-    if (gridX < 0 || gridY < 0 || gridX + width > GRID_COLS || gridY + height > GRID_ROWS) {
+    if (
+      gridX < 0 ||
+      gridY < 0 ||
+      gridX + width > GRID_COLS ||
+      gridY + height > GRID_ROWS
+    ) {
       return false;
     }
 
     // Check for overlaps with other items
     for (const item of items) {
-      if (item.id === itemId || !item.gridX === undefined || !item.gridY === undefined) continue;
-      
+      if (
+        item.id === itemId ||
+        !item.gridX === undefined ||
+        !item.gridY === undefined
+      )
+        continue;
+
       const itemRight = (item.gridX || 0) + item.gridWidth;
       const itemBottom = (item.gridY || 0) + item.gridHeight;
       const newRight = gridX + width;
@@ -127,7 +184,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
       return;
     }
     setDraggingItem(itemId);
-    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.effectAllowed = "move";
   };
 
   const handleDragEnd = () => {
@@ -138,20 +195,20 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
   // Touch/Click handlers for mobile-friendly item selection
   const handleItemClick = (itemId: number) => {
     if (!isEditMode) return;
-    
+
     if (selectedItem === itemId) {
       // Deselect if clicking the same item
       setSelectedItem(null);
     } else {
       setSelectedItem(itemId);
-      toast.info('Tap anywhere to place the item');
+      toast.info("Tap anywhere to place the item");
     }
   };
 
   const handleContainerClick = (e: React.MouseEvent) => {
     if (!isEditMode || selectedItem === null || !containerRef.current) return;
 
-    const item = items.find(i => i.id === selectedItem);
+    const item = items.find((i) => i.id === selectedItem);
     if (!item) return;
 
     const rect = containerRef.current.getBoundingClientRect();
@@ -165,12 +222,20 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
     const gridY = Math.floor(y / cellHeight);
 
     // Validate and update position
-    if (isValidPosition(selectedItem, gridX, gridY, item.gridWidth, item.gridHeight)) {
+    if (
+      isValidPosition(
+        selectedItem,
+        gridX,
+        gridY,
+        item.gridWidth,
+        item.gridHeight
+      )
+    ) {
       onUpdatePosition(selectedItem, gridX, gridY);
       setSelectedItem(null);
-      toast.success('Item placed!');
+      toast.success("Item placed!");
     } else {
-      toast.error('Cannot place item here');
+      toast.error("Cannot place item here");
     }
   };
 
@@ -179,21 +244,21 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
     setSelectedItem(null);
     setDraggingItem(null);
     setDragPreview(null);
-    
+
     if (!isEditMode) {
-      toast.info('Edit mode enabled. Drag items or tap to select and place.');
+      toast.info("Edit mode enabled. Drag items or tap to select and place.");
     } else {
-      toast.success('Edit mode disabled');
+      toast.success("Edit mode disabled");
     }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = "move";
 
     if (draggingItem === null || !containerRef.current) return;
 
-    const item = items.find(i => i.id === draggingItem);
+    const item = items.find((i) => i.id === draggingItem);
     if (!item) return;
 
     const rect = containerRef.current.getBoundingClientRect();
@@ -218,7 +283,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
     e.preventDefault();
     if (draggingItem === null || !containerRef.current) return;
 
-    const item = items.find(i => i.id === draggingItem);
+    const item = items.find((i) => i.id === draggingItem);
     if (!item) return;
 
     const rect = containerRef.current.getBoundingClientRect();
@@ -232,7 +297,15 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
     const gridY = Math.floor(y / cellHeight);
 
     // Validate position
-    if (isValidPosition(draggingItem, gridX, gridY, item.gridWidth, item.gridHeight)) {
+    if (
+      isValidPosition(
+        draggingItem,
+        gridX,
+        gridY,
+        item.gridWidth,
+        item.gridHeight
+      )
+    ) {
       onUpdatePosition(draggingItem, gridX, gridY);
     }
 
@@ -240,14 +313,17 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
   };
 
   // Generate default positions for items that don't have positions yet
-  const getItemPosition = (item: ShopItem, index: number): { gridX: number; gridY: number } => {
+  const getItemPosition = (
+    item: ShopItem,
+    index: number
+  ): { gridX: number; gridY: number } => {
     if (item.gridX !== undefined && item.gridY !== undefined) {
       return { gridX: item.gridX, gridY: item.gridY };
     }
 
     // Default positions based on category and index
-    const categoryItems = items.filter(i => i.category === item.category);
-    const itemIndex = categoryItems.findIndex(i => i.id === item.id);
+    const categoryItems = items.filter((i) => i.category === item.category);
+    const itemIndex = categoryItems.findIndex((i) => i.id === item.id);
 
     // Arrange items in rows, trying to fit them nicely
     const row = Math.floor(itemIndex / 3);
@@ -267,20 +343,22 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
           <div>
             <h1 className="text-white">My Virtual Home</h1>
             <p className="text-purple-100 opacity-90">
-              {isEditMode ? 'Arrange your furniture!' : 'Enjoy your cozy space!'}
+              {isEditMode
+                ? "Arrange your furniture!"
+                : "Enjoy your cozy space!"}
             </p>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 md:px-4 py-2 flex items-center gap-2">
-              <Star className="fill-yellow-300 text-yellow-300" size={20} md:size={24} />
+              <Star className="fill-yellow-300 text-yellow-300" size={20} />
               <span className="text-white">{stars}</span>
             </div>
             <Button
               onClick={toggleEditMode}
               className={`${
-                isEditMode 
-                  ? 'bg-green-500 hover:bg-green-600 border-green-400' 
-                  : 'bg-white/20 hover:bg-white/30 border-white/40'
+                isEditMode
+                  ? "bg-green-500 hover:bg-green-600 border-green-400"
+                  : "bg-white/20 hover:bg-white/30 border-white/40"
               } backdrop-blur-sm border-2 text-white hidden sm:flex`}
             >
               {isEditMode ? (
@@ -299,9 +377,9 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
               onClick={toggleEditMode}
               size="icon"
               className={`${
-                isEditMode 
-                  ? 'bg-green-500 hover:bg-green-600 border-green-400' 
-                  : 'bg-white/20 hover:bg-white/30 border-white/40'
+                isEditMode
+                  ? "bg-green-500 hover:bg-green-600 border-green-400"
+                  : "bg-white/20 hover:bg-white/30 border-white/40"
               } backdrop-blur-sm border-2 text-white sm:hidden`}
             >
               {isEditMode ? <Check size={20} /> : <Edit3 size={20} />}
@@ -345,10 +423,10 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
             </div>
 
             {/* House Interior */}
-            <div 
+            <div
               ref={containerRef}
               className={`flex-1 bg-gradient-to-b ${backgroundGradient} mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden ${
-                isEditMode ? 'cursor-crosshair' : ''
+                isEditMode ? "cursor-crosshair" : ""
               }`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -356,14 +434,14 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
             >
               {/* Floor */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30 pointer-events-none"></div>
-              
+
               {/* Wood Floor Pattern */}
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
               {/* Grid Overlay */}
               {isEditMode && showGrid && (
                 <div className="absolute inset-0 pointer-events-none z-5">
-                  <div 
+                  <div
                     className="h-full w-full"
                     style={{
                       backgroundImage: `
@@ -391,14 +469,18 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                       dragPreview.gridY,
                       dragPreview.width,
                       dragPreview.height
-                    ) ? '#22c55e' : '#ef4444',
+                    )
+                      ? "#22c55e"
+                      : "#ef4444",
                     backgroundColor: isValidPosition(
                       draggingItem!,
                       dragPreview.gridX,
                       dragPreview.gridY,
                       dragPreview.width,
                       dragPreview.height
-                    ) ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                    )
+                      ? "rgba(34, 197, 94, 0.2)"
+                      : "rgba(239, 68, 68, 0.2)",
                   }}
                 />
               )}
@@ -426,7 +508,7 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                 const position = getItemPosition(item, index);
                 const scaleFactor = Math.max(item.gridWidth, item.gridHeight);
                 const isSelected = selectedItem === item.id;
-                
+
                 return (
                   <div
                     key={item.id}
@@ -438,10 +520,16 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                       handleItemClick(item.id);
                     }}
                     className={`absolute transition-all z-10 flex items-center justify-center ${
-                      draggingItem === item.id ? 'opacity-50 scale-90' : ''
-                    } ${isSelected ? 'scale-110 z-50 animate-pulse' : ''} ${
-                      isEditMode ? 'cursor-pointer hover:scale-105 hover:z-40' : 'pointer-events-none'
-                    } ${!isEditMode && item.category === 'pets' ? 'animate-bounce-slow' : ''}`}
+                      draggingItem === item.id ? "opacity-50 scale-90" : ""
+                    } ${isSelected ? "scale-110 z-50 animate-pulse" : ""} ${
+                      isEditMode
+                        ? "cursor-pointer hover:scale-105 hover:z-40"
+                        : "pointer-events-none"
+                    } ${
+                      !isEditMode && item.category === "pets"
+                        ? "animate-bounce-slow"
+                        : ""
+                    }`}
                     style={{
                       left: `${(position.gridX / GRID_COLS) * 100}%`,
                       top: `${(position.gridY / GRID_ROWS) * 100}%`,
@@ -449,11 +537,15 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                       height: `${(item.gridHeight / GRID_ROWS) * 100}%`,
                     }}
                   >
-                    <div 
+                    <div
                       className={`select-none flex items-center justify-center w-full h-full rounded-xl ${
-                        isSelected ? 'bg-blue-500/30 border-4 border-blue-500 border-dashed' : ''
-                      } ${isEditMode && !isSelected ? 'hover:bg-white/20' : ''}`}
-                      style={{ 
+                        isSelected
+                          ? "bg-blue-500/30 border-4 border-blue-500 border-dashed"
+                          : ""
+                      } ${
+                        isEditMode && !isSelected ? "hover:bg-white/20" : ""
+                      }`}
+                      style={{
                         fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
                       }}
                     >
@@ -469,16 +561,16 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
               })}
 
               {/* Characters Walking Around */}
-              {characters.map(char => {
+              {characters.map((char) => {
                 const getBadgeColor = (color: string) => {
                   const colors: Record<string, string> = {
-                    blue: 'bg-blue-500',
-                    pink: 'bg-pink-500',
-                    green: 'bg-green-500',
-                    purple: 'bg-purple-500',
-                    orange: 'bg-orange-500',
+                    blue: "bg-blue-500",
+                    pink: "bg-pink-500",
+                    green: "bg-green-500",
+                    purple: "bg-purple-500",
+                    orange: "bg-orange-500",
                   };
-                  return colors[color] || 'bg-purple-500';
+                  return colors[color] || "bg-purple-500";
                 };
 
                 return (
@@ -491,16 +583,29 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                     }}
                   >
                     <div className="relative">
-                      <div className={`animate-bounce-slow ${char.isCurrentUser ? 'scale-110' : ''}`}>
+                      <div
+                        className={`animate-bounce-slow ${
+                          char.isCurrentUser ? "scale-110" : ""
+                        }`}
+                      >
                         {char.avatarConfig ? (
-                          <AvatarDisplay config={char.avatarConfig} size="compact" />
+                          <AvatarDisplay
+                            config={char.avatarConfig}
+                            size="compact"
+                          />
                         ) : (
                           <div className="text-4xl">{char.emoji}</div>
                         )}
                       </div>
-                      <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(char.color)} text-white px-2 py-0.5 rounded whitespace-nowrap ${
-                        char.isCurrentUser ? 'ring-2 ring-yellow-400 ring-offset-2' : ''
-                      }`}>
+                      <div
+                        className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(
+                          char.color
+                        )} text-white px-2 py-0.5 rounded whitespace-nowrap ${
+                          char.isCurrentUser
+                            ? "ring-2 ring-yellow-400 ring-offset-2"
+                            : ""
+                        }`}
+                      >
                         {char.name}
                       </div>
                     </div>
@@ -514,7 +619,9 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
                   <div className="text-center bg-white/80 backdrop-blur-sm p-8 rounded-2xl">
                     <div className="text-6xl mb-4">🏠</div>
                     <p className="text-muted-foreground">Your home is empty!</p>
-                    <p className="text-muted-foreground">Complete tasks and visit the shop to decorate.</p>
+                    <p className="text-muted-foreground">
+                      Complete tasks and visit the shop to decorate.
+                    </p>
                   </div>
                 </div>
               )}
@@ -529,7 +636,9 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
         {isEditMode && items.length > 0 && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
             <Badge className="bg-blue-500 text-white px-4 py-2 text-sm shadow-lg">
-              <span className="hidden sm:inline">💡 Drag items or tap to select, then tap where to place</span>
+              <span className="hidden sm:inline">
+                💡 Drag items or tap to select, then tap where to place
+              </span>
               <span className="sm:hidden">💡 Tap item, then tap location</span>
             </Badge>
           </div>
@@ -544,14 +653,15 @@ export function HomeScreen({ stars, items, onUpdatePosition, avatarConfig, momAv
           </div>
         )}
 
-        {/* Stats Badge */}
+        {/* Stats Badge 
         {!isEditMode && items.length > 0 && (
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
             <Badge className="bg-purple-500 text-white hover:bg-purple-600 px-4 py-2">
-              🎉 {items.length} item{items.length !== 1 ? 's' : ''} in your home!
+              🎉 {items.length} item{items.length !== 1 ? "s" : ""} in your
+              home!
             </Badge>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
