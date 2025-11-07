@@ -338,38 +338,39 @@ export function HomeScreen({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-6 text-white flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-white">My Virtual Home</h1>
-            <p className="text-purple-100 opacity-90">
+      <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 md:p-6 text-white flex-shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-shrink">
+            <h1 className="text-white text-lg md:text-2xl lg:text-3xl truncate">My Virtual Home</h1>
+            <p className="text-purple-100 opacity-90 text-xs md:text-sm truncate">
               {isEditMode
                 ? "Arrange your furniture!"
                 : "Enjoy your cozy space!"}
             </p>
           </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 md:px-4 py-2 flex items-center gap-2">
-              <Star className="fill-yellow-300 text-yellow-300" size={20} />
-              <span className="text-white">{stars}</span>
+          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg md:rounded-xl px-2 md:px-4 py-1.5 md:py-2 flex items-center gap-1 md:gap-2">
+              <Star className="fill-yellow-300 text-yellow-300" size={16} />
+              <span className="text-white text-sm md:text-base">{stars}</span>
             </div>
             <Button
               onClick={toggleEditMode}
+              size="sm"
               className={`${
                 isEditMode
                   ? "bg-green-500 hover:bg-green-600 border-green-400"
                   : "bg-white/20 hover:bg-white/30 border-white/40"
-              } backdrop-blur-sm border-2 text-white hidden sm:flex`}
+              } backdrop-blur-sm border-2 text-white hidden md:flex h-8 text-xs`}
             >
               {isEditMode ? (
                 <>
-                  <Check size={20} className="mr-2" />
+                  <Check size={16} className="mr-1" />
                   Done
                 </>
               ) : (
                 <>
-                  <Edit3 size={20} className="mr-2" />
-                  Edit Home
+                  <Edit3 size={16} className="mr-1" />
+                  Edit
                 </>
               )}
             </Button>
@@ -380,32 +381,33 @@ export function HomeScreen({
                 isEditMode
                   ? "bg-green-500 hover:bg-green-600 border-green-400"
                   : "bg-white/20 hover:bg-white/30 border-white/40"
-              } backdrop-blur-sm border-2 text-white sm:hidden`}
+              } backdrop-blur-sm border-2 text-white md:hidden h-8 w-8`}
             >
-              {isEditMode ? <Check size={20} /> : <Edit3 size={20} />}
+              {isEditMode ? <Check size={16} /> : <Edit3 size={16} />}
             </Button>
             {isEditMode && (
               <Button
                 onClick={() => setShowGrid(!showGrid)}
                 size="icon"
-                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white"
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white h-8 w-8"
               >
-                <Grid3x3 size={20} />
+                <Grid3x3 size={16} />
               </Button>
             )}
             <Button
               onClick={onOpenShop}
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white hidden sm:flex"
+              size="sm"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white hidden md:flex h-8 text-xs"
             >
-              <ShoppingBag size={20} className="mr-2" />
+              <ShoppingBag size={16} className="mr-1" />
               Shop
             </Button>
             <Button
               onClick={onOpenShop}
               size="icon"
-              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white sm:hidden"
+              className="bg-white/20 hover:bg-white/30 backdrop-blur-sm border-2 border-white/40 text-white md:hidden h-8 w-8"
             >
-              <ShoppingBag size={20} />
+              <ShoppingBag size={16} />
             </Button>
           </div>
         </div>

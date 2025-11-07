@@ -3,6 +3,9 @@ import { Star, UserCircle } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
+
+const GRID_COLS = 20;
+const GRID_ROWS = 15;
 import {
   Select,
   SelectContent,
@@ -109,16 +112,17 @@ export function SocialScreen({
   return (
     <div className="h-full flex flex-col">
       {/* Header - Compact */}
-      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-2 text-white flex-shrink-0">
-        <div className="flex items-center gap-2 mb-2">
-          <p className="text-blue-100 opacity-90 text-sm flex-shrink-0">
-            Visit friends:
+      <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-2 md:px-3 py-2 text-white flex-shrink-0">
+        {/* Friend Selector */}
+        <div className="flex items-center gap-1 md:gap-2 mb-2">
+          <p className="text-blue-100 opacity-90 text-xs md:text-sm flex-shrink-0">
+            Visit:
           </p>
           <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
             <SelectTrigger
-              className={`w-[140px] h-8 ${getBadgeColor(
+              className={`w-[100px] md:w-[140px] h-7 md:h-8 ${getBadgeColor(
                 selectedFriend.color
-              )} text-white border-2 border-white/40 hover:bg-white/10 text-sm`}
+              )} text-white border-2 border-white/40 hover:bg-white/10 text-xs md:text-sm`}
             >
               <SelectValue />
             </SelectTrigger>
@@ -151,35 +155,35 @@ export function SocialScreen({
           </Select>
         </div>
 
-        {/* Edit Avatar Buttons - Compact */}
-        <div className="flex items-center gap-1.5">
+        {/* Edit Avatar Buttons - Responsive Layout */}
+        <div className="flex flex-col sm:flex-row items-stretch gap-1 md:gap-1.5">
           <Button
             onClick={() => handleOpenEditor("user")}
-            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <UserCircle size={14} className="mr-1" />
-            Edit My Avatar
+            <UserCircle size={12} className="mr-0.5 md:mr-1 flex-shrink-0" />
+            <span className="truncate">My Avatar</span>
           </Button>
           <Button
             onClick={() => handleOpenEditor("mom")}
-            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <div className="w-4 h-4 mr-1">
+            <div className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1 flex-shrink-0">
               <AvatarDisplay config={momAvatarConfig} size="small" />
             </div>
-            Edit Mom's Avatar
+            <span className="truncate">Mom</span>
           </Button>
           <Button
             onClick={() => handleOpenEditor("dad")}
-            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
+            className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <div className="w-4 h-4 mr-1">
+            <div className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1 flex-shrink-0">
               <AvatarDisplay config={dadAvatarConfig} size="small" />
             </div>
-            Edit Dad's Avatar
+            <span className="truncate">Dad</span>
           </Button>
         </div>
       </div>
@@ -223,24 +227,33 @@ export function SocialScreen({
                 </div>
               </div>
 
-              {/* Items */}
-              {selectedFriend.items.map((item) => (
-                <div
-                  key={item.id}
-                  className={`absolute z-10 ${
-                    item.category === "pets" ? "animate-bounce-slow" : ""
-                  }`}
-                  style={{
-                    left: `${item.x}%`,
-                    top: `${item.y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                >
-                  <div className="text-5xl select-none pointer-events-none">
-                    {item.emoji}
+              {/* Items - Grid Based */}
+              {selectedFriend.items.map((item) => {
+                const scaleFactor = Math.max(item.gridWidth, item.gridHeight);
+                return (
+                  <div
+                    key={item.id}
+                    className={`absolute z-10 flex items-center justify-center pointer-events-none ${
+                      item.category === "pets" ? "animate-bounce-slow" : ""
+                    }`}
+                    style={{
+                      left: `${(item.gridX / GRID_COLS) * 100}%`,
+                      top: `${(item.gridY / GRID_ROWS) * 100}%`,
+                      width: `${(item.gridWidth / GRID_COLS) * 100}%`,
+                      height: `${(item.gridHeight / GRID_ROWS) * 100}%`,
+                    }}
+                  >
+                    <div
+                      className="select-none flex items-center justify-center w-full h-full"
+                      style={{
+                        fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
+                      }}
+                    >
+                      {item.emoji}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {/* Friend Character */}
               <div
