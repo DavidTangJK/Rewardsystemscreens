@@ -120,7 +120,7 @@ export function SocialScreen({
           </p>
           <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
             <SelectTrigger
-              className={`w-[100px] md:w-[140px] h-7 md:h-8 ${getBadgeColor(
+              className={`w-[140px] h-8 ${getBadgeColor(
                 selectedFriend.color
               )} text-white border-2 border-white/40 hover:bg-white/10 text-xs md:text-sm`}
             >
@@ -162,28 +162,30 @@ export function SocialScreen({
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <UserCircle size={12} className="mr-0.5 md:mr-1 flex-shrink-0" />
-            <span className="truncate">My Avatar</span>
+            <div className="w-4 h-4 mr-1">
+              <AvatarDisplay config={avatarConfig} size="small" />
+            </div>
+            <span className="truncate">Edit My Avatar</span>
           </Button>
           <Button
             onClick={() => handleOpenEditor("mom")}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <div className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1 flex-shrink-0">
+            <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={momAvatarConfig} size="small" />
             </div>
-            <span className="truncate">Mom</span>
+            <span className="truncate">Edit Mom's Avatar</span>
           </Button>
           <Button
             onClick={() => handleOpenEditor("dad")}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 sm:flex-1 h-7 md:h-8 text-[10px] md:text-xs px-1 md:px-2"
             size="sm"
           >
-            <div className="w-3 h-3 md:w-4 md:h-4 mr-0.5 md:mr-1 flex-shrink-0">
+            <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={dadAvatarConfig} size="small" />
             </div>
-            <span className="truncate">Dad</span>
+            <span className="truncate">Edit Dad's Avatar</span>
           </Button>
         </div>
       </div>
