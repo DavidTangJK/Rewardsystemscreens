@@ -16,6 +16,7 @@ type Screen = 'home' | 'shop' | 'reflect' | 'social';
 export default function App() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [childId, setChildId] = useState<string>('');
   const [userName, setUserName] = useState('');
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [stars, setStars] = useState(100);
@@ -24,24 +25,105 @@ export default function App() {
   const [dadAvatarConfig, setDadAvatarConfig] = useState<AvatarConfig>(dadAvatar);
   const [shopItems, setShopItems] = useState<ShopItem[]>(initialShopItems);
 
-  // Check if user has completed onboarding on mount
+  // Check URL query parameters and load child data
   useEffect(() => {
-    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
-    const storedUserName = localStorage.getItem('userName');
-    const storedAvatarConfig = localStorage.getItem('avatarConfig');
-    const storedMomAvatarConfig = localStorage.getItem('momAvatarConfig');
-    const storedDadAvatarConfig = localStorage.getItem('dadAvatarConfig');
+    const params = new URLSearchParams(window.location.search);
+    const urlChildId = params.get('child_id');
+    const urlChildName = params.get('child_name');
 
-    if (onboardingCompleted === 'true') {
-      setHasCompletedOnboarding(true);
-      if (storedUserName) setUserName(storedUserName);
-      if (storedAvatarConfig) setAvatarConfig(JSON.parse(storedAvatarConfig));
-      if (storedMomAvatarConfig) setMomAvatarConfig(JSON.parse(storedMomAvatarConfig));
-      if (storedDadAvatarConfig) setDadAvatarConfig(JSON.parse(storedDadAvatarConfig));
+    // Determine which child to load
+    let loadChildId = urlChildId || localStorage.getItem('currentChildId') || 'default';
+    
+    // If URL has child_id, set it as the current child
+    if (urlChildId) {
+      localStorage.setItem('currentChildId', urlChildId);
+      setChildId(urlChildId);
+    } else {
+      setChildId(loadChildId);
+    }
+
+    // Try to load child data from localStorage
+    const childDataKey = `child_${loadChildId}`;
+    const storedChildData = localStorage.getItem(childDataKey);
+
+    if (storedChildData) {
+      // Child exists, load their data
+      try {
+        const childData = JSON.parse(storedChildData);
+        setHasCompletedOnboarding(childData.onboardingCompleted || false);
+        setUserName(childData.userName || '');
+        setAvatarConfig(childData.avatarConfig || defaultAvatarConfig);
+        setMomAvatarConfig(childData.momAvatarConfig || momAvatar);
+        setDadAvatarConfig(childData.dadAvatarConfig || dadAvatar);
+        setStars(childData.stars || 100);
+        setShopItems(childData.shopItems || initialShopItems);
+      } catch (error) {
+        console.error('Error loading child data:', error);
+      }
+    } else if (urlChildId && urlChildName) {
+      // New child from URL parameters - start onboarding with prefilled name
+      setUserName(urlChildName);
+      setHasCompletedOnboarding(false);
+    } else {
+      // Check legacy localStorage for backwards compatibility
+      const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+      const storedUserName = localStorage.getItem('userName');
+      const storedAvatarConfig = localStorage.getItem('avatarConfig');
+      const storedMomAvatarConfig = localStorage.getItem('momAvatarConfig');
+      const storedDadAvatarConfig = localStorage.getItem('dadAvatarConfig');
+
+      if (onboardingCompleted === 'true') {
+        // Migrate legacy data to new child-based system
+        const legacyData = {
+          onboardingCompleted: true,
+          userName: storedUserName || '',
+          avatarConfig: storedAvatarConfig ? JSON.parse(storedAvatarConfig) : defaultAvatarConfig,
+          momAvatarConfig: storedMomAvatarConfig ? JSON.parse(storedMomAvatarConfig) : momAvatar,
+          dadAvatarConfig: storedDadAvatarConfig ? JSON.parse(storedDadAvatarConfig) : dadAvatar,
+          stars: 100,
+          shopItems: initialShopItems,
+        };
+        
+        localStorage.setItem(`child_${loadChildId}`, JSON.stringify(legacyData));
+        
+        setHasCompletedOnboarding(true);
+        setUserName(legacyData.userName);
+        setAvatarConfig(legacyData.avatarConfig);
+        setMomAvatarConfig(legacyData.momAvatarConfig);
+        setDadAvatarConfig(legacyData.dadAvatarConfig);
+
+        // Clean up legacy localStorage keys
+        localStorage.removeItem('onboardingCompleted');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('avatarConfig');
+        localStorage.removeItem('momAvatarConfig');
+        localStorage.removeItem('dadAvatarConfig');
+      }
     }
     
     setIsLoading(false);
   }, []);
+
+  const saveChildData = () => {
+    const childDataKey = `child_${childId}`;
+    const childData = {
+      onboardingCompleted: hasCompletedOnboarding,
+      userName,
+      avatarConfig,
+      momAvatarConfig,
+      dadAvatarConfig,
+      stars,
+      shopItems,
+    };
+    localStorage.setItem(childDataKey, JSON.stringify(childData));
+  };
+
+  // Save child data whenever relevant state changes
+  useEffect(() => {
+    if (childId && hasCompletedOnboarding) {
+      saveChildData();
+    }
+  }, [userName, avatarConfig, momAvatarConfig, dadAvatarConfig, stars, shopItems, hasCompletedOnboarding]);
 
   const handleOnboardingComplete = (data: {
     userName: string;
@@ -55,12 +137,18 @@ export default function App() {
     setDadAvatarConfig(data.dadAvatarConfig);
     setHasCompletedOnboarding(true);
 
-    // Save to localStorage
-    localStorage.setItem('onboardingCompleted', 'true');
-    localStorage.setItem('userName', data.userName);
-    localStorage.setItem('avatarConfig', JSON.stringify(data.avatarConfig));
-    localStorage.setItem('momAvatarConfig', JSON.stringify(data.momAvatarConfig));
-    localStorage.setItem('dadAvatarConfig', JSON.stringify(data.dadAvatarConfig));
+    // Save to child-specific localStorage
+    const childDataKey = `child_${childId}`;
+    const childData = {
+      onboardingCompleted: true,
+      userName: data.userName,
+      avatarConfig: data.avatarConfig,
+      momAvatarConfig: data.momAvatarConfig,
+      dadAvatarConfig: data.dadAvatarConfig,
+      stars: 100,
+      shopItems: initialShopItems,
+    };
+    localStorage.setItem(childDataKey, JSON.stringify(childData));
 
     // Show welcome toast
     toast.success(`Welcome, ${data.userName}! 🎉`, {
@@ -79,7 +167,6 @@ export default function App() {
 
   const handleUpdateAvatar = (newAvatarConfig: AvatarConfig) => {
     setAvatarConfig(newAvatarConfig);
-    localStorage.setItem('avatarConfig', JSON.stringify(newAvatarConfig));
     
     toast.success('Avatar updated!', {
       description: 'Your avatar has been saved.',
@@ -89,7 +176,6 @@ export default function App() {
 
   const handleUpdateMomAvatar = (newAvatarConfig: AvatarConfig) => {
     setMomAvatarConfig(newAvatarConfig);
-    localStorage.setItem('momAvatarConfig', JSON.stringify(newAvatarConfig));
     
     toast.success('Mom\'s avatar updated!', {
       description: 'Mom\'s avatar has been saved.',
@@ -99,7 +185,6 @@ export default function App() {
 
   const handleUpdateDadAvatar = (newAvatarConfig: AvatarConfig) => {
     setDadAvatarConfig(newAvatarConfig);
-    localStorage.setItem('dadAvatarConfig', JSON.stringify(newAvatarConfig));
     
     toast.success('Dad\'s avatar updated!', {
       description: 'Dad\'s avatar has been saved.',
@@ -219,7 +304,10 @@ export default function App() {
     return (
       <>
         <Toaster position="top-center" richColors />
-        <OnboardingFlow onComplete={handleOnboardingComplete} />
+        <OnboardingFlow 
+          onComplete={handleOnboardingComplete}
+          initialUserName={userName}
+        />
       </>
     );
   }

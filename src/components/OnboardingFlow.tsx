@@ -15,11 +15,12 @@ interface OnboardingFlowProps {
     momAvatarConfig: AvatarConfig;
     dadAvatarConfig: AvatarConfig;
   }) => void;
+  initialUserName?: string;
 }
 
-export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+export function OnboardingFlow({ onComplete, initialUserName = '' }: OnboardingFlowProps) {
   const [step, setStep] = useState(1);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState(initialUserName);
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>(defaultAvatarConfig);
   const [momAvatarConfig, setMomAvatarConfig] = useState<AvatarConfig>({
     skinTone: '#f0c8a0',
