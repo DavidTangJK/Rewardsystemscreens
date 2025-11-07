@@ -1,15 +1,14 @@
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { avatarOptions, type AvatarConfig } from "../data/avatar-options";
-import { AvatarDisplay } from "./AvatarDisplay";
-import { Button } from "./ui/button";
-import { Shuffle } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { avatarOptions, type AvatarConfig } from '../data/avatar-options';
+import { AvatarDisplay } from './AvatarDisplay';
+import { Button } from './ui/button';
+import { Shuffle } from 'lucide-react';
+import { ScrollArea } from './ui/scroll-area';
 
 // Helper to extract IDs from avatar options
-const extractIds = (
-  options: Array<{ id: string; [key: string]: any }>
-): string[] => options.map((option) => option.id);
+const extractIds = (options: Array<{ id: string; [key: string]: any }>): string[] => 
+  options.map(option => option.id);
 
 const simpleOptions = {
   baseColor: extractIds(avatarOptions.skinColors),
@@ -36,10 +35,7 @@ interface SimpleAvatarCustomizerProps {
   onAvatarChange: (config: AvatarConfig) => void;
 }
 
-export function SimpleAvatarCustomizer({
-  avatarConfig,
-  onAvatarChange,
-}: SimpleAvatarCustomizerProps) {
+export function SimpleAvatarCustomizer({ avatarConfig, onAvatarChange }: SimpleAvatarCustomizerProps) {
   const updateConfig = (key: keyof AvatarConfig, value: string[]) => {
     onAvatarChange({
       ...avatarConfig,
@@ -90,8 +86,8 @@ export function SimpleAvatarCustomizer({
             onClick={() => updateConfig(key, [color])}
             className={`w-full aspect-square rounded-lg transition-all hover:scale-110 ${
               avatarConfig[key]?.[0] === color
-                ? "ring-2 ring-offset-2 ring-blue-500 scale-105"
-                : ""
+                ? 'ring-2 ring-offset-2 ring-blue-500 scale-105'
+                : ''
             }`}
             style={{ backgroundColor: `#${color}` }}
             title={color}
@@ -115,11 +111,11 @@ export function SimpleAvatarCustomizer({
             onClick={() => updateConfig(key, [option])}
             className={`px-3 py-2 rounded-lg border-2 text-sm transition-all hover:scale-105 ${
               avatarConfig[key]?.[0] === option
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-blue-300"
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:border-blue-300'
             }`}
           >
-            {option || "None"}
+            {option || 'None'}
           </button>
         ))}
       </div>
@@ -131,7 +127,7 @@ export function SimpleAvatarCustomizer({
       {/* Avatar Preview */}
       <div className="flex flex-col items-center space-y-4">
         <div className="w-32 h-32 md:w-40 md:h-40">
-          <AvatarDisplay config={avatarConfig} size="large" />
+          <AvatarDisplay config={avatarConfig} size="lg" />
         </div>
         <Button onClick={randomize} variant="outline" size="sm">
           <Shuffle className="mr-2" size={16} />
@@ -151,61 +147,29 @@ export function SimpleAvatarCustomizer({
         <ScrollArea className="h-[300px] md:h-[400px] mt-4">
           <div className="space-y-6 pr-4">
             <TabsContent value="face" className="space-y-4 mt-0">
-              {renderOptionPicker("Eyes", "eyes", simpleOptions.eyes)}
-              {renderOptionPicker(
-                "Eyebrows",
-                "eyebrows",
-                simpleOptions.eyebrows
-              )}
-              {renderOptionPicker("Nose", "nose", simpleOptions.nose)}
-              {renderOptionPicker("Mouth", "mouth", simpleOptions.mouth)}
+              {renderOptionPicker('Eyes', 'eyes', simpleOptions.eyes)}
+              {renderOptionPicker('Eyebrows', 'eyebrows', simpleOptions.eyebrows)}
+              {renderOptionPicker('Nose', 'nose', simpleOptions.nose)}
+              {renderOptionPicker('Mouth', 'mouth', simpleOptions.mouth)}
             </TabsContent>
 
             <TabsContent value="hair" className="space-y-4 mt-0">
-              {renderOptionPicker("Hair Style", "hair", simpleOptions.hair)}
-              {renderColorPicker(
-                "Hair Color",
-                "hairColor",
-                simpleOptions.hairColor
-              )}
-              {renderOptionPicker(
-                "Facial Hair",
-                "facialHair",
-                simpleOptions.facialHair
-              )}
+              {renderOptionPicker('Hair Style', 'hair', simpleOptions.hair)}
+              {renderColorPicker('Hair Color', 'hairColor', simpleOptions.hairColor)}
+              {renderOptionPicker('Facial Hair', 'facialHair', simpleOptions.facialHair)}
             </TabsContent>
 
             <TabsContent value="style" className="space-y-4 mt-0">
-              {renderOptionPicker("Glasses", "glasses", simpleOptions.glasses)}
-              {renderOptionPicker(
-                "Earrings",
-                "earrings",
-                simpleOptions.earrings
-              )}
-              {renderOptionPicker("Shirt", "shirt", simpleOptions.shirt)}
+              {renderOptionPicker('Glasses', 'glasses', simpleOptions.glasses)}
+              {renderOptionPicker('Earrings', 'earrings', simpleOptions.earrings)}
+              {renderOptionPicker('Shirt', 'shirt', simpleOptions.shirt)}
             </TabsContent>
 
             <TabsContent value="colors" className="space-y-4 mt-0">
-              {renderColorPicker(
-                "Skin Tone",
-                "baseColor",
-                simpleOptions.baseColor
-              )}
-              {renderColorPicker(
-                "Background",
-                "backgroundColor",
-                simpleOptions.backgroundColor
-              )}
-              {renderColorPicker(
-                "Shirt Color",
-                "shirtColor",
-                simpleOptions.shirtColor
-              )}
-              {renderColorPicker(
-                "Glasses Color",
-                "glassesColor",
-                simpleOptions.glassesColor
-              )}
+              {renderColorPicker('Skin Tone', 'baseColor', simpleOptions.baseColor)}
+              {renderColorPicker('Background', 'backgroundColor', simpleOptions.backgroundColor)}
+              {renderColorPicker('Shirt Color', 'shirtColor', simpleOptions.shirtColor)}
+              {renderColorPicker('Glasses Color', 'glassesColor', simpleOptions.glassesColor)}
             </TabsContent>
           </div>
         </ScrollArea>

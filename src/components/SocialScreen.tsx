@@ -1,19 +1,13 @@
-import { useState } from "react";
-import { Star, UserCircle } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Card } from "./ui/card";
-import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { sampleFriends, Friend } from "../data/friends-data";
-import { AvatarDisplay } from "./AvatarDisplay";
-import { AvatarCustomizer } from "./AvatarCustomizer";
-import type { AvatarConfig } from "../data/avatar-options";
+import { useState } from 'react';
+import { Star, UserCircle } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { sampleFriends, Friend } from '../data/friends-data';
+import { AvatarDisplay } from './AvatarDisplay';
+import { AvatarCustomizer } from './AvatarCustomizer';
+import type { AvatarConfig } from '../data/avatar-options';
 
 interface SocialScreenProps {
   avatarConfig: AvatarConfig;
@@ -24,32 +18,30 @@ interface SocialScreenProps {
   onUpdateDadAvatar: (avatarConfig: AvatarConfig) => void;
 }
 
-type EditingAvatar = "user" | "mom" | "dad" | null;
+type EditingAvatar = 'user' | 'mom' | 'dad' | null;
 
-export function SocialScreen({
-  avatarConfig,
+export function SocialScreen({ 
+  avatarConfig, 
   onUpdateAvatar,
   momAvatarConfig,
   onUpdateMomAvatar,
   dadAvatarConfig,
-  onUpdateDadAvatar,
+  onUpdateDadAvatar
 }: SocialScreenProps) {
-  const [selectedFriend, setSelectedFriend] = useState<Friend>(
-    sampleFriends[0]
-  );
+  const [selectedFriend, setSelectedFriend] = useState<Friend>(sampleFriends[0]);
   const [editingAvatar, setEditingAvatar] = useState<EditingAvatar>(null);
 
   const handleFriendChange = (friendId: string) => {
-    const friend = sampleFriends.find((f) => f.id === friendId);
+    const friend = sampleFriends.find(f => f.id === friendId);
     if (friend) {
       setSelectedFriend(friend);
     }
   };
 
   const handleSaveAvatar = (newAvatarConfig: AvatarConfig) => {
-    if (editingAvatar === "mom") {
+    if (editingAvatar === 'mom') {
       onUpdateMomAvatar(newAvatarConfig);
-    } else if (editingAvatar === "dad") {
+    } else if (editingAvatar === 'dad') {
       onUpdateDadAvatar(newAvatarConfig);
     } else {
       onUpdateAvatar(newAvatarConfig);
@@ -58,9 +50,9 @@ export function SocialScreen({
   };
 
   const getCurrentAvatarConfig = () => {
-    if (editingAvatar === "mom") {
+    if (editingAvatar === 'mom') {
       return momAvatarConfig;
-    } else if (editingAvatar === "dad") {
+    } else if (editingAvatar === 'dad') {
       return dadAvatarConfig;
     } else {
       return avatarConfig;
@@ -68,9 +60,9 @@ export function SocialScreen({
   };
 
   const getAvatarName = () => {
-    if (editingAvatar === "mom") {
+    if (editingAvatar === 'mom') {
       return "Mom's Avatar";
-    } else if (editingAvatar === "dad") {
+    } else if (editingAvatar === 'dad') {
       return "Dad's Avatar";
     } else {
       return "My Character";
@@ -79,13 +71,13 @@ export function SocialScreen({
 
   const getBadgeColor = (color: string) => {
     const colors: Record<string, string> = {
-      blue: "bg-blue-500",
-      pink: "bg-pink-500",
-      green: "bg-green-500",
-      purple: "bg-purple-500",
-      orange: "bg-orange-500",
+      blue: 'bg-blue-500',
+      pink: 'bg-pink-500',
+      green: 'bg-green-500',
+      purple: 'bg-purple-500',
+      orange: 'bg-orange-500',
     };
-    return colors[color] || "bg-purple-500";
+    return colors[color] || 'bg-purple-500';
   };
 
   return (
@@ -93,37 +85,25 @@ export function SocialScreen({
       {/* Header - Compact */}
       <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-3 py-2 text-white flex-shrink-0">
         <div className="flex items-center gap-2 mb-2">
-          <p className="text-blue-100 opacity-90 text-sm flex-shrink-0">
-            Visit friends:
-          </p>
+          <p className="text-blue-100 opacity-90 text-sm flex-shrink-0">Visit friends:</p>
           <Select value={selectedFriend.id} onValueChange={handleFriendChange}>
-            <SelectTrigger
-              className={`w-[140px] h-8 ${getBadgeColor(
-                selectedFriend.color
-              )} text-white border-2 border-white/40 hover:bg-white/10 text-sm`}
-            >
+            <SelectTrigger className={`w-[140px] h-8 ${getBadgeColor(selectedFriend.color)} text-white border-2 border-white/40 hover:bg-white/10 text-sm`}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {sampleFriends.map((friend) => (
+              {sampleFriends.map(friend => (
                 <SelectItem key={friend.id} value={friend.id}>
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 flex items-center justify-center">
                       {friend.avatarConfig ? (
-                        <AvatarDisplay
-                          config={friend.avatarConfig}
-                          size="small"
-                        />
+                        <AvatarDisplay config={friend.avatarConfig} size="small" />
                       ) : (
                         <span className="text-lg">{friend.emoji}</span>
                       )}
                     </div>
                     <span>{friend.name}</span>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Star
-                        className="fill-yellow-400 text-yellow-400"
-                        size={12}
-                      />
+                      <Star className="fill-yellow-400 text-yellow-400" size={12} />
                       <span>{friend.stars}</span>
                     </div>
                   </div>
@@ -136,38 +116,38 @@ export function SocialScreen({
         {/* Edit Avatar Buttons - Compact */}
         <div className="flex items-center gap-1.5">
           <Button
-            onClick={() => setEditingAvatar("user")}
+            onClick={() => setEditingAvatar('user')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
             <UserCircle size={14} className="mr-1" />
-            Edit My Avatar
+            My Avatar
           </Button>
           <Button
-            onClick={() => setEditingAvatar("mom")}
+            onClick={() => setEditingAvatar('mom')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
             <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={momAvatarConfig} size="small" />
             </div>
-            Edit Mom's Avatar
+            Mom
           </Button>
           <Button
-            onClick={() => setEditingAvatar("dad")}
+            onClick={() => setEditingAvatar('dad')}
             className="bg-white/20 hover:bg-white/30 text-white border border-white/40 flex-1 h-8 text-xs px-2"
             size="sm"
           >
             <div className="w-4 h-4 mr-1">
               <AvatarDisplay config={dadAvatarConfig} size="small" />
             </div>
-            Edit Dad's Avatar
+            Dad
           </Button>
         </div>
       </div>
 
       {/* Friend's Home View - Takes up remaining space (at least 70% of screen) */}
-      <div className="h-[70vh] bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
+      <div className="flex-1 min-h-0 bg-gradient-to-b from-sky-300 to-sky-200 overflow-hidden relative">
         <div className="h-full max-w-6xl mx-auto relative">
           {/* House Structure */}
           <div className="flex flex-col h-full">
@@ -178,12 +158,12 @@ export function SocialScreen({
             </div>
 
             {/* House Interior */}
-            <div
+            <div 
               className={`flex-1 bg-gradient-to-b ${selectedFriend.background} mx-8 md:mx-16 relative border-8 border-amber-800 overflow-hidden`}
             >
               {/* Floor */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-white/30 pointer-events-none"></div>
-
+              
               {/* Wood Floor Pattern */}
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
@@ -209,18 +189,14 @@ export function SocialScreen({
               {selectedFriend.items.map((item) => (
                 <div
                   key={item.id}
-                  className={`absolute z-10 ${
-                    item.category === "pets" ? "animate-bounce-slow" : ""
-                  }`}
+                  className={`absolute z-10 ${item.category === 'pets' ? 'animate-bounce-slow' : ''}`}
                   style={{
                     left: `${item.x}%`,
                     top: `${item.y}%`,
-                    transform: "translate(-50%, -50%)",
+                    transform: 'translate(-50%, -50%)',
                   }}
                 >
-                  <div className="text-5xl select-none pointer-events-none">
-                    {item.emoji}
-                  </div>
+                  <div className="text-5xl select-none pointer-events-none">{item.emoji}</div>
                 </div>
               ))}
 
@@ -228,26 +204,19 @@ export function SocialScreen({
               <div
                 className="absolute z-20 pointer-events-none"
                 style={{
-                  left: "50%",
-                  top: "60%",
+                  left: '50%',
+                  top: '60%',
                 }}
               >
                 <div className="relative">
                   <div className="animate-bounce-slow">
                     {selectedFriend.avatarConfig ? (
-                      <AvatarDisplay
-                        config={selectedFriend.avatarConfig}
-                        size="compact"
-                      />
+                      <AvatarDisplay config={selectedFriend.avatarConfig} size="compact" />
                     ) : (
                       <div className="text-4xl">{selectedFriend.emoji}</div>
                     )}
                   </div>
-                  <div
-                    className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(
-                      selectedFriend.color
-                    )} text-white px-2 py-0.5 rounded whitespace-nowrap`}
-                  >
+                  <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 text-xs ${getBadgeColor(selectedFriend.color)} text-white px-2 py-0.5 rounded whitespace-nowrap`}>
                     {selectedFriend.name}
                   </div>
                 </div>
@@ -275,7 +244,9 @@ export function SocialScreen({
                 <span>{selectedFriend.stars} Stars</span>
               </div>
               <div className="w-px h-6 bg-gray-300"></div>
-              <div>{selectedFriend.items.length} items</div>
+              <div>
+                {selectedFriend.items.length} items
+              </div>
             </div>
           </Card>
         </div>
