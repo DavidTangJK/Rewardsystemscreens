@@ -199,6 +199,16 @@ export function SimpleAvatarCustomizer({
                 "glassesColor",
                 simpleOptions.glassesColor
               )}
+              {renderColorPicker(
+                "Eye Shadow",
+                "eyeShadowColor",
+                simpleOptions.eyeShadowColor
+              )}
+              {renderColorPicker(
+                "Earring Color",
+                "earringColor",
+                simpleOptions.earringColor
+              )}
             </TabsContent>
           </div>
         </ScrollArea>
