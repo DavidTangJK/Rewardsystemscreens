@@ -4,8 +4,8 @@ import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 
-const GRID_COLS = 16;
-const GRID_ROWS = 12;
+const GRID_COLS = 13;
+const GRID_ROWS = 10;
 import {
   Select,
   SelectContent,
