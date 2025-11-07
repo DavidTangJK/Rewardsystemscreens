@@ -32,7 +32,7 @@ export default function App() {
     name: string;
   } | null>(null);
 
-  // Check if user has completed onboarding on mount
+  // Check URL query parameters and load child data
   useEffect(() => {
     const onboardingCompleted = localStorage.getItem("onboardingCompleted");
     const storedUserName = localStorage.getItem("userName");
@@ -52,6 +52,35 @@ export default function App() {
 
     setIsLoading(false);
   }, []);
+
+  const saveChildData = () => {
+    const childDataKey = `child_${childId}`;
+    const childData = {
+      onboardingCompleted: hasCompletedOnboarding,
+      userName,
+      avatarConfig,
+      momAvatarConfig,
+      dadAvatarConfig,
+      stars,
+      shopItems,
+    };
+    localStorage.setItem(childDataKey, JSON.stringify(childData));
+  };
+
+  // Save child data whenever relevant state changes
+  useEffect(() => {
+    if (childId && hasCompletedOnboarding) {
+      saveChildData();
+    }
+  }, [
+    userName,
+    avatarConfig,
+    momAvatarConfig,
+    dadAvatarConfig,
+    stars,
+    shopItems,
+    hasCompletedOnboarding,
+  ]);
 
   const handleOnboardingComplete = (data: {
     userName: string;
@@ -250,7 +279,10 @@ export default function App() {
     return (
       <>
         <Toaster position="top-center" richColors />
-        <OnboardingFlow onComplete={handleOnboardingComplete} />
+        <OnboardingFlow
+          onComplete={handleOnboardingComplete}
+          initialUserName={userName}
+        />
       </>
     );
   }
