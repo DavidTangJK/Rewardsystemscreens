@@ -24,14 +24,8 @@ export interface FriendItem {
 
 import { friendAvatars } from './avatars';
 
-const GRID_COLS = 20;
-const GRID_ROWS = 15;
-
-// Helper to convert percentage to grid position
-const percentToGrid = (percent: number, isX: boolean): number => {
-  const gridSize = isX ? GRID_COLS : GRID_ROWS;
-  return Math.floor((percent / 100) * gridSize);
-};
+const GRID_COLS = 16;
+const GRID_ROWS = 12;
 
 export const sampleFriends: Friend[] = [
   {
@@ -43,14 +37,14 @@ export const sampleFriends: Friend[] = [
     background: 'from-pink-100 to-purple-200',
     avatarConfig: friendAvatars.friend1,
     items: [
-      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 2, gridY: 6, gridWidth: 3, gridHeight: 2 },
-      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 14, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 3, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 16, gridY: 5, gridWidth: 2, gridHeight: 3 },
-      { id: 4, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 3, gridY: 9, gridWidth: 1, gridHeight: 1 },
-      { id: 5, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 13, gridY: 10, gridWidth: 1, gridHeight: 1 },
-      { id: 6, name: 'Cute Cat', emoji: '🐱', category: 'pets', gridX: 8, gridY: 8, gridWidth: 2, gridHeight: 2 },
-      { id: 7, name: 'Board Games', emoji: '🎲', category: 'games', gridX: 5, gridY: 11, gridWidth: 2, gridHeight: 1 },
-      { id: 8, name: 'Art Supplies', emoji: '🎨', category: 'toys', gridX: 11, gridY: 12, gridWidth: 2, gridHeight: 1 },
+      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 4, gridWidth: 3, gridHeight: 2 },
+      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 11, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 3, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 13, gridY: 4, gridWidth: 2, gridHeight: 3 },
+      { id: 4, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 2, gridY: 7, gridWidth: 1, gridHeight: 1 },
+      { id: 5, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 10, gridY: 8, gridWidth: 1, gridHeight: 1 },
+      { id: 6, name: 'Cute Cat', emoji: '🐱', category: 'pets', gridX: 6, gridY: 6, gridWidth: 2, gridHeight: 2 },
+      { id: 7, name: 'Board Games', emoji: '🎲', category: 'games', gridX: 4, gridY: 9, gridWidth: 2, gridHeight: 1 },
+      { id: 8, name: 'Art Supplies', emoji: '🎨', category: 'toys', gridX: 8, gridY: 9, gridWidth: 2, gridHeight: 1 },
     ],
   },
   {
@@ -62,15 +56,15 @@ export const sampleFriends: Friend[] = [
     background: 'from-cyan-100 to-blue-200',
     avatarConfig: friendAvatars.friend2,
     items: [
-      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 6, gridWidth: 3, gridHeight: 2 },
-      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 1, gridY: 8, gridWidth: 2, gridHeight: 2 },
-      { id: 3, name: 'Bean Bag Chair', emoji: '🛋️', category: 'furniture', gridX: 16, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 4, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 16, gridY: 9, gridWidth: 1, gridHeight: 1 },
-      { id: 5, name: 'Happy Dog', emoji: '🐶', category: 'pets', gridX: 9, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 6, name: 'Gaming Console', emoji: '🎮', category: 'games', gridX: 4, gridY: 11, gridWidth: 2, gridHeight: 1 },
-      { id: 7, name: 'Soccer Ball', emoji: '⚽', category: 'toys', gridX: 7, gridY: 11, gridWidth: 1, gridHeight: 1 },
-      { id: 8, name: 'Basketball', emoji: '🏀', category: 'toys', gridX: 13, gridY: 11, gridWidth: 1, gridHeight: 1 },
-      { id: 9, name: 'Fish Tank', emoji: '🐠', category: 'pets', gridX: 14, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 4, gridWidth: 3, gridHeight: 2 },
+      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 1, gridY: 7, gridWidth: 2, gridHeight: 2 },
+      { id: 3, name: 'Bean Bag Chair', emoji: '🛋️', category: 'furniture', gridX: 12, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 4, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 13, gridY: 8, gridWidth: 1, gridHeight: 1 },
+      { id: 5, name: 'Happy Dog', emoji: '🐶', category: 'pets', gridX: 7, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 6, name: 'Gaming Console', emoji: '🎮', category: 'games', gridX: 3, gridY: 9, gridWidth: 2, gridHeight: 1 },
+      { id: 7, name: 'Soccer Ball', emoji: '⚽', category: 'toys', gridX: 6, gridY: 9, gridWidth: 1, gridHeight: 1 },
+      { id: 8, name: 'Basketball', emoji: '🏀', category: 'toys', gridX: 10, gridY: 9, gridWidth: 1, gridHeight: 1 },
+      { id: 9, name: 'Fish Tank', emoji: '🐠', category: 'pets', gridX: 11, gridY: 3, gridWidth: 2, gridHeight: 2 },
     ],
   },
   {
@@ -82,13 +76,13 @@ export const sampleFriends: Friend[] = [
     background: 'from-green-100 to-emerald-200',
     avatarConfig: friendAvatars.friend3,
     items: [
-      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 2, gridY: 7, gridWidth: 3, gridHeight: 2 },
-      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 15, gridY: 6, gridWidth: 2, gridHeight: 2 },
-      { id: 3, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 15, gridY: 9, gridWidth: 2, gridHeight: 3 },
-      { id: 4, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 3, gridY: 10, gridWidth: 1, gridHeight: 1 },
-      { id: 5, name: 'Bunny', emoji: '🐰', category: 'pets', gridX: 6, gridY: 9, gridWidth: 2, gridHeight: 2 },
-      { id: 6, name: 'Puzzle Set', emoji: '🧩', category: 'games', gridX: 10, gridY: 10, gridWidth: 2, gridHeight: 1 },
-      { id: 7, name: 'Card Games', emoji: '🃏', category: 'games', gridX: 8, gridY: 11, gridWidth: 2, gridHeight: 1 },
+      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 5, gridWidth: 3, gridHeight: 2 },
+      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 12, gridY: 4, gridWidth: 2, gridHeight: 2 },
+      { id: 3, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 12, gridY: 7, gridWidth: 2, gridHeight: 3 },
+      { id: 4, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 2, gridY: 8, gridWidth: 1, gridHeight: 1 },
+      { id: 5, name: 'Bunny', emoji: '🐰', category: 'pets', gridX: 5, gridY: 7, gridWidth: 2, gridHeight: 2 },
+      { id: 6, name: 'Puzzle Set', emoji: '🧩', category: 'games', gridX: 8, gridY: 8, gridWidth: 2, gridHeight: 1 },
+      { id: 7, name: 'Card Games', emoji: '🃏', category: 'games', gridX: 6, gridY: 9, gridWidth: 2, gridHeight: 1 },
     ],
   },
   {
@@ -100,18 +94,18 @@ export const sampleFriends: Friend[] = [
     background: 'from-orange-100 to-pink-200',
     avatarConfig: friendAvatars.friend4,
     items: [
-      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 2, gridY: 5, gridWidth: 3, gridHeight: 2 },
-      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 2, gridY: 8, gridWidth: 2, gridHeight: 2 },
-      { id: 3, name: 'Bean Bag Chair', emoji: '🛋️', category: 'furniture', gridX: 15, gridY: 6, gridWidth: 2, gridHeight: 2 },
-      { id: 4, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 15, gridY: 8, gridWidth: 2, gridHeight: 3 },
-      { id: 5, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 4, gridY: 10, gridWidth: 1, gridHeight: 1 },
-      { id: 6, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 14, gridY: 10, gridWidth: 1, gridHeight: 1 },
-      { id: 7, name: 'Happy Dog', emoji: '🐶', category: 'pets', gridX: 8, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 8, name: 'Cute Cat', emoji: '🐱', category: 'pets', gridX: 10, gridY: 9, gridWidth: 2, gridHeight: 2 },
-      { id: 9, name: 'Gaming Console', emoji: '🎮', category: 'games', gridX: 5, gridY: 12, gridWidth: 2, gridHeight: 1 },
-      { id: 10, name: 'Board Games', emoji: '🎲', category: 'games', gridX: 9, gridY: 11, gridWidth: 2, gridHeight: 1 },
-      { id: 11, name: 'Soccer Ball', emoji: '⚽', category: 'toys', gridX: 12, gridY: 12, gridWidth: 1, gridHeight: 1 },
-      { id: 12, name: 'Art Supplies', emoji: '🎨', category: 'toys', gridX: 6, gridY: 10, gridWidth: 2, gridHeight: 1 },
+      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 3, gridWidth: 3, gridHeight: 2 },
+      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 1, gridY: 6, gridWidth: 2, gridHeight: 2 },
+      { id: 3, name: 'Bean Bag Chair', emoji: '🛋️', category: 'furniture', gridX: 12, gridY: 4, gridWidth: 2, gridHeight: 2 },
+      { id: 4, name: 'Bookshelf', emoji: '📚', category: 'furniture', gridX: 12, gridY: 6, gridWidth: 2, gridHeight: 3 },
+      { id: 5, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 3, gridY: 8, gridWidth: 1, gridHeight: 1 },
+      { id: 6, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 11, gridY: 9, gridWidth: 1, gridHeight: 1 },
+      { id: 7, name: 'Happy Dog', emoji: '🐶', category: 'pets', gridX: 6, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 8, name: 'Cute Cat', emoji: '🐱', category: 'pets', gridX: 8, gridY: 7, gridWidth: 2, gridHeight: 2 },
+      { id: 9, name: 'Gaming Console', emoji: '🎮', category: 'games', gridX: 4, gridY: 9, gridWidth: 2, gridHeight: 1 },
+      { id: 10, name: 'Board Games', emoji: '🎲', category: 'games', gridX: 7, gridY: 9, gridWidth: 2, gridHeight: 1 },
+      { id: 11, name: 'Soccer Ball', emoji: '⚽', category: 'toys', gridX: 10, gridY: 9, gridWidth: 1, gridHeight: 1 },
+      { id: 12, name: 'Art Supplies', emoji: '🎨', category: 'toys', gridX: 5, gridY: 3, gridWidth: 2, gridHeight: 1 },
     ],
   },
   {
@@ -123,13 +117,13 @@ export const sampleFriends: Friend[] = [
     background: 'from-indigo-200 to-purple-300',
     avatarConfig: friendAvatars.friend5,
     items: [
-      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 6, gridWidth: 3, gridHeight: 2 },
-      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 16, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 3, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 2, gridY: 9, gridWidth: 1, gridHeight: 1 },
-      { id: 4, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 15, gridY: 9, gridWidth: 1, gridHeight: 1 },
-      { id: 5, name: 'Fish Tank', emoji: '🐠', category: 'pets', gridX: 9, gridY: 7, gridWidth: 2, gridHeight: 2 },
-      { id: 6, name: 'Toy Box', emoji: '🧸', category: 'toys', gridX: 7, gridY: 11, gridWidth: 2, gridHeight: 1 },
-      { id: 7, name: 'Card Games', emoji: '🃏', category: 'games', gridX: 11, gridY: 11, gridWidth: 2, gridHeight: 1 },
+      { id: 1, name: 'Cozy Bed', emoji: '🛏️', category: 'furniture', gridX: 1, gridY: 4, gridWidth: 3, gridHeight: 2 },
+      { id: 2, name: 'Study Desk', emoji: '🪑', category: 'furniture', gridX: 12, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 3, name: 'Lamp', emoji: '💡', category: 'furniture', gridX: 2, gridY: 7, gridWidth: 1, gridHeight: 1 },
+      { id: 4, name: 'Plant', emoji: '🪴', category: 'furniture', gridX: 12, gridY: 8, gridWidth: 1, gridHeight: 1 },
+      { id: 5, name: 'Fish Tank', emoji: '🐠', category: 'pets', gridX: 7, gridY: 5, gridWidth: 2, gridHeight: 2 },
+      { id: 6, name: 'Toy Box', emoji: '🧸', category: 'toys', gridX: 5, gridY: 9, gridWidth: 2, gridHeight: 1 },
+      { id: 7, name: 'Card Games', emoji: '🃏', category: 'games', gridX: 8, gridY: 9, gridWidth: 2, gridHeight: 1 },
     ],
   },
 ];

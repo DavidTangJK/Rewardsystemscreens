@@ -6,8 +6,8 @@ import { AvatarDisplay } from "./AvatarDisplay";
 import { AvatarConfig } from "../data/avatar-options";
 import { toast } from "sonner";
 
-const GRID_COLS = 20;
-const GRID_ROWS = 15;
+const GRID_COLS = 16;
+const GRID_ROWS = 12;
 
 interface ShopItem {
   id: number;
