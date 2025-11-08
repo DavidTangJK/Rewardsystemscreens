@@ -556,7 +556,7 @@ export function HomeScreen({
                       }}
                     >
                       <ImageWithFallback
-                        src={import.meta.env.BASE_URL + item.imageUrl}
+                        src={(import.meta as any).env.BASE_URL + item.imageUrl}
                         // 👇 The key CSS to make sure the image scales within its allocated grid space
                         className="w-full h-full object-contain"
                       />
