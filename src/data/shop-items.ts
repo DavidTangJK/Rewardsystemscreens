@@ -1,3 +1,4 @@
+import IMAGES from "../../public/assets/IMAGES";
 export interface ShopItem {
   id: number;
   name: string;
@@ -26,7 +27,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 3,
     gridHeight: 2,
-    imageUrl: "/assets/bed.png",
+    imageUrl: IMAGES.bed,
   },
   {
     id: 2,
@@ -38,7 +39,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: "/assets/desk.png",
+    imageUrl: IMAGES.table,
   },
   {
     id: 3,
@@ -50,7 +51,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 3,
-    imageUrl: "/assets/bookcase2.png",
+    imageUrl: IMAGES.bookcase2,
   },
   {
     id: 4,
@@ -62,7 +63,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: "/assets/gamingchair.png",
+    imageUrl: IMAGES.chair,
   },
   {
     id: 5,
@@ -74,7 +75,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: "/assets/lamp.png",
+    imageUrl: IMAGES.lamp,
   },
   {
     id: 6,
@@ -86,7 +87,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: "/assets/pottedplant.png",
+    imageUrl: IMAGES.pottedplant,
   },
 
   // Pets
