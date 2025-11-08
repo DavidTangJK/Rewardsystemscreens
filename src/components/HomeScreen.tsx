@@ -18,6 +18,7 @@ interface ShopItem {
   gridY?: number;
   gridWidth: number;
   gridHeight: number;
+  imageUrl?: string;
 }
 
 interface HomeScreenProps {
@@ -341,7 +342,9 @@ export function HomeScreen({
       <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 md:p-6 text-white flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-shrink">
-            <h1 className="text-white text-lg md:text-2xl lg:text-3xl truncate">My Virtual Home</h1>
+            <h1 className="text-white text-lg md:text-2xl lg:text-3xl truncate">
+              My Virtual Home
+            </h1>
             <p className="text-purple-100 opacity-90 text-xs md:text-sm truncate">
               {isEditMode
                 ? "Arrange your furniture!"
@@ -551,7 +554,7 @@ export function HomeScreen({
                         fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
                       }}
                     >
-                      {item.emoji}
+                      {item.imageUrl}
                     </div>
                     {isEditMode && (
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
