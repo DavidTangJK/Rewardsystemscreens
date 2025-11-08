@@ -176,7 +176,7 @@ export const defaultAvatarConfig: AvatarConfig = {
   earringColor: ["ffd700"],
   earrings: [""],
   eyebrows: ["up"],
-  eyes: ["eyeShadow"],
+  eyes: ["round"],
   eyeShadowColor: [""],
   facialHair: [""],
   glasses: [""],

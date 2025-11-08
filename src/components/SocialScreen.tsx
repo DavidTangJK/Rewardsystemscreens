@@ -211,24 +211,6 @@ export function SocialScreen({
               {/* Wood Floor Pattern */}
               <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
 
-              {/* Windows */}
-              <div className="absolute top-4 left-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none">
-                <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                </div>
-              </div>
-              <div className="absolute top-4 right-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none">
-                <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                </div>
-              </div>
-
               {/* Items - Grid Based */}
               {selectedFriend.items.map((item) => {
                 const scaleFactor = Math.max(item.gridWidth, item.gridHeight);

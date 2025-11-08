@@ -54,7 +54,7 @@ export function AvatarCustomizer({
     earringColor: ["ffd700"],
     earrings: [""],
     eyebrows: ["up"],
-    eyes: ["eyeShadow"],
+    eyes: ["tound"],
     eyeShadowColor: [""],
     facialHair: [""],
     glasses: [""],

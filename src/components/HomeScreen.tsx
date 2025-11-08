@@ -505,24 +505,6 @@ export function HomeScreen({
                 />
               )}
 
-              {/* Windows */}
-              <div className="absolute top-4 left-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none z-10">
-                <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                </div>
-              </div>
-              <div className="absolute top-4 right-8 w-20 h-20 bg-sky-200 border-4 border-amber-700 rounded-lg pointer-events-none z-10">
-                <div className="absolute inset-0 grid grid-cols-2 gap-1 p-1">
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                  <div className="bg-sky-100/50"></div>
-                </div>
-              </div>
-
               {/* Draggable Items */}
               {items.map((item, index) => {
                 const position = getItemPosition(item, index);
