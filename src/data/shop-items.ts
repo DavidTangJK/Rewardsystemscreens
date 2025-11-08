@@ -1,4 +1,3 @@
-import IMAGES from "../../public/assets/IMAGES";
 export interface ShopItem {
   id: number;
   name: string;
@@ -12,7 +11,7 @@ export interface ShopItem {
   gridWidth: number; // Width in grid cells
   gridHeight: number; // Height in grid cells
   gradient?: string; // For background items
-  imageUrl: string; // Optional image URL for the item
+  imageUrl: string; // Image URL or pathd
 }
 
 export const initialShopItems: ShopItem[] = [
@@ -27,7 +26,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 3,
     gridHeight: 2,
-    imageUrl: IMAGES.bed,
+    imageUrl: "/assets/bed.png",
   },
   {
     id: 2,
@@ -39,7 +38,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: IMAGES.table,
+    imageUrl: "/assets/desk.png",
   },
   {
     id: 3,
@@ -51,7 +50,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 3,
-    imageUrl: IMAGES.bookcase2,
+    imageUrl: "/assets/bookcase.png",
   },
   {
     id: 4,
@@ -63,7 +62,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: IMAGES.chair,
+    imageUrl: "/assets/gamingchair.png",
   },
   {
     id: 5,
@@ -75,7 +74,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: IMAGES.lamp,
+    imageUrl: "/assets/lamp.png",
   },
   {
     id: 6,
@@ -87,7 +86,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: IMAGES.pottedplant,
+    imageUrl: "/assets/plant.png",
   },
 
   // Pets

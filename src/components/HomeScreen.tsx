@@ -102,6 +102,12 @@ export function HomeScreen({
     width: number;
     height: number;
   } | null>(null);
+  const resolveSrc = (url?: string) =>
+    !url
+      ? undefined
+      : url.startsWith("/") || url.startsWith("http")
+      ? url
+      : new URL(url, import.meta.url).href;
 
   // Update avatars when they change
   useEffect(() => {
@@ -337,6 +343,14 @@ export function HomeScreen({
     };
   };
 
+  // Debugging effect to log item URLs
+  useEffect(() => {
+    console.log(
+      "HomeScreen items:",
+      items.map((i) => ({ id: i.id, name: i.name, imageUrl: i.imageUrl }))
+    );
+  }, [items]);
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -556,12 +570,17 @@ export function HomeScreen({
                       }}
                     >
                       <ImageWithFallback
-                        src={`${(import.meta as any).env?.BASE_URL ?? ""}${
-                          item.imageUrl
-                        }`}
+                        src={resolveSrc(item.imageUrl)}
                         alt={item.name}
-                        // 👇 The key CSS to make sure the image scales within its allocated grid space
                         className="w-full h-full object-contain"
+                        onError={() => {
+                          console.warn(
+                            "Missing/broken image for item:",
+                            item.id,
+                            item.name,
+                            item.imageUrl
+                          );
+                        }}
                       />
                     </div>
                     {isEditMode && (
