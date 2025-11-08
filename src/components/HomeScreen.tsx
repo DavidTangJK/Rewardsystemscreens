@@ -4,6 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { AvatarDisplay } from "./AvatarDisplay";
 import { AvatarConfig } from "../data/avatar-options";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { toast } from "sonner";
 
 const GRID_COLS = 13;
@@ -554,7 +555,12 @@ export function HomeScreen({
                         fontSize: `${Math.min(scaleFactor * 2, 4)}rem`,
                       }}
                     >
-                      {item.imageUrl}
+                      <ImageWithFallback
+                        src={item.imageUrl}
+                        alt={item.name}
+                        // 👇 The key CSS to make sure the image scales within its allocated grid space
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     {isEditMode && (
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -657,16 +663,6 @@ export function HomeScreen({
             </Badge>
           </div>
         )}
-
-        {/* Stats Badge 
-        {!isEditMode && items.length > 0 && (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
-            <Badge className="bg-purple-500 text-white hover:bg-purple-600 px-4 py-2">
-              🎉 {items.length} item{items.length !== 1 ? "s" : ""} in your
-              home!
-            </Badge>
-          </div>
-        )} */}
       </div>
     </div>
   );

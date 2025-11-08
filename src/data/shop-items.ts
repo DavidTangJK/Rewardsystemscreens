@@ -11,7 +11,7 @@ export interface ShopItem {
   gridWidth: number; // Width in grid cells
   gridHeight: number; // Height in grid cells
   gradient?: string; // For background items
-  imageUrl?: string; // Optional image URL for the item
+  imageUrl: string; // Optional image URL for the item
 }
 
 export const initialShopItems: ShopItem[] = [
@@ -26,7 +26,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 3,
     gridHeight: 2,
-    imageUrl: "../assets/bed.png",
+    imageUrl: "/assets/bed.png",
   },
   {
     id: 2,
@@ -38,7 +38,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: "../assets/desk.png",
+    imageUrl: "/assets/desk.png",
   },
   {
     id: 3,
@@ -50,7 +50,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 3,
-    imageUrl: "../assets/bookcase2.png",
+    imageUrl: "/assets/bookcase2.png",
   },
   {
     id: 4,
@@ -62,7 +62,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
-    imageUrl: "../assets/gamingchair.png",
+    imageUrl: "/assets/gamingchair.png",
   },
   {
     id: 5,
@@ -74,7 +74,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: "../assets/lamp.png",
+    imageUrl: "/assets/lamp.png",
   },
   {
     id: 6,
@@ -86,7 +86,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 2,
-    imageUrl: "../assets/pottedplant.png",
+    imageUrl: "/assets/pottedplant.png",
   },
 
   // Pets
@@ -100,6 +100,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/cat.png",
   },
   {
     id: 8,
@@ -111,6 +112,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/dog.png",
   },
   {
     id: 9,
@@ -122,6 +124,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/fishtank.png",
   },
   {
     id: 10,
@@ -133,6 +136,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/bunny.png",
   },
 
   // Games
@@ -146,6 +150,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/console.png",
   },
   {
     id: 12,
@@ -157,6 +162,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/boardgames.png",
   },
   {
     id: 13,
@@ -168,6 +174,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/puzzleset.png",
   },
   {
     id: 14,
@@ -179,6 +186,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/cardgames.png",
   },
 
   // Toys
@@ -192,6 +200,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/toybox.png",
   },
   {
     id: 16,
@@ -203,6 +212,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/artsupplies.png",
   },
   {
     id: 17,
@@ -214,6 +224,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: true,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/soccerball.png",
   },
   {
     id: 18,
@@ -225,6 +236,7 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 2,
     gridHeight: 2,
+    imageUrl: "/assets/basketball.png",
   },
 
   // Backgrounds (grid size not used for backgrounds)
@@ -239,6 +251,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-amber-50 to-amber-100",
+    imageUrl: "",
   },
   {
     id: 20,
@@ -251,6 +264,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-cyan-100 to-blue-200",
+    imageUrl: "",
   },
   {
     id: 21,
@@ -263,6 +277,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-green-100 to-emerald-200",
+    imageUrl: "",
   },
   {
     id: 22,
@@ -275,6 +290,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-orange-100 to-pink-200",
+    imageUrl: "",
   },
   {
     id: 23,
@@ -287,6 +303,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-purple-100 to-pink-200",
+    imageUrl: "",
   },
   {
     id: 24,
@@ -299,6 +316,7 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-indigo-200 to-purple-300",
+    imageUrl: "",
   },
   {
     id: 25,
@@ -311,5 +329,6 @@ export const initialShopItems: ShopItem[] = [
     gridWidth: 1,
     gridHeight: 1,
     gradient: "from-pink-100 via-yellow-100 to-cyan-100",
+    imageUrl: "",
   },
 ];
