@@ -34,6 +34,7 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     const urlChildId = params.get("child_id");
     const urlChildName = params.get("child_name");
+    const urlChildLink = params.get("share_token");
 
     localStorage.clear(); // Clear localStorage for testing purposes
 
@@ -57,6 +58,30 @@ export default function App() {
       // Child exists, load their data
       try {
         const childData = JSON.parse(storedChildData);
+        const cleanedShopItems = (childData.shopItems || initialShopItems).map(
+          (item, index) => {
+            if (
+              item.equipped &&
+              (item.gridX === undefined || item.gridY === undefined)
+            ) {
+              console.log(
+                `Equipped item "${item.name}" is missing coordinates. Assigning defaults.`
+              );
+
+              // Use a basic default position for missing items.
+              // We use index fallback logic similar to getItemPosition just to place it somewhere visible.
+              const defaultGridX = (index * 3) % 13;
+              const defaultGridY = Math.floor(index / 5) + 2;
+
+              return {
+                ...item,
+                gridX: item.gridX ?? defaultGridX,
+                gridY: item.gridY ?? defaultGridY,
+              };
+            }
+            return item;
+          }
+        );
         setHasCompletedOnboarding(childData.onboardingCompleted || false);
         setUserName(childData.userName || "");
         setAvatarConfig(childData.avatarConfig || defaultAvatarConfig);
@@ -283,6 +308,8 @@ export default function App() {
 
     setShopItems((prevItems) => {
       // If equipping a background, unequip all other backgrounds first
+
+      const isEquipping = !item.equipped;
       if (item.category === "backgrounds" && !item.equipped) {
         return prevItems.map((i) =>
           i.id === itemId
@@ -294,9 +321,23 @@ export default function App() {
       }
 
       // For all other items (including pets), just toggle
-      return prevItems.map((i) =>
-        i.id === itemId ? { ...i, equipped: !i.equipped } : i
-      );
+      return prevItems.map((i) => {
+        if (i.id === itemId) {
+          // FIX: If equipping AND missing position, enforce a default spawn point.
+          // This ensures the item has coordinates and appears on the home screen.
+          const defaultGridX = i.gridX ?? 2;
+          const defaultGridY = i.gridY ?? 2;
+
+          return {
+            ...i,
+            equipped: !i.equipped,
+            // Only set defaults if it is being equipped and values are missing
+            gridX: isEquipping ? defaultGridX : i.gridX,
+            gridY: isEquipping ? defaultGridY : i.gridY,
+          };
+        }
+        return i;
+      });
     });
   };
 

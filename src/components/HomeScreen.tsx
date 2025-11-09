@@ -347,7 +347,13 @@ export function HomeScreen({
   useEffect(() => {
     console.log(
       "HomeScreen items:",
-      items.map((i) => ({ id: i.id, name: i.name, imageUrl: i.imageUrl }))
+      items.map((i) => ({
+        id: i.id,
+        name: i.name,
+        imageUrl: i.imageUrl,
+        gridX: i.gridX,
+        gridY: i.gridY,
+      }))
     );
   }, [items]);
 
