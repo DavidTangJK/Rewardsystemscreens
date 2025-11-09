@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Home, Users, Sparkles } from "lucide-react";
+import { Home, Users, Sparkles, ListTodo } from "lucide-react";
 import { HomeScreen } from "./components/HomeScreen";
 import { ShopScreen } from "./components/ShopScreen";
 import { ReflectionScreen } from "./components/ReflectionScreen";
@@ -28,13 +28,17 @@ export default function App() {
   const [dadAvatarConfig, setDadAvatarConfig] =
     useState<AvatarConfig>(dadAvatar);
   const [shopItems, setShopItems] = useState<ShopItem[]>(initialShopItems);
+  const [shareToken, setShareToken] = useState<string | null>(null);
 
   // Check URL query parameters and load child data
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlChildId = params.get("child_id");
     const urlChildName = params.get("child_name");
-    const urlChildLink = params.get("share_token");
+    const urlShareToken = params.get("share_token");
+    if (urlShareToken) {
+      setShareToken(urlShareToken);
+    }
 
     localStorage.clear(); // Clear localStorage for testing purposes
 
@@ -363,7 +367,10 @@ export default function App() {
     { id: "social" as Screen, label: "Friends", icon: Users },
     { id: "reflect" as Screen, label: "Reflect", icon: Sparkles },
   ];
-
+  const EXTERNAL_REDIRECT_BASE = "https://task.csun.site/kids/"; // Base URL
+  const finalRedirectUrl = shareToken
+    ? `${EXTERNAL_REDIRECT_BASE}?share_token=${shareToken}`
+    : EXTERNAL_REDIRECT_BASE;
   // Show loading state while checking onboarding status
   if (isLoading) {
     return (
@@ -430,7 +437,7 @@ export default function App() {
 
       {/* Bottom Navigation */}
       <nav className="bg-white border-t border-border flex-shrink-0">
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentScreen === item.id;
@@ -450,6 +457,15 @@ export default function App() {
               </button>
             );
           })}
+          <a
+            href={finalRedirectUrl} // <-- CHANGE THIS TO YOUR DESIRED URL
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-1 py-3 transition-colors text-muted-foreground hover:text-foreground"
+          >
+            <ListTodo size={24} className="text-pink-600" />
+            <span className="text-xs">Tasks</span>
+          </a>
         </div>
       </nav>
     </div>
