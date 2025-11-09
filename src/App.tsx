@@ -369,7 +369,7 @@ export default function App() {
   ];
   const EXTERNAL_REDIRECT_BASE = "https://task.csun.site/kids/"; // Base URL
   const finalRedirectUrl = shareToken
-    ? `${EXTERNAL_REDIRECT_BASE}?share_token=${shareToken}`
+    ? `${EXTERNAL_REDIRECT_BASE}${shareToken}`
     : EXTERNAL_REDIRECT_BASE;
   // Show loading state while checking onboarding status
   if (isLoading) {
