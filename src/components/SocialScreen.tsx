@@ -114,7 +114,7 @@ export function SocialScreen({
       {/* Header - Compact */}
       <div className="bg-gradient-to-r from-cyan-500 to-blue-500 px-2 md:px-3 py-2 text-white flex-shrink-0">
         {/* Friend Selector */}
-        <div className="flex items-center gap-1 md:gap-2 mb-2">
+        <div className="flex items-center gap-1 md:gap-3 mb-2">
           <p className="text-blue-100 opacity-90 text-xs md:text-sm flex-shrink-0">
             Visit:
           </p>
@@ -141,13 +141,6 @@ export function SocialScreen({
                       )}
                     </div>
                     <span>{friend.name}</span>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Star
-                        className="fill-yellow-400 text-yellow-400"
-                        size={12}
-                      />
-                      <span>{friend.stars}</span>
-                    </div>
                   </div>
                 </SelectItem>
               ))}
