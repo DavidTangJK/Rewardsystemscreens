@@ -64,7 +64,7 @@ export const initialShopItems: ShopItem[] = [
     emoji: "🪑",
     purchased: false,
     equipped: false,
-    gridWidth: 2,
+    gridWidth: 1,
     gridHeight: 2,
     imageUrl: "/assets/furniture/sidetable.png",
   },

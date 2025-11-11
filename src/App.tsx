@@ -12,6 +12,79 @@ import { defaultAvatarConfig, type AvatarConfig } from "./data/avatar-options";
 import { momAvatar, dadAvatar } from "./data/avatars";
 
 type Screen = "home" | "shop" | "reflect" | "social";
+const GRID_COLS = 13;
+const GRID_ROWS = 10;
+interface TempShopItem {
+  id: number;
+  name: string;
+  category: string;
+  gridX?: number;
+  gridY?: number;
+  gridWidth: number;
+  gridHeight: number;
+  equipped: boolean;
+}
+const isValidPosition = (
+  newItem: TempShopItem,
+  existingItems: TempShopItem[],
+  gridX: number,
+  gridY: number
+) => {
+  // Check bounds
+  if (
+    gridX < 0 ||
+    gridY < 0 ||
+    gridX + newItem.gridWidth > GRID_COLS ||
+    gridY + newItem.gridHeight > GRID_ROWS
+  ) {
+    return false;
+  }
+
+  // Check for overlaps with other items (ALL items now prevent overlap)
+  for (const item of existingItems) {
+    // Skip check for the item itself
+    if (item.id === newItem.id) continue;
+
+    if (item.gridX === undefined || item.gridY === undefined) continue;
+
+    const itemRight = (item.gridX || 0) + item.gridWidth;
+    const itemBottom = (item.gridY || 0) + item.gridHeight;
+    const newRight = gridX + newItem.gridWidth;
+    const newBottom = gridY + newItem.gridHeight;
+
+    // Check if rectangles overlap (collision detected)
+    if (
+      gridX < itemRight &&
+      newRight > (item.gridX || 0) &&
+      gridY < itemBottom &&
+      newBottom > (item.gridY || 0)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+const findRandomValidPosition = (
+  newItem: TempShopItem,
+  existingItems: TempShopItem[]
+) => {
+  const MAX_ATTEMPTS = 50;
+
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    const maxGridX = Math.max(0, GRID_COLS - newItem.gridWidth);
+    const maxGridY = Math.max(0, GRID_ROWS - newItem.gridHeight);
+
+    const candidateX = Math.floor(Math.random() * (maxGridX + 1));
+    const candidateY = Math.floor(Math.random() * (maxGridY + 1));
+
+    if (isValidPosition(newItem, existingItems, candidateX, candidateY)) {
+      return { gridX: candidateX, gridY: candidateY };
+    }
+  }
+
+  return { gridX: 0, gridY: 0 };
+};
 
 export default function App() {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] =
@@ -62,37 +135,39 @@ export default function App() {
       // Child exists, load their data
       try {
         const childData = JSON.parse(storedChildData);
-        const cleanedShopItems = (childData.shopItems || initialShopItems).map(
-          (item, index) => {
-            if (
-              item.equipped &&
-              (item.gridX === undefined || item.gridY === undefined)
-            ) {
-              console.log(
-                `Equipped item "${item.name}" is missing coordinates. Assigning defaults.`
-              );
+        let currentShopItems: TempShopItem[] = (childData.shopItems ||
+          initialShopItems) as TempShopItem[];
 
-              // Use a basic default position for missing items.
-              // We use index fallback logic similar to getItemPosition just to place it somewhere visible.
-              const defaultGridX = (index * 3) % 13;
-              const defaultGridY = Math.floor(index / 5) + 2;
+        const cleanedShopItems = currentShopItems.map((item) => {
+          if (
+            item.equipped &&
+            (item.gridX === undefined || item.gridY === undefined)
+          ) {
+            console.warn(
+              `Equipped item "${item.name}" is missing coordinates. Finding random spot.`
+            );
 
-              return {
-                ...item,
-                gridX: item.gridX ?? defaultGridX,
-                gridY: item.gridY ?? defaultGridY,
-              };
-            }
-            return item;
+            // Find a random valid position based on the current items on screen
+            const { gridX, gridY } = findRandomValidPosition(
+              item,
+              currentShopItems
+            );
+
+            return {
+              ...item,
+              gridX: gridX, // Assigned random valid X
+              gridY: gridY, // Assigned random valid Y
+            } as ShopItem;
           }
-        );
+          return item as ShopItem;
+        });
         setHasCompletedOnboarding(childData.onboardingCompleted || false);
         setUserName(childData.userName || "");
         setAvatarConfig(childData.avatarConfig || defaultAvatarConfig);
         setMomAvatarConfig(childData.momAvatarConfig || momAvatar);
         setDadAvatarConfig(childData.dadAvatarConfig || dadAvatar);
         setStars(childData.stars || 100);
-        setShopItems(childData.shopItems || initialShopItems);
+        setShopItems(cleanedShopItems);
       } catch (error) {
         console.error("Error loading child data:", error);
       }
@@ -189,6 +264,28 @@ export default function App() {
 
     // Save to child-specific localStorage
     const childDataKey = `child_${childId}`;
+    const initialItemsWithPositions = (initialShopItems as TempShopItem[]).map(
+      (item) => {
+        // Check if item is initially equipped AND missing coordinates
+        if (
+          item.equipped &&
+          (item.gridX === undefined || item.gridY === undefined)
+        ) {
+          // Find a random valid position based on the whole initial list
+          const { gridX, gridY } = findRandomValidPosition(
+            item,
+            initialShopItems as TempShopItem[]
+          );
+          return {
+            ...item,
+            gridX: gridX,
+            gridY: gridY,
+          } as ShopItem;
+        }
+        return item as ShopItem;
+      }
+    );
+    setShopItems(initialItemsWithPositions);
     const childData = {
       onboardingCompleted: true,
       userName: data.userName,
@@ -258,9 +355,29 @@ export default function App() {
         }
 
         // For other items, just set purchased and equipped
-        return prevItems.map((i) =>
-          i.id === itemId ? { ...i, purchased: true, equipped: true } : i
-        );
+        return prevItems.map((i) => {
+          if (i.id === itemId) {
+            // Check if coordinates are missing upon first purchase/equip
+            if (i.gridX === undefined || i.gridY === undefined) {
+              const { gridX, gridY } = findRandomValidPosition(
+                i as TempShopItem,
+                prevItems as TempShopItem[]
+              );
+
+              return {
+                ...i,
+                purchased: true,
+                equipped: true,
+                gridX: gridX,
+                gridY: gridY,
+              } as ShopItem;
+            }
+
+            // Item purchased, equipped, and already had coordinates
+            return { ...i, purchased: true, equipped: true } as ShopItem;
+          }
+          return i;
+        });
       });
       setStars((prev) => prev - item.cost);
 
@@ -327,18 +444,25 @@ export default function App() {
       // For all other items (including pets), just toggle
       return prevItems.map((i) => {
         if (i.id === itemId) {
-          // FIX: If equipping AND missing position, enforce a default spawn point.
-          // This ensures the item has coordinates and appears on the home screen.
-          const defaultGridX = i.gridX ?? 2;
-          const defaultGridY = i.gridY ?? 2;
+          if (isEquipping && (i.gridX === undefined || i.gridY === undefined)) {
+            // CRITICAL FIX: If equipping AND coordinates are missing, assign a random valid spot NOW.
+            const { gridX, gridY } = findRandomValidPosition(
+              i as TempShopItem,
+              prevItems as TempShopItem[]
+            );
+
+            return {
+              ...i,
+              equipped: !i.equipped,
+              gridX: gridX,
+              gridY: gridY,
+            } as ShopItem;
+          }
 
           return {
             ...i,
             equipped: !i.equipped,
-            // Only set defaults if it is being equipped and values are missing
-            gridX: isEquipping ? defaultGridX : i.gridX,
-            gridY: isEquipping ? defaultGridY : i.gridY,
-          };
+          } as ShopItem;
         }
         return i;
       });
