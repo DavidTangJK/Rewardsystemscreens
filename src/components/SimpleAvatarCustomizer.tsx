@@ -39,11 +39,13 @@ export function SimpleAvatarCustomizer({
   avatarConfig,
   onAvatarChange,
 }: SimpleAvatarCustomizerProps) {
+  const [configkey, setConfigKey] = useState(0);
   const updateConfig = (key: keyof AvatarConfig, value: string[]) => {
     onAvatarChange({
       ...avatarConfig,
       [key]: value,
     });
+    setConfigKey((prev) => prev + 1);
   };
 
   const randomize = () => {
@@ -129,7 +131,7 @@ export function SimpleAvatarCustomizer({
       {/* Avatar Preview */}
       <div className="flex flex-col items-center space-y-4">
         <div className="w-32 h-32 md:w-40 md:h-40">
-          <AvatarDisplay config={avatarConfig} size="large" />
+          <AvatarDisplay key={configkey} config={avatarConfig} size="large" />
         </div>
         <Button onClick={randomize} variant="outline" size="sm">
           <Shuffle className="mr-2" size={16} />

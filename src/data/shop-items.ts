@@ -204,8 +204,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/MeowingCat.gif",
   },
   {
@@ -218,8 +216,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/HonkingGoose.gif",
   },
   {
@@ -232,8 +228,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/PasturingSheep.gif",
   },
   {
@@ -246,8 +240,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/SnowFox.gif",
   },
   {
@@ -260,8 +252,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/SlowTurtle.gif",
   },
   {
@@ -274,8 +264,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/SpikeyPorcupine.gif",
   },
   {
@@ -288,8 +276,6 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/SpikeyPorcupine.gif",
   },
   {
@@ -302,14 +288,12 @@ export const initialShopItems: ShopItem[] = [
     equipped: false,
     gridWidth: 1,
     gridHeight: 1,
-    gridX: 10,
-    gridY: 5,
     imageUrl: "/assets/pets/TinyChick.gif",
   },
 
   // Games
   {
-    id: 11,
+    id: 23,
     name: "Gaming Console",
     cost: 50,
     category: "entertainment",
@@ -321,7 +305,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/console.png",
   },
   {
-    id: 12,
+    id: 24,
     name: "Board Games",
     cost: 20,
     category: "entertainment",
@@ -333,7 +317,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/boardgames.png",
   },
   {
-    id: 13,
+    id: 25,
     name: "Puzzle Set",
     cost: 15,
     category: "entertainment",
@@ -345,7 +329,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/puzzleset.png",
   },
   {
-    id: 14,
+    id: 26,
     name: "Card Games",
     cost: 10,
     category: "entertainment",
@@ -359,7 +343,7 @@ export const initialShopItems: ShopItem[] = [
 
   // Toys
   {
-    id: 15,
+    id: 27,
     name: "Toy Box",
     cost: 15,
     category: "entertainment",
@@ -371,7 +355,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/toybox.png",
   },
   {
-    id: 16,
+    id: 28,
     name: "Art Supplies",
     cost: 18,
     category: "entertainment",
@@ -383,7 +367,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/artsupplies.png",
   },
   {
-    id: 17,
+    id: 29,
     name: "Soccer Ball",
     cost: 12,
     category: "entertainment",
@@ -395,7 +379,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "/assets/soccerball.png",
   },
   {
-    id: 18,
+    id: 30,
     name: "Basketball",
     cost: 12,
     category: "entertainment",
@@ -409,7 +393,7 @@ export const initialShopItems: ShopItem[] = [
 
   // Backgrounds (grid size not used for backgrounds)
   {
-    id: 19,
+    id: 31,
     name: "Cozy Default",
     cost: 0,
     category: "backgrounds",
@@ -422,7 +406,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 20,
+    id: 32,
     name: "Ocean Breeze",
     cost: 25,
     category: "backgrounds",
@@ -435,7 +419,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 21,
+    id: 33,
     name: "Forest Retreat",
     cost: 25,
     category: "backgrounds",
@@ -448,7 +432,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 22,
+    id: 34,
     name: "Sunset Dreams",
     cost: 30,
     category: "backgrounds",
@@ -461,7 +445,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 23,
+    id: 35,
     name: "Purple Paradise",
     cost: 30,
     category: "backgrounds",
@@ -474,7 +458,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 24,
+    id: 36,
     name: "Starry Night",
     cost: 35,
     category: "backgrounds",
@@ -487,7 +471,7 @@ export const initialShopItems: ShopItem[] = [
     imageUrl: "",
   },
   {
-    id: 25,
+    id: 37,
     name: "Rainbow Magic",
     cost: 40,
     category: "backgrounds",

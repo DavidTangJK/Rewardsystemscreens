@@ -558,18 +558,13 @@ export function HomeScreen({
                       }}
                     >
                       <ImageWithFallback
-                        src={resolveSrc(item.imageUrl)}
+                        src={item.imageUrl} // Use the specific image URL
                         alt={item.name}
                         className="w-full h-full object-contain"
-                        onError={() => {
-                          console.warn(
-                            "Missing/broken image for item:",
-                            item.id,
-                            item.name,
-                            item.imageUrl
-                          );
-                        }}
-                      />
+                      >
+                        {/* The content inside here is the fallback (the emoji) */}
+                        {item.emoji}
+                      </ImageWithFallback>
                     </div>
                     {isEditMode && (
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -611,7 +606,7 @@ export function HomeScreen({
                         {char.avatarConfig ? (
                           <AvatarDisplay
                             config={char.avatarConfig}
-                            size="compact"
+                            size="between"
                           />
                         ) : (
                           <div className="text-4xl">{char.emoji}</div>

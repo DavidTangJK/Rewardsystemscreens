@@ -355,29 +355,9 @@ export default function App() {
         }
 
         // For other items, just set purchased and equipped
-        return prevItems.map((i) => {
-          if (i.id === itemId) {
-            // Check if coordinates are missing upon first purchase/equip
-            if (i.gridX === undefined || i.gridY === undefined) {
-              const { gridX, gridY } = findRandomValidPosition(
-                i as TempShopItem,
-                prevItems as TempShopItem[]
-              );
-
-              return {
-                ...i,
-                purchased: true,
-                equipped: true,
-                gridX: gridX,
-                gridY: gridY,
-              } as ShopItem;
-            }
-
-            // Item purchased, equipped, and already had coordinates
-            return { ...i, purchased: true, equipped: true } as ShopItem;
-          }
-          return i;
-        });
+        return prevItems.map((i) =>
+          i.id === itemId ? { ...i, purchased: true, equipped: true } : i
+        );
       });
       setStars((prev) => prev - item.cost);
 
@@ -428,24 +408,49 @@ export default function App() {
     if (!item || !item.purchased) return;
 
     setShopItems((prevItems) => {
-      // If equipping a background, unequip all other backgrounds first
-
       const isEquipping = !item.equipped;
-      if (item.category === "backgrounds" && !item.equipped) {
-        return prevItems.map((i) =>
-          i.id === itemId
-            ? { ...i, equipped: true }
-            : i.category === "backgrounds"
-            ? { ...i, equipped: false }
-            : i
-        );
+      const isBackground = item.category === "backgrounds";
+      const DEFAULT_BG_ID = 19; // Assuming Cozy Default is ID 19 from shop-items.ts
+
+      if (isBackground) {
+        // CASE 1: Item is currently equipped (User wants to UNEQUIP/deactivate)
+        if (item.equipped) {
+          // Prevent UNEQUIPPING the Cozy Default background
+          if (item.id === DEFAULT_BG_ID) {
+            return prevItems;
+          }
+
+          // If any *custom* background is unequipped, force default to be equipped instead.
+          return prevItems.map((i) => {
+            if (i.id === itemId) {
+              return { ...i, equipped: false } as ShopItem; // Unequip the clicked custom one
+            }
+            if (i.id === DEFAULT_BG_ID) {
+              return { ...i, equipped: true } as ShopItem; // Force default back ON
+            }
+            return i;
+          });
+        }
+
+        // CASE 2: Item is NOT equipped (User wants to EQUIP/ACTIVATE)
+        // This is the path for both first-time equip and switching from another custom BG.
+        return prevItems.map((i) => {
+          if (i.category === "backgrounds") {
+            // Equip only the item they clicked
+            if (i.id === itemId) {
+              return { ...i, equipped: true } as ShopItem;
+            }
+            // Unequip all other backgrounds (including the default)
+            return { ...i, equipped: false } as ShopItem;
+          }
+          return i;
+        });
       }
 
-      // For all other items (including pets), just toggle
+      // Logic for all other non-background items (remains unchanged)
       return prevItems.map((i) => {
         if (i.id === itemId) {
           if (isEquipping && (i.gridX === undefined || i.gridY === undefined)) {
-            // CRITICAL FIX: If equipping AND coordinates are missing, assign a random valid spot NOW.
             const { gridX, gridY } = findRandomValidPosition(
               i as TempShopItem,
               prevItems as TempShopItem[]
