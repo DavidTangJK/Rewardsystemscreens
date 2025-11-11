@@ -113,7 +113,7 @@ export default function App() {
       setShareToken(urlShareToken);
     }
 
-    //localStorage.clear(); // Clear localStorage for testing purposes
+    localStorage.clear(); // Clear localStorage for testing purposes
 
     // Determine which child to load
     let loadChildId =
